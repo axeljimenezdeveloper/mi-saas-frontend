@@ -1,0 +1,110 @@
+/* src/styles/tokens.css
+ * Primitivas del sistema de diseño — inspirado en Apple HIG.
+ * NUNCA usar estos tokens directamente en componentes.
+ * Usa los tokens semánticos de themes.css.
+ */
+
+:root {
+  /* ============ Grays (neutrales, estilo Apple — NO slate) ============ */
+  --gray-50:  #f5f5f7;   /* Apple light background */
+  --gray-100: #e8e8ed;
+  --gray-200: #d2d2d7;
+  --gray-300: #b0b0b8;
+  --gray-400: #86868b;
+  --gray-500: #6e6e73;   /* Apple secondary label (light) */
+  --gray-600: #52525a;
+  --gray-700: #3a3a3d;
+  --gray-800: #2c2c2e;   /* Apple tertiary system background */
+  --gray-850: #1c1c1e;   /* Apple secondary system background */
+  --gray-900: #141416;
+  --gray-950: #000000;   /* Apple primary background (dark) */
+
+  /* ============ Apple Blue (acento de marca) ============ */
+  --blue-300: #66b3ff;
+  --blue-400: #409cff;
+  --blue-500: #0a84ff;   /* Apple system blue — dark mode */
+  --blue-600: #007aff;   /* Apple system blue — light mode */
+  --blue-700: #0062cc;
+  --blue-800: #004f9e;
+
+  /* ============ Apple system colors ============ */
+  --red-400:   #ff6961;
+  --red-500:   #ff453a;  /* dark mode */
+  --red-600:   #ff3b30;  /* light mode */
+  --red-700:   #d70015;
+
+  --green-400: #5ee07a;
+  --green-500: #30d158;  /* dark mode */
+  --green-600: #34c759;  /* light mode */
+  --green-700: #248a3d;
+
+  --orange-400: #ffb340;
+  --orange-500: #ff9f0a; /* dark mode */
+  --orange-600: #ff9500; /* light mode */
+
+  --yellow-400: #ffd60a;
+  --yellow-500: #ffcc00;
+
+  --teal-400: #64d2ff;
+  --teal-500: #5ac8fa;
+
+  /* ============ Espaciado (base 4px) ============ */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ============ Radios (más redondeados, estilo Apple) ============ */
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-full: 9999px;
+
+  /* ============ Tipografía ============ */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI',
+               system-ui, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SF Mono', 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+
+  --text-xs:   0.6875rem;
+  --text-sm:   0.8125rem;
+  --text-base: 0.9375rem;
+  --text-lg:   1.0625rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  1.875rem;
+
+  --leading-tight:   1.25;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.65;
+
+  --weight-normal:   400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  /* ============ Alturas de controles ============ */
+  --control-height-sm: 30px;
+  --control-height-md: 38px;
+  --control-height-lg: 46px;
+
+  /* ============ Motion ============ */
+  --duration-fast:   120ms;
+  --duration-normal: 200ms;
+  --duration-slow:   320ms;
+  --ease-out:        cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:     cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ============ Capas ============ */
+  --z-base:     0;
+  --z-dropdown: 1000;
+  --z-modal:    1100;
+  --z-toast:    1200;
+  --z-tooltip:  1300;
+}

@@ -1,0 +1,115 @@
+/* src/styles/themes.css
+ * Tokens semánticos por tema. Dark es el default (estética Apple).
+ */
+
+/* ============ TEMA OSCURO (default) ============ */
+:root,
+[data-theme='dark'] {
+  /* Superficies — jerarquía estilo iOS */
+  --color-bg:             #000000;      /* negro puro, estilo OLED */
+  --color-bg-subtle:      #0a0a0c;
+  --color-bg-muted:       #141416;
+
+  --color-surface:        #1c1c1e;      /* Apple secondary background */
+  --color-surface-raised: #2c2c2e;      /* Apple tertiary background */
+  --color-surface-hover:  #3a3a3c;      /* Apple quaternary */
+
+  /* Bordes — separadores sutiles Apple */
+  --color-border:         #242426;
+  --color-border-strong:  #38383a;
+  --color-border-focus:   var(--blue-500);
+
+  /* Texto — labels Apple */
+  --color-text:           #f5f5f7;      /* near-white, no puro #fff */
+  --color-text-muted:     #98989f;      /* secondary label */
+  --color-text-subtle:    #6e6e73;      /* tertiary label */
+  --color-text-inverse:   #000000;
+
+  /* Marca — Apple Blue dark */
+  --color-primary:          var(--blue-500);  /* #0A84FF */
+  --color-primary-hover:    var(--blue-400);  /* #409CFF */
+  --color-primary-active:   var(--blue-600);  /* #007AFF */
+  --color-primary-soft:     rgba(10, 132, 255, 0.15);
+  --color-primary-contrast: #ffffff;
+
+  /* Estados — Apple system colors (dark) */
+  --color-danger:          var(--red-500);    /* #FF453A */
+  --color-danger-hover:    var(--red-400);
+  --color-danger-soft:     rgba(255, 69, 58, 0.15);
+  --color-danger-contrast: #ffffff;
+
+  --color-success:         var(--green-500);  /* #30D158 */
+  --color-success-soft:    rgba(48, 209, 88, 0.15);
+
+  --color-warning:         var(--orange-500); /* #FF9F0A */
+  --color-warning-soft:    rgba(255, 159, 10, 0.15);
+
+  --color-info:            var(--teal-400);   /* #64D2FF */
+  --color-info-soft:       rgba(100, 210, 255, 0.15);
+
+  /* Focus */
+  --color-focus-ring:      var(--blue-500);
+
+  /* Sombras — mínimas en dark, casi invisibles sobre negro */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.7);
+
+  /* Overlay (modales) */
+  --color-overlay: rgba(0, 0, 0, 0.8);
+
+  color-scheme: dark;
+}
+
+/* ============ TEMA CLARO ============ */
+[data-theme='light'] {
+  --color-bg:             #f5f5f7;      /* Apple light background */
+  --color-bg-subtle:      #ffffff;
+  --color-bg-muted:       #f0f0f2;
+
+  --color-surface:        #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-surface-hover:  #f5f5f7;
+
+  --color-border:         #e5e5e7;
+  --color-border-strong:  #d2d2d7;
+  --color-border-focus:   var(--blue-600);
+
+  /* Texto — labels Apple light */
+  --color-text:           #1d1d1f;      /* near-black Apple label */
+  --color-text-muted:     #6e6e73;      /* secondary label */
+  --color-text-subtle:    #a1a1a6;      /* tertiary label */
+  --color-text-inverse:   #ffffff;
+
+  /* Marca — Apple Blue light */
+  --color-primary:          var(--blue-600);  /* #007AFF */
+  --color-primary-hover:    var(--blue-700);  /* #0062CC */
+  --color-primary-active:   var(--blue-800);  /* #004F9E */
+  --color-primary-soft:     rgba(0, 122, 255, 0.08);
+  --color-primary-contrast: #ffffff;
+
+  /* Estados — Apple system colors (light) */
+  --color-danger:          var(--red-600);
+  --color-danger-hover:    var(--red-700);
+  --color-danger-soft:     rgba(255, 59, 48, 0.08);
+  --color-danger-contrast: #ffffff;
+
+  --color-success:         var(--green-600);
+  --color-success-soft:    rgba(52, 199, 89, 0.08);
+
+  --color-warning:         var(--orange-600);
+  --color-warning-soft:    rgba(255, 149, 0, 0.08);
+
+  --color-info:            var(--teal-500);
+  --color-info-soft:       rgba(90, 200, 250, 0.08);
+
+  --color-focus-ring:      var(--blue-600);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.08);
+
+  --color-overlay: rgba(0, 0, 0, 0.4);
+
+  color-scheme: light;
+}
