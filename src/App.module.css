@@ -60,3 +60,10 @@
   gap: var(--space-3);
   max-width: 400px;
 }
+.formColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 480px;
+}
