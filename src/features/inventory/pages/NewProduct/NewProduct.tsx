@@ -3,6 +3,7 @@ import { Package, Tag, DollarSign, Boxes, FolderTree, Save, X } from 'lucide-rea
 import { Input } from '../../../../components/common/inputs/Input';
 import { Textarea } from '../../../../components/common/inputs/Textarea';
 import { Select } from '../../../../components/common/inputs/Select';
+import { Checkbox } from '../../../../components/common/inputs/Checkbox';
 import { Button } from '../../../../components/common/actions/Button';
 import styles from './NewProduct.module.css';
 
@@ -13,6 +14,8 @@ interface FormState {
   price: string;
   stock: string;
   description: string;
+  active: boolean;
+  taxable: boolean;
 }
 
 interface FormErrors {
@@ -38,6 +41,8 @@ const INITIAL_FORM: FormState = {
   price: '',
   stock: '',
   description: '',
+  active: true,
+  taxable: true,
 };
 
 export default function NewProduct() {
@@ -48,7 +53,9 @@ export default function NewProduct() {
   const handleChange =
     (field: keyof FormState) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-      setForm((f) => ({ ...f, [field]: e.target.value }));
+      const target = e.target as HTMLInputElement;
+      const value = target.type === 'checkbox' ? target.checked : target.value;
+      setForm((f) => ({ ...f, [field]: value }));
       if (errors[field as keyof FormErrors]) {
         setErrors((prev) => ({ ...prev, [field]: undefined }));
       }
@@ -180,6 +187,25 @@ export default function NewProduct() {
               helperText="Maximo 500 caracteres"
               rows={4}
             />
+          </div>
+
+          <div className={`${styles.field} ${styles.fullWidth}`}>
+            <div className={styles.checkboxGroup}>
+              <Checkbox
+                id="product-active"
+                label="Producto activo"
+                helperText="Visible en el catalogo y disponible para facturacion"
+                checked={form.active}
+                onChange={handleChange('active')}
+              />
+              <Checkbox
+                id="product-taxable"
+                label="Aplicar IVA (16%)"
+                helperText="El precio incluye el impuesto al valor agregado"
+                checked={form.taxable}
+                onChange={handleChange('taxable')}
+              />
+            </div>
           </div>
         </div>
       </div>

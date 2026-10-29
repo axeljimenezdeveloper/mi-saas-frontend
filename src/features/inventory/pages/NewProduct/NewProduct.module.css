@@ -20,12 +20,6 @@
   font-size: var(--text-lg);
   font-weight: var(--weight-semibold);
   color: var(--color-text);
-  margin: 0 0 var(--space-1) 0;
-}
-
-.sectionHint {
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
   margin: 0;
 }
 
@@ -51,9 +45,21 @@
   color: var(--color-text);
 }
 
-.required {
-  color: var(--color-danger);
-  font-weight: var(--weight-semibold);
+.optional {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-normal);
+  color: var(--color-text-muted);
+  margin-left: var(--space-1);
+}
+
+.checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  background-color: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 
 .footer {
