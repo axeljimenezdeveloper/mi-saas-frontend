@@ -4,13 +4,17 @@ import { Input } from '../../../../components/common/inputs/Input';
 import { Textarea } from '../../../../components/common/inputs/Textarea';
 import { Select } from '../../../../components/common/inputs/Select';
 import { Checkbox } from '../../../../components/common/inputs/Checkbox';
+import { Radio } from '../../../../components/common/inputs/Radio';
 import { Button } from '../../../../components/common/actions/Button';
 import styles from './NewProduct.module.css';
+
+type ProductType = 'physical' | 'digital' | 'service';
 
 interface FormState {
   name: string;
   sku: string;
   category: string;
+  type: ProductType;
   price: string;
   stock: string;
   description: string;
@@ -21,6 +25,7 @@ interface FormState {
 interface FormErrors {
   name?: string;
   category?: string;
+  type?: string;
   price?: string;
   stock?: string;
 }
@@ -34,10 +39,17 @@ const CATEGORY_OPTIONS = [
   { value: 'other', label: 'Otros' },
 ];
 
+const PRODUCT_TYPE_OPTIONS: { value: ProductType; label: string; helper: string }[] = [
+  { value: 'physical', label: 'Físico', helper: 'Producto tangible con stock' },
+  { value: 'digital', label: 'Digital', helper: 'Software, licencia o descarga' },
+  { value: 'service', label: 'Servicio', helper: 'Trabajo o asesoría sin stock' },
+];
+
 const INITIAL_FORM: FormState = {
   name: '',
   sku: '',
   category: '',
+  type: 'physical',
   price: '',
   stock: '',
   description: '',
@@ -65,10 +77,14 @@ export default function NewProduct() {
     const next: FormErrors = {};
     if (!form.name.trim()) next.name = 'El nombre del producto es obligatorio';
     if (!form.category.trim()) next.category = 'Debes seleccionar una categoría';
+    if (!form.type) next.type = 'Debes seleccionar un tipo de producto';
     if (!form.price.trim()) next.price = 'El precio unitario es obligatorio';
     else if (Number(form.price) <= 0) next.price = 'El precio debe ser mayor a cero';
-    if (!form.stock.trim()) next.stock = 'El stock inicial es obligatorio';
-    else if (Number(form.stock) < 0) next.stock = 'El stock no puede ser negativo';
+    // Solo productos fisicos y digitales llevan stock; servicios no
+    if (form.type !== 'service') {
+      if (!form.stock.trim()) next.stock = 'El stock inicial es obligatorio';
+      else if (Number(form.stock) < 0) next.stock = 'El stock no puede ser negativo';
+    }
     return next;
   };
 
@@ -91,6 +107,8 @@ export default function NewProduct() {
     setForm(INITIAL_FORM);
     setErrors({});
   };
+
+  const isService = form.type === 'service';
 
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
@@ -142,6 +160,27 @@ export default function NewProduct() {
             />
           </div>
 
+          <div className={`${styles.field} ${styles.fullWidth}`}>
+            <label className={styles.label}>Tipo de producto</label>
+            <div className={styles.radioGroup}>
+              {PRODUCT_TYPE_OPTIONS.map((opt) => (
+                <Radio
+                  key={opt.value}
+                  id={`product-type-${opt.value}`}
+                  name="product-type"
+                  value={opt.value}
+                  label={opt.label}
+                  helperText={opt.helper}
+                  checked={form.type === opt.value}
+                  onChange={handleChange('type')}
+                />
+              ))}
+            </div>
+            {errors.type && (
+              <span className={styles.fieldError}>{errors.type}</span>
+            )}
+          </div>
+
           <div className={styles.field}>
             <label className={styles.label} htmlFor="product-price">
               Precio unitario (Bs.)
@@ -166,12 +205,13 @@ export default function NewProduct() {
             <Input
               id="product-stock"
               type="number"
-              placeholder="0"
+              placeholder={isService ? 'No aplica para servicios' : '0'}
               leftIcon={<Boxes size={16} />}
               value={form.stock}
               onChange={handleChange('stock')}
               error={errors.stock}
               min="0"
+              disabled={isService}
             />
           </div>
 
