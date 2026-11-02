@@ -1,0 +1,171 @@
+﻿/* src/components/common/inputs/Switch/Switch.module.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.switch {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  user-select: none;
+  width: fit-content;
+}
+
+.switch.disabled {
+  opacity: 0.5;
+}
+
+/* ============ Track (unica area clickeable) ============ */
+.trackWrapper {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-top: 1px;
+  cursor: pointer;
+}
+
+.switch.disabled .trackWrapper {
+  cursor: not-allowed;
+}
+
+.nativeInput {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.switch.disabled .nativeInput {
+  cursor: not-allowed;
+}
+
+.track {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  background-color: var(--color-border-strong);
+  border-radius: var(--radius-full);
+  transition: background-color var(--duration-normal) var(--ease-out);
+}
+
+.switch:not(.disabled) .trackWrapper:hover .track {
+  background-color: var(--color-text-subtle);
+}
+
+.nativeInput:focus-visible + .track {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.nativeInput:checked + .track {
+  background-color: var(--color-primary);
+}
+
+.switch:not(.disabled) .trackWrapper:hover .nativeInput:checked + .track {
+  background-color: var(--color-primary-hover);
+}
+
+/* Estado de error */
+.switch.error .track {
+  background-color: var(--color-danger-soft);
+}
+
+.switch.error .nativeInput:checked + .track {
+  background-color: var(--color-danger);
+}
+
+/* ============ Thumb (circulo deslizante) ============ */
+.thumb {
+  display: block;
+  background-color: #ffffff;
+  border-radius: var(--radius-full);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), 0 1px 1px rgba(0, 0, 0, 0.15);
+  transform: translateX(0);
+  transition: transform var(--duration-normal) var(--ease-out);
+}
+
+.nativeInput:checked + .track .thumb {
+  transform: translateX(var(--thumb-translate));
+}
+
+/* ============ Sizes ============ */
+.sm .track {
+  width: 32px;
+  height: 18px;
+}
+
+.sm .thumb {
+  width: 14px;
+  height: 14px;
+}
+
+.sm {
+  --thumb-translate: 14px;
+}
+
+.md .track {
+  width: 40px;
+  height: 22px;
+}
+
+.md .thumb {
+  width: 18px;
+  height: 18px;
+}
+
+.md {
+  --thumb-translate: 18px;
+}
+
+.lg .track {
+  width: 48px;
+  height: 26px;
+}
+
+.lg .thumb {
+  width: 22px;
+  height: 22px;
+}
+
+.lg {
+  --thumb-translate: 22px;
+}
+
+/* ============ Contenido (no clickeable) ============ */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.label {
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  line-height: var(--leading-tight);
+}
+
+.sm .label {
+  font-size: var(--text-xs);
+}
+
+.lg .label {
+  font-size: var(--text-base);
+}
+
+.helper {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  line-height: var(--leading-tight);
+}
+
+.errorMessage {
+  font-size: var(--text-xs);
+  color: var(--color-danger);
+  padding-left: calc(40px + var(--space-3));
+}

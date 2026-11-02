@@ -5,6 +5,7 @@ import { Textarea } from '../../../../components/common/inputs/Textarea';
 import { Select } from '../../../../components/common/inputs/Select';
 import { Checkbox } from '../../../../components/common/inputs/Checkbox';
 import { Radio } from '../../../../components/common/inputs/Radio';
+import { Switch } from '../../../../components/common/inputs/Switch';
 import { Button } from '../../../../components/common/actions/Button';
 import styles from './NewProduct.module.css';
 
@@ -20,6 +21,7 @@ interface FormState {
   description: string;
   active: boolean;
   taxable: boolean;
+  featured: boolean;
 }
 
 interface FormErrors {
@@ -55,6 +57,7 @@ const INITIAL_FORM: FormState = {
   description: '',
   active: true,
   taxable: true,
+  featured: false,
 };
 
 export default function NewProduct() {
@@ -80,7 +83,6 @@ export default function NewProduct() {
     if (!form.type) next.type = 'Debes seleccionar un tipo de producto';
     if (!form.price.trim()) next.price = 'El precio unitario es obligatorio';
     else if (Number(form.price) <= 0) next.price = 'El precio debe ser mayor a cero';
-    // Solo productos fisicos y digitales llevan stock; servicios no
     if (form.type !== 'service') {
       if (!form.stock.trim()) next.stock = 'El stock inicial es obligatorio';
       else if (Number(form.stock) < 0) next.stock = 'El stock no puede ser negativo';
@@ -244,6 +246,13 @@ export default function NewProduct() {
                 helperText="El precio incluye el impuesto al valor agregado"
                 checked={form.taxable}
                 onChange={handleChange('taxable')}
+              />
+              <Switch
+                id="product-featured"
+                label="Destacar en la tienda"
+                helperText="Aparecera en la seccion de productos destacados"
+                checked={form.featured}
+                onChange={handleChange('featured')}
               />
             </div>
           </div>
