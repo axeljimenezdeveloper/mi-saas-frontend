@@ -1,0 +1,57 @@
+﻿/* src/components/feedback/loading/Spinner/Spinner.module.css */
+
+.spinner {
+  display: inline-block;
+  border-radius: var(--radius-full);
+  border-style: solid;
+  border-color: currentColor;
+  border-right-color: transparent;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Respetar preferencias de accesibilidad: si el usuario prefiere
+   movimiento reducido, ralentizamos el spinner en lugar de animarlo
+   freneticamente. */
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 1.5s;
+  }
+}
+
+/* ============ Sizes ============ */
+.sm {
+  width: 14px;
+  height: 14px;
+  border-width: 2px;
+}
+
+.md {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+}
+
+.lg {
+  width: 32px;
+  height: 32px;
+  border-width: 3px;
+}
+
+/* ============ Colors ============ */
+.primary {
+  color: var(--color-primary);
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+.inverse {
+  color: var(--color-primary-contrast);
+}

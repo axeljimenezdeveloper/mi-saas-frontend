@@ -1,9 +1,11 @@
-﻿import { Plus, Pencil, Trash2, Package } from 'lucide-react';
+﻿import { useState, useEffect } from 'react';
+import { Plus, Pencil, Trash2, Package } from 'lucide-react';
 import { Table, type TableColumn } from '../../../../components/common/data-display/Table';
 import { Badge } from '../../../../components/common/data-display/Badge';
 import { Card } from '../../../../components/common/data-display/Card';
 import { Avatar } from '../../../../components/common/data-display/Avatar';
 import { Button } from '../../../../components/common/actions/Button';
+import { Spinner } from '../../../../components/feedback/loading/Spinner';
 import styles from './ProductsList.module.css';
 
 type StockStatus = 'in-stock' | 'low-stock' | 'out-of-stock';
@@ -46,6 +48,13 @@ const formatBs = (amount: number): string =>
   }).format(amount);
 
 export default function ProductsList() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), 1200);
+    return () => clearTimeout(t);
+  }, []);
+
   const columns: TableColumn<Product>[] = [
     {
       key: 'name',
@@ -125,7 +134,7 @@ export default function ProductsList() {
         <div>
           <h2 className={styles.title}>Inventario</h2>
           <p className={styles.subtitle}>
-            {MOCK_PRODUCTS.length} productos registrados
+            {isLoading ? 'Cargando productos...' : `${MOCK_PRODUCTS.length} productos registrados`}
           </p>
         </div>
         <div className={styles.toolbarActions}>
@@ -136,12 +145,20 @@ export default function ProductsList() {
           <Button leftIcon={<Plus size={14} />}>Nuevo producto</Button>
         </div>
       </div>
-      <Table
-        columns={columns}
-        data={MOCK_PRODUCTS}
-        getRowKey={(p) => p.id}
-        emptyMessage="No hay productos registrados"
-      />
+
+      {isLoading ? (
+        <div className={styles.loadingState}>
+          <Spinner size="lg" />
+          <span className={styles.loadingText}>Cargando inventario...</span>
+        </div>
+      ) : (
+        <Table
+          columns={columns}
+          data={MOCK_PRODUCTS}
+          getRowKey={(p) => p.id}
+          emptyMessage="No hay productos registrados"
+        />
+      )}
     </Card>
   );
 }
