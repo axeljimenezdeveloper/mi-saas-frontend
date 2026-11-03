@@ -1,30 +1,5 @@
-﻿/* src/App.module.css - estilos especificos del App (el layout lo maneja PageContainer) */
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--space-4);
-  margin-bottom: var(--space-8);
-  padding-bottom: var(--space-6);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.title {
-  font-size: var(--text-2xl);
-  font-weight: var(--weight-semibold);
-  color: var(--color-text);
-  margin: 0 0 var(--space-1) 0;
-}
-
-.subtitle {
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  margin: 0;
-}
-
-@media (max-width: 640px) {
-  .header {
-    flex-direction: column;
-  }
-}
+﻿/* src/App.module.css
+ * Este archivo queda vacio intencionalmente.
+ * Los estilos viven en los componentes (layout, pages, etc.).
+ * Se puede eliminar cuando App.tsx se convierta en el AppRouter.
+ */
