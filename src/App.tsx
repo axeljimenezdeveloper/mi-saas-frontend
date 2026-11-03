@@ -6,11 +6,14 @@ import {
   Settings,
   Moon,
   Sun,
+  Bell,
 } from 'lucide-react';
 import { Button } from './components/common/actions/Button';
+import { Avatar } from './components/common/data-display/Avatar';
 import { PageContainer } from './components/layout/PageContainer';
 import { PageHeader } from './components/layout/PageHeader';
 import { Sidebar, type SidebarItem } from './components/layout/Sidebar';
+import { Header } from './components/layout/Header';
 import ProductsList from './features/inventory/pages/ProductsList';
 import styles from './App.module.css';
 
@@ -46,25 +49,47 @@ function App() {
         isCollapsed={isCollapsed}
         onToggleCollapse={() => setIsCollapsed((v) => !v)}
       />
-      <main className={styles.main}>
-        <PageContainer maxWidth="lg" padding="md">
-          <PageHeader
-            title="Productos"
-            subtitle="Gestiona el inventario de tu negocio"
-            actions={
+      <div className={styles.content}>
+        <Header
+          brand={
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <Package size={20} />
+              InvenSaaS
+            </span>
+          }
+          actions={
+            <>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                onClick={toggleTheme}
-                leftIcon={theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+                iconOnly
+                aria-label="Notificaciones"
               >
-                {theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+                <Bell size={18} />
               </Button>
-            }
-          />
-          <ProductsList />
-        </PageContainer>
-      </main>
+              <Button
+                variant="ghost"
+                size="sm"
+                iconOnly
+                onClick={toggleTheme}
+                aria-label={theme === 'dark' ? 'Activar modo claro' : 'Activar modo oscuro'}
+              >
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </Button>
+              <Avatar name="Axel Jimenez" size="sm" status="online" />
+            </>
+          }
+        />
+        <main className={styles.main}>
+          <PageContainer maxWidth="lg" padding="md">
+            <PageHeader
+              title="Productos"
+              subtitle="Gestiona el inventario de tu negocio"
+            />
+            <ProductsList />
+          </PageContainer>
+        </main>
+      </div>
     </div>
   );
 }
