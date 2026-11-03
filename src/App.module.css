@@ -1,5 +1,13 @@
-﻿/* src/App.module.css
- * Este archivo queda vacio intencionalmente.
- * Los estilos viven en los componentes (layout, pages, etc.).
- * Se puede eliminar cuando App.tsx se convierta en el AppRouter.
- */
+﻿/* src/App.module.css - layout transitorio hasta que exista MainLayout */
+
+.app {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  overflow-x: hidden;
+}
