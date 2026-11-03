@@ -2,6 +2,7 @@
 import { Table, type TableColumn } from '../../../../components/common/data-display/Table';
 import { Badge } from '../../../../components/common/data-display/Badge';
 import { Card } from '../../../../components/common/data-display/Card';
+import { Avatar } from '../../../../components/common/data-display/Avatar';
 import { Button } from '../../../../components/common/actions/Button';
 import styles from './ProductsList.module.css';
 
@@ -127,7 +128,13 @@ export default function ProductsList() {
             {MOCK_PRODUCTS.length} productos registrados
           </p>
         </div>
-        <Button leftIcon={<Plus size={14} />}>Nuevo producto</Button>
+        <div className={styles.toolbarActions}>
+          <div className={styles.userBadge}>
+            <Avatar name="Axel Jimenez" size="sm" status="online" />
+            <span className={styles.userName}>Axel Jimenez</span>
+          </div>
+          <Button leftIcon={<Plus size={14} />}>Nuevo producto</Button>
+        </div>
       </div>
       <Table
         columns={columns}
