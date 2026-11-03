@@ -1,17 +1,4 @@
-﻿/* src/App.module.css - wrapper de la app */
-
-.page {
-  min-height: 100vh;
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  padding: var(--space-10) var(--space-6);
-  transition: background-color var(--duration-normal) var(--ease-out);
-}
-
-.container {
-  max-width: 840px;
-  margin: 0 auto;
-}
+﻿/* src/App.module.css - estilos especificos del App (el layout lo maneja PageContainer) */
 
 .header {
   display: flex;
@@ -37,9 +24,6 @@
 }
 
 @media (max-width: 640px) {
-  .page {
-    padding: var(--space-6) var(--space-4);
-  }
   .header {
     flex-direction: column;
   }

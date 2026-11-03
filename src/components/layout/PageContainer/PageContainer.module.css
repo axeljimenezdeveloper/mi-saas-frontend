@@ -1,0 +1,55 @@
+﻿/* src/components/layout/PageContainer/PageContainer.module.css */
+
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ============ Max widths ============ */
+.maxWidth-sm {
+  max-width: 640px;
+}
+
+.maxWidth-md {
+  max-width: 840px;
+}
+
+.maxWidth-lg {
+  max-width: 1120px;
+}
+
+.maxWidth-xl {
+  max-width: 1280px;
+}
+
+.maxWidth-full {
+  max-width: none;
+}
+
+/* ============ Paddings ============ */
+.padding-none {
+  padding: 0;
+}
+
+.padding-sm {
+  padding: var(--space-4) var(--space-4);
+}
+
+.padding-md {
+  padding: var(--space-8) var(--space-6);
+}
+
+.padding-lg {
+  padding: var(--space-10) var(--space-8);
+}
+
+/* En mobile reducimos el padding horizontal */
+@media (max-width: 640px) {
+  .padding-md {
+    padding: var(--space-5) var(--space-4);
+  }
+  .padding-lg {
+    padding: var(--space-6) var(--space-4);
+  }
+}
