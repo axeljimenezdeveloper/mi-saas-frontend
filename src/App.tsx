@@ -1,7 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { Button } from './components/common/actions/Button';
-import NewProduct from './features/inventory/pages/NewProduct';
+import ProductsList from './features/inventory/pages/ProductsList';
 import styles from './App.module.css';
 
 type Theme = 'light' | 'dark';
@@ -24,9 +24,9 @@ function App() {
       <div className={styles.container}>
         <header className={styles.header}>
           <div>
-            <h1 className={styles.title}>Nuevo producto</h1>
+            <h1 className={styles.title}>Productos</h1>
             <p className={styles.subtitle}>
-              Completa los datos para agregar un producto al inventario
+              Gestiona el inventario de tu negocio
             </p>
           </div>
           <Button
@@ -39,7 +39,7 @@ function App() {
           </Button>
         </header>
 
-        <NewProduct />
+        <ProductsList />
       </div>
     </div>
   );
