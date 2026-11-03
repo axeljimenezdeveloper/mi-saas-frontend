@@ -1,7 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { Button } from './components/common/actions/Button';
-import ProductsList from './features/inventory/pages/ProductsList';
+import NewProduct from './features/inventory/pages/NewProduct';
 import styles from './App.module.css';
 
 type Theme = 'light' | 'dark';
@@ -39,7 +39,7 @@ function App() {
           </Button>
         </header>
 
-        <ProductsList />
+        <NewProduct />
       </div>
     </div>
   );

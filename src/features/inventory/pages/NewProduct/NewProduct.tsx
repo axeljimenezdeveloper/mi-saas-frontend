@@ -10,6 +10,7 @@ import { Badge } from '../../../../components/common/data-display/Badge';
 import { Card } from '../../../../components/common/data-display/Card';
 import { Button } from '../../../../components/common/actions/Button';
 import { Alert } from '../../../../components/feedback/alerts/Alert';
+import { useToast } from '../../../../components/feedback/alerts/Toast';
 import styles from './NewProduct.module.css';
 
 type ProductType = 'physical' | 'digital' | 'service';
@@ -64,6 +65,7 @@ const INITIAL_FORM: FormState = {
 };
 
 export default function NewProduct() {
+  const toast = useToast();
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -100,6 +102,10 @@ export default function NewProduct() {
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
       setShowErrorAlert(true);
+      toast.error(
+        'No se pudo guardar el producto',
+        'Revisa los campos marcados en rojo'
+      );
       return;
     }
     setShowErrorAlert(false);
@@ -107,7 +113,10 @@ export default function NewProduct() {
     setTimeout(() => {
       setIsSubmitting(false);
       setForm(INITIAL_FORM);
-      alert('Producto creado correctamente (demo)');
+      toast.success(
+        'Producto creado',
+        'El producto se agrego correctamente al inventario'
+      );
     }, 1500);
   };
 
