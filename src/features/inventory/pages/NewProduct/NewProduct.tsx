@@ -11,6 +11,7 @@ import { Card } from '../../../../components/common/data-display/Card';
 import { Button } from '../../../../components/common/actions/Button';
 import { Alert } from '../../../../components/feedback/alerts/Alert';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
+import { FormField } from '../../../../components/forms/FormField';
 import styles from './NewProduct.module.css';
 
 type ProductType = 'physical' | 'digital' | 'service';
@@ -158,10 +159,7 @@ export default function NewProduct() {
         }
       >
         <div className={styles.grid}>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="product-name">
-              Nombre del producto
-            </label>
+          <FormField label="Nombre del producto" htmlFor="product-name">
             <Input
               id="product-name"
               placeholder="Ej. Camisa azul talla M"
@@ -170,12 +168,9 @@ export default function NewProduct() {
               onChange={handleChange('name')}
               error={errors.name}
             />
-          </div>
+          </FormField>
 
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="product-sku">
-              SKU / Codigo <span className={styles.optional}>(opcional)</span>
-            </label>
+          <FormField label="SKU / Codigo" htmlFor="product-sku" optional>
             <Input
               id="product-sku"
               placeholder="Ej. CAM-AZ-M-001"
@@ -183,12 +178,9 @@ export default function NewProduct() {
               value={form.sku}
               onChange={handleChange('sku')}
             />
-          </div>
+          </FormField>
 
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="product-category">
-              Categoria
-            </label>
+          <FormField label="Categoria" htmlFor="product-category">
             <Select
               id="product-category"
               placeholder="Selecciona una categoria"
@@ -198,7 +190,35 @@ export default function NewProduct() {
               onChange={handleChange('category')}
               error={errors.category}
             />
-          </div>
+          </FormField>
+
+          <FormField label="Precio unitario (Bs.)" htmlFor="product-price">
+            <Input
+              id="product-price"
+              type="number"
+              placeholder="0.00"
+              leftIcon={<DollarSign size={16} />}
+              value={form.price}
+              onChange={handleChange('price')}
+              error={errors.price}
+              min="0"
+              step="0.01"
+            />
+          </FormField>
+
+          <FormField label="Stock inicial" htmlFor="product-stock">
+            <Input
+              id="product-stock"
+              type="number"
+              placeholder={isService ? 'No aplica para servicios' : '0'}
+              leftIcon={<Boxes size={16} />}
+              value={form.stock}
+              onChange={handleChange('stock')}
+              error={errors.stock}
+              min="0"
+              disabled={isService}
+            />
+          </FormField>
 
           <div className={`${styles.field} ${styles.fullWidth}`}>
             <label className={styles.label}>Tipo de producto</label>
@@ -221,53 +241,21 @@ export default function NewProduct() {
             )}
           </div>
 
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="product-price">
-              Precio unitario (Bs.)
-            </label>
-            <Input
-              id="product-price"
-              type="number"
-              placeholder="0.00"
-              leftIcon={<DollarSign size={16} />}
-              value={form.price}
-              onChange={handleChange('price')}
-              error={errors.price}
-              min="0"
-              step="0.01"
-            />
-          </div>
-
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="product-stock">
-              Stock inicial
-            </label>
-            <Input
-              id="product-stock"
-              type="number"
-              placeholder={isService ? 'No aplica para servicios' : '0'}
-              leftIcon={<Boxes size={16} />}
-              value={form.stock}
-              onChange={handleChange('stock')}
-              error={errors.stock}
-              min="0"
-              disabled={isService}
-            />
-          </div>
-
-          <div className={`${styles.field} ${styles.fullWidth}`}>
-            <label className={styles.label} htmlFor="product-description">
-              Descripcion <span className={styles.optional}>(opcional)</span>
-            </label>
+          <FormField
+            label="Descripcion"
+            htmlFor="product-description"
+            optional
+            helperText="Maximo 500 caracteres"
+            className={styles.fullWidth}
+          >
             <Textarea
               id="product-description"
               placeholder="Describe el producto, materiales, caracteristicas..."
               value={form.description}
               onChange={handleChange('description')}
-              helperText="Maximo 500 caracteres"
               rows={4}
             />
-          </div>
+          </FormField>
 
           <div className={`${styles.field} ${styles.fullWidth}`}>
             <div className={styles.checkboxGroup}>

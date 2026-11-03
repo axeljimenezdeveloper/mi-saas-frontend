@@ -27,7 +27,7 @@
 
 .inputWrapper:focus-within {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px var(--color-primary-soft);
+  box-shadow: 0 0 0 1px var(--color-primary-soft);
 }
 
 .inputWrapper.error {
@@ -117,3 +117,4 @@
   color: var(--color-danger);
   padding-left: var(--space-1);
 }
+

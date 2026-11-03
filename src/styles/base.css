@@ -1,4 +1,4 @@
-/* src/styles/base.css
+﻿/* src/styles/base.css
  * Reset + estilos base de elementos HTML.
  * Solo usa tokens semánticos.
  */
@@ -89,10 +89,23 @@ svg {
   max-width: 100%;
 }
 
-/* Focus visible global (accesibilidad) */
-:focus-visible {
+/* Focus visible global (accesibilidad).
+ * Excluye inputs nativos porque ellos manejan su propio focus visual
+ * (ring suave via box-shadow en el wrapper), y el outline duro no respeta
+ * el border-radius, generando un rectangulo feo. */
+:focus-visible:not(input):not(textarea):not(select) {
   outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
+}
+
+/* Inputs: sin outline; el focus visual lo provee el wrapper. */
+input:focus,
+input:focus-visible,
+textarea:focus,
+textarea:focus-visible,
+select:focus,
+select:focus-visible {
+  outline: none;
 }
 
 /* Selección de texto */
