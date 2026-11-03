@@ -13,6 +13,7 @@ import { Alert } from '../../../../components/feedback/alerts/Alert';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { FormField } from '../../../../components/forms/FormField';
 import { FormGroup } from '../../../../components/forms/FormGroup';
+import { CurrencyInput } from '../../../../components/forms/CurrencyInput';
 import styles from './NewProduct.module.css';
 
 type ProductType = 'physical' | 'digital' | 'service';
@@ -22,7 +23,7 @@ interface FormState {
   sku: string;
   category: string;
   type: ProductType;
-  price: string;
+  price: number | undefined;
   stock: string;
   description: string;
   active: boolean;
@@ -58,7 +59,7 @@ const INITIAL_FORM: FormState = {
   sku: '',
   category: '',
   type: 'physical',
-  price: '',
+  price: undefined,
   stock: '',
   description: '',
   active: true,
@@ -84,13 +85,20 @@ export default function NewProduct() {
       }
     };
 
+  const handlePriceChange = (value: number | undefined) => {
+    setForm((f) => ({ ...f, price: value }));
+    if (errors.price) {
+      setErrors((prev) => ({ ...prev, price: undefined }));
+    }
+  };
+
   const validate = (): FormErrors => {
     const next: FormErrors = {};
     if (!form.name.trim()) next.name = 'El nombre del producto es obligatorio';
     if (!form.category.trim()) next.category = 'Debes seleccionar una categoría';
     if (!form.type) next.type = 'Debes seleccionar un tipo de producto';
-    if (!form.price.trim()) next.price = 'El precio unitario es obligatorio';
-    else if (Number(form.price) <= 0) next.price = 'El precio debe ser mayor a cero';
+    if (form.price === undefined) next.price = 'El precio unitario es obligatorio';
+    else if (form.price <= 0) next.price = 'El precio debe ser mayor a cero';
     if (form.type !== 'service') {
       if (!form.stock.trim()) next.stock = 'El stock inicial es obligatorio';
       else if (Number(form.stock) < 0) next.stock = 'El stock no puede ser negativo';
@@ -199,16 +207,11 @@ export default function NewProduct() {
             </FormField>
 
             <FormField label="Precio unitario (Bs.)" htmlFor="product-price">
-              <Input
+              <CurrencyInput
                 id="product-price"
-                type="number"
-                placeholder="0.00"
-                leftIcon={<DollarSign size={16} />}
                 value={form.price}
-                onChange={handleChange('price')}
+                onChange={handlePriceChange}
                 error={errors.price}
-                min="0"
-                step="0.01"
               />
             </FormField>
 

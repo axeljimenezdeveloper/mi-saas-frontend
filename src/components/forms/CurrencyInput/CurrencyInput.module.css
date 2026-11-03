@@ -1,0 +1,127 @@
+﻿/* src/components/forms/CurrencyInput/CurrencyInput.module.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 100%;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-3);
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+.wrapper:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-soft);
+}
+
+.hasError {
+  border-color: var(--color-danger);
+}
+
+.hasError:focus-within {
+  box-shadow: 0 0 0 2px var(--color-danger-soft);
+}
+
+.isDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============ Sizes ============ */
+.sm {
+  height: var(--control-height-sm);
+}
+
+.md {
+  height: var(--control-height-md);
+}
+
+.lg {
+  height: var(--control-height-lg);
+}
+
+/* ============ Parts ============ */
+.currencySymbol {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.currencySelect {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  padding: 0 var(--space-1);
+  flex-shrink: 0;
+  height: 100%;
+}
+
+.currencySelect:disabled {
+  cursor: not-allowed;
+}
+
+.currencySelect option {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+.input {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  padding: 0;
+  text-align: right;
+}
+
+.input::placeholder {
+  color: var(--color-text-subtle);
+}
+
+.input:disabled {
+  cursor: not-allowed;
+}
+
+.helper {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  padding-left: var(--space-1);
+}
+
+.errorMessage {
+  font-size: var(--text-xs);
+  color: var(--color-danger);
+  padding-left: var(--space-1);
+}
