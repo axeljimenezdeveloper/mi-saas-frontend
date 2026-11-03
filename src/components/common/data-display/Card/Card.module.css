@@ -1,0 +1,83 @@
+﻿/* src/components/common/data-display/Card/Card.module.css */
+
+.card {
+  /* Variables locales: el padding se propaga a header, body y footer
+     para mantener alineacion consistente. */
+  --card-px: var(--space-5);
+  --card-py: var(--space-5);
+
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+/* ============ Variants ============ */
+.default {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.outlined {
+  background-color: transparent;
+  border: 1px solid var(--color-border-strong);
+}
+
+.elevated {
+  background-color: var(--color-surface);
+  border: 1px solid transparent;
+  box-shadow: var(--shadow-md);
+}
+
+/* ============ Paddings ============ */
+.padding-none {
+  --card-px: 0px;
+  --card-py: 0px;
+}
+
+.padding-sm {
+  --card-px: var(--space-3);
+  --card-py: var(--space-3);
+}
+
+.padding-md {
+  --card-px: var(--space-5);
+  --card-py: var(--space-5);
+}
+
+.padding-lg {
+  --card-px: var(--space-6);
+  --card-py: var(--space-6);
+}
+
+/* ============ Modifiers ============ */
+.fullWidth {
+  width: 100%;
+}
+
+/* ============ Parts ============ */
+.header {
+  padding: var(--card-py) var(--card-px);
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+
+.body {
+  padding: var(--card-py) var(--card-px);
+  flex: 1;
+}
+
+.footer {
+  padding: var(--card-py) var(--card-px);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-3);
+}

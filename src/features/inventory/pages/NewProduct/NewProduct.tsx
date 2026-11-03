@@ -7,6 +7,7 @@ import { Checkbox } from '../../../../components/common/inputs/Checkbox';
 import { Radio } from '../../../../components/common/inputs/Radio';
 import { Switch } from '../../../../components/common/inputs/Switch';
 import { Badge } from '../../../../components/common/data-display/Badge';
+import { Card } from '../../../../components/common/data-display/Card';
 import { Button } from '../../../../components/common/actions/Button';
 import styles from './NewProduct.module.css';
 
@@ -115,21 +116,23 @@ export default function NewProduct() {
 
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
-      <div className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Informacion del producto</h2>
-          <div className={styles.sectionBadges}>
-            <Badge variant="primary" size="sm">Nuevo</Badge>
-            <Badge
-              variant={form.active ? 'success' : 'neutral'}
-              size="sm"
-              withDot
-            >
-              {form.active ? 'Activo' : 'Inactivo'}
-            </Badge>
+      <Card
+        header={
+          <div className={styles.cardHeader}>
+            <span className={styles.sectionTitle}>Informacion del producto</span>
+            <div className={styles.sectionBadges}>
+              <Badge variant="primary" size="sm">Nuevo</Badge>
+              <Badge
+                variant={form.active ? 'success' : 'neutral'}
+                size="sm"
+                withDot
+              >
+                {form.active ? 'Activo' : 'Inactivo'}
+              </Badge>
+            </div>
           </div>
-        </div>
-
+        }
+      >
         <div className={styles.grid}>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="product-name">
@@ -268,7 +271,7 @@ export default function NewProduct() {
             </div>
           </div>
         </div>
-      </div>
+      </Card>
 
       <div className={styles.footer}>
         <Button
