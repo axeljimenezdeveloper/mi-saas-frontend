@@ -6,6 +6,7 @@ import { Select } from '../../../../components/common/inputs/Select';
 import { Checkbox } from '../../../../components/common/inputs/Checkbox';
 import { Radio } from '../../../../components/common/inputs/Radio';
 import { Switch } from '../../../../components/common/inputs/Switch';
+import { Badge } from '../../../../components/common/data-display/Badge';
 import { Button } from '../../../../components/common/actions/Button';
 import styles from './NewProduct.module.css';
 
@@ -115,8 +116,18 @@ export default function NewProduct() {
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
       <div className={styles.section}>
-        <div>
+        <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Informacion del producto</h2>
+          <div className={styles.sectionBadges}>
+            <Badge variant="primary" size="sm">Nuevo</Badge>
+            <Badge
+              variant={form.active ? 'success' : 'neutral'}
+              size="sm"
+              withDot
+            >
+              {form.active ? 'Activo' : 'Inactivo'}
+            </Badge>
+          </div>
         </div>
 
         <div className={styles.grid}>
