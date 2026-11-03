@@ -12,6 +12,7 @@ import { Button } from '../../../../components/common/actions/Button';
 import { Alert } from '../../../../components/feedback/alerts/Alert';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { FormField } from '../../../../components/forms/FormField';
+import { FormGroup } from '../../../../components/forms/FormGroup';
 import styles from './NewProduct.module.css';
 
 type ProductType = 'physical' | 'digital' | 'service';
@@ -144,7 +145,7 @@ export default function NewProduct() {
       <Card
         header={
           <div className={styles.cardHeader}>
-            <span className={styles.sectionTitle}>Informacion del producto</span>
+            <span className={styles.sectionTitle}>Nuevo producto</span>
             <div className={styles.sectionBadges}>
               <Badge variant="primary" size="sm">Nuevo</Badge>
               <Badge
@@ -158,106 +159,115 @@ export default function NewProduct() {
           </div>
         }
       >
-        <div className={styles.grid}>
-          <FormField label="Nombre del producto" htmlFor="product-name">
-            <Input
-              id="product-name"
-              placeholder="Ej. Camisa azul talla M"
-              leftIcon={<Package size={16} />}
-              value={form.name}
-              onChange={handleChange('name')}
-              error={errors.name}
-            />
-          </FormField>
-
-          <FormField label="SKU / Codigo" htmlFor="product-sku" optional>
-            <Input
-              id="product-sku"
-              placeholder="Ej. CAM-AZ-M-001"
-              leftIcon={<Tag size={16} />}
-              value={form.sku}
-              onChange={handleChange('sku')}
-            />
-          </FormField>
-
-          <FormField label="Categoria" htmlFor="product-category">
-            <Select
-              id="product-category"
-              placeholder="Selecciona una categoria"
-              leftIcon={<FolderTree size={16} />}
-              options={CATEGORY_OPTIONS}
-              value={form.category}
-              onChange={handleChange('category')}
-              error={errors.category}
-            />
-          </FormField>
-
-          <FormField label="Precio unitario (Bs.)" htmlFor="product-price">
-            <Input
-              id="product-price"
-              type="number"
-              placeholder="0.00"
-              leftIcon={<DollarSign size={16} />}
-              value={form.price}
-              onChange={handleChange('price')}
-              error={errors.price}
-              min="0"
-              step="0.01"
-            />
-          </FormField>
-
-          <FormField label="Stock inicial" htmlFor="product-stock">
-            <Input
-              id="product-stock"
-              type="number"
-              placeholder={isService ? 'No aplica para servicios' : '0'}
-              leftIcon={<Boxes size={16} />}
-              value={form.stock}
-              onChange={handleChange('stock')}
-              error={errors.stock}
-              min="0"
-              disabled={isService}
-            />
-          </FormField>
-
-          <div className={`${styles.field} ${styles.fullWidth}`}>
-            <label className={styles.label}>Tipo de producto</label>
-            <div className={styles.radioGroup}>
-              {PRODUCT_TYPE_OPTIONS.map((opt) => (
-                <Radio
-                  key={opt.value}
-                  id={`product-type-${opt.value}`}
-                  name="product-type"
-                  value={opt.value}
-                  label={opt.label}
-                  helperText={opt.helper}
-                  checked={form.type === opt.value}
-                  onChange={handleChange('type')}
-                />
-              ))}
-            </div>
-            {errors.type && (
-              <span className={styles.fieldError}>{errors.type}</span>
-            )}
-          </div>
-
-          <FormField
-            label="Descripcion"
-            htmlFor="product-description"
-            optional
-            helperText="Maximo 500 caracteres"
-            className={styles.fullWidth}
+        <div className={styles.sections}>
+          <FormGroup
+            title="Informacion del producto"
+            description="Datos basicos para identificar el producto en el inventario"
+            layout="two-columns"
           >
-            <Textarea
-              id="product-description"
-              placeholder="Describe el producto, materiales, caracteristicas..."
-              value={form.description}
-              onChange={handleChange('description')}
-              rows={4}
-            />
-          </FormField>
+            <FormField label="Nombre del producto" htmlFor="product-name">
+              <Input
+                id="product-name"
+                placeholder="Ej. Camisa azul talla M"
+                leftIcon={<Package size={16} />}
+                value={form.name}
+                onChange={handleChange('name')}
+                error={errors.name}
+              />
+            </FormField>
 
-          <div className={`${styles.field} ${styles.fullWidth}`}>
+            <FormField label="SKU / Codigo" htmlFor="product-sku" optional>
+              <Input
+                id="product-sku"
+                placeholder="Ej. CAM-AZ-M-001"
+                leftIcon={<Tag size={16} />}
+                value={form.sku}
+                onChange={handleChange('sku')}
+              />
+            </FormField>
+
+            <FormField label="Categoria" htmlFor="product-category">
+              <Select
+                id="product-category"
+                placeholder="Selecciona una categoria"
+                leftIcon={<FolderTree size={16} />}
+                options={CATEGORY_OPTIONS}
+                value={form.category}
+                onChange={handleChange('category')}
+                error={errors.category}
+              />
+            </FormField>
+
+            <FormField label="Precio unitario (Bs.)" htmlFor="product-price">
+              <Input
+                id="product-price"
+                type="number"
+                placeholder="0.00"
+                leftIcon={<DollarSign size={16} />}
+                value={form.price}
+                onChange={handleChange('price')}
+                error={errors.price}
+                min="0"
+                step="0.01"
+              />
+            </FormField>
+
+            <FormField label="Stock inicial" htmlFor="product-stock">
+              <Input
+                id="product-stock"
+                type="number"
+                placeholder={isService ? 'No aplica para servicios' : '0'}
+                leftIcon={<Boxes size={16} />}
+                value={form.stock}
+                onChange={handleChange('stock')}
+                error={errors.stock}
+                min="0"
+                disabled={isService}
+              />
+            </FormField>
+          </FormGroup>
+
+          <FormGroup
+            title="Configuracion"
+            description="Tipo de producto, impuestos y visibilidad en el catalogo"
+            layout="stack"
+          >
+            <div className={styles.field}>
+              <label className={styles.label}>Tipo de producto</label>
+              <div className={styles.radioGroup}>
+                {PRODUCT_TYPE_OPTIONS.map((opt) => (
+                  <Radio
+                    key={opt.value}
+                    id={`product-type-${opt.value}`}
+                    name="product-type"
+                    value={opt.value}
+                    label={opt.label}
+                    helperText={opt.helper}
+                    checked={form.type === opt.value}
+                    onChange={handleChange('type')}
+                  />
+                ))}
+              </div>
+              {errors.type && (
+                <span className={styles.fieldError}>{errors.type}</span>
+              )}
+            </div>
+
+            <FormField
+              label="Descripcion"
+              htmlFor="product-description"
+              optional
+              helperText="Maximo 500 caracteres"
+            >
+              <Textarea
+                id="product-description"
+                placeholder="Describe el producto, materiales, caracteristicas..."
+                value={form.description}
+                onChange={handleChange('description')}
+                rows={4}
+              />
+            </FormField>
+
             <div className={styles.checkboxGroup}>
               <Checkbox
                 id="product-active"
@@ -281,7 +291,7 @@ export default function NewProduct() {
                 onChange={handleChange('featured')}
               />
             </div>
-          </div>
+          </FormGroup>
         </div>
       </Card>
 
