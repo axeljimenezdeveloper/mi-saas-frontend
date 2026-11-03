@@ -1,11 +1,11 @@
 ﻿import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Package } from 'lucide-react';
+import { Plus, Pencil, Trash2, Package, RefreshCw } from 'lucide-react';
 import { Table, type TableColumn } from '../../../../components/common/data-display/Table';
 import { Badge } from '../../../../components/common/data-display/Badge';
 import { Card } from '../../../../components/common/data-display/Card';
 import { Avatar } from '../../../../components/common/data-display/Avatar';
 import { Button } from '../../../../components/common/actions/Button';
-import { Spinner } from '../../../../components/feedback/loading/Spinner';
+import { Skeleton } from '../../../../components/feedback/loading/Skeleton';
 import styles from './ProductsList.module.css';
 
 type StockStatus = 'in-stock' | 'low-stock' | 'out-of-stock';
@@ -51,9 +51,14 @@ export default function ProductsList() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 1200);
+    if (!isLoading) return;
+    const t = setTimeout(() => setIsLoading(false), 3000);
     return () => clearTimeout(t);
-  }, []);
+  }, [isLoading]);
+
+  const handleReload = () => {
+    setIsLoading(true);
+  };
 
   const columns: TableColumn<Product>[] = [
     {
@@ -134,7 +139,9 @@ export default function ProductsList() {
         <div>
           <h2 className={styles.title}>Inventario</h2>
           <p className={styles.subtitle}>
-            {isLoading ? 'Cargando productos...' : `${MOCK_PRODUCTS.length} productos registrados`}
+            {isLoading
+              ? 'Cargando productos...'
+              : `${MOCK_PRODUCTS.length} productos registrados`}
           </p>
         </div>
         <div className={styles.toolbarActions}>
@@ -142,14 +149,32 @@ export default function ProductsList() {
             <Avatar name="Axel Jimenez" size="sm" status="online" />
             <span className={styles.userName}>Axel Jimenez</span>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleReload}
+            leftIcon={<RefreshCw size={14} />}
+            disabled={isLoading}
+          >
+            Recargar
+          </Button>
           <Button leftIcon={<Plus size={14} />}>Nuevo producto</Button>
         </div>
       </div>
 
       {isLoading ? (
-        <div className={styles.loadingState}>
-          <Spinner size="lg" />
-          <span className={styles.loadingText}>Cargando inventario...</span>
+        <div className={styles.skeletonTable}>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className={styles.skeletonRow}>
+              <Skeleton variant="circular" width="36px" height="36px" />
+              <div className={styles.skeletonRowContent}>
+                <Skeleton width="60%" height="12px" />
+                <Skeleton width="40%" height="10px" />
+              </div>
+              <Skeleton width="80px" height="12px" />
+              <Skeleton width="60px" height="12px" />
+            </div>
+          ))}
         </div>
       ) : (
         <Table
