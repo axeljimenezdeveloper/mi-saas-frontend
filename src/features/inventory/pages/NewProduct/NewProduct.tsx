@@ -9,6 +9,7 @@ import { Switch } from '../../../../components/common/inputs/Switch';
 import { Badge } from '../../../../components/common/data-display/Badge';
 import { Card } from '../../../../components/common/data-display/Card';
 import { Button } from '../../../../components/common/actions/Button';
+import { Alert } from '../../../../components/feedback/alerts/Alert';
 import styles from './NewProduct.module.css';
 
 type ProductType = 'physical' | 'digital' | 'service';
@@ -66,6 +67,7 @@ export default function NewProduct() {
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
 
   const handleChange =
     (field: keyof FormState) =>
@@ -97,8 +99,10 @@ export default function NewProduct() {
     const nextErrors = validate();
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
+      setShowErrorAlert(true);
       return;
     }
+    setShowErrorAlert(false);
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
@@ -110,12 +114,23 @@ export default function NewProduct() {
   const handleCancel = () => {
     setForm(INITIAL_FORM);
     setErrors({});
+    setShowErrorAlert(false);
   };
 
   const isService = form.type === 'service';
 
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
+      {showErrorAlert && (
+        <Alert
+          variant="error"
+          title="No se pudo guardar el producto"
+          onClose={() => setShowErrorAlert(false)}
+        >
+          Revisa los campos marcados en rojo e intenta nuevamente.
+        </Alert>
+      )}
+
       <Card
         header={
           <div className={styles.cardHeader}>

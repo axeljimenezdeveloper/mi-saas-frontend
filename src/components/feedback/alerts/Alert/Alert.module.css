@@ -1,0 +1,98 @@
+﻿/* src/components/feedback/alerts/Alert/Alert.module.css */
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border-left: 3px solid currentColor;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
+/* ============ Variants ============ */
+.success {
+  background-color: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.error {
+  background-color: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.warning {
+  background-color: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+.info {
+  background-color: var(--color-info-soft);
+  color: var(--color-info);
+}
+
+/* ============ Parts ============ */
+.iconWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.title {
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+}
+
+.message {
+  color: var(--color-text);
+  line-height: var(--leading-normal);
+}
+
+/* En modo dark, --color-text es claro y contrasta bien sobre el fondo soft.
+   En modo light tambien. Pero el mensaje siempre es neutro, no del color de la variante. */
+
+.closeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  margin: -2px -4px 0 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: currentColor;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity var(--duration-fast) var(--ease-out),
+              background-color var(--duration-fast) var(--ease-out);
+}
+
+.closeButton:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='light'] .closeButton:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.closeButton:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  opacity: 1;
+}
