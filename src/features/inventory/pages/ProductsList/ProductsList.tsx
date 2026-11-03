@@ -6,6 +6,7 @@ import { Card } from '../../../../components/common/data-display/Card';
 import { Avatar } from '../../../../components/common/data-display/Avatar';
 import { Button } from '../../../../components/common/actions/Button';
 import { Skeleton } from '../../../../components/feedback/loading/Skeleton';
+import { EmptyState } from '../../../../components/feedback/states/EmptyState';
 import styles from './ProductsList.module.css';
 
 type StockStatus = 'in-stock' | 'low-stock' | 'out-of-stock';
@@ -49,15 +50,23 @@ const formatBs = (amount: number): string =>
 
 export default function ProductsList() {
   const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
 
   useEffect(() => {
     if (!isLoading) return;
-    const t = setTimeout(() => setIsLoading(false), 3000);
+    const t = setTimeout(() => {
+      setIsLoading(false);
+      setProducts(MOCK_PRODUCTS);
+    }, 1500);
     return () => clearTimeout(t);
   }, [isLoading]);
 
   const handleReload = () => {
     setIsLoading(true);
+  };
+
+  const handleEmpty = () => {
+    setProducts([]);
   };
 
   const columns: TableColumn<Product>[] = [
@@ -133,6 +142,49 @@ export default function ProductsList() {
     },
   ];
 
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className={styles.skeletonTable}>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className={styles.skeletonRow}>
+              <Skeleton variant="circular" width="36px" height="36px" />
+              <div className={styles.skeletonRowContent}>
+                <Skeleton width="60%" height="12px" />
+                <Skeleton width="40%" height="10px" />
+              </div>
+              <Skeleton width="80px" height="12px" />
+              <Skeleton width="60px" height="12px" />
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (products.length === 0) {
+      return (
+        <EmptyState
+          title="No hay productos registrados"
+          description="Comienza agregando tu primer producto al inventario para poder facturarlo."
+          action={
+            <Button leftIcon={<Plus size={14} />}>
+              Crear primer producto
+            </Button>
+          }
+        />
+      );
+    }
+
+    return (
+      <Table
+        columns={columns}
+        data={products}
+        getRowKey={(p) => p.id}
+        emptyMessage="No hay productos registrados"
+      />
+    );
+  };
+
   return (
     <Card padding="none">
       <div className={styles.toolbar}>
@@ -141,7 +193,7 @@ export default function ProductsList() {
           <p className={styles.subtitle}>
             {isLoading
               ? 'Cargando productos...'
-              : `${MOCK_PRODUCTS.length} productos registrados`}
+              : `${products.length} productos registrados`}
           </p>
         </div>
         <div className={styles.toolbarActions}>
@@ -158,32 +210,19 @@ export default function ProductsList() {
           >
             Recargar
           </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleEmpty}
+            disabled={isLoading || products.length === 0}
+          >
+            Vaciar lista
+          </Button>
           <Button leftIcon={<Plus size={14} />}>Nuevo producto</Button>
         </div>
       </div>
 
-      {isLoading ? (
-        <div className={styles.skeletonTable}>
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className={styles.skeletonRow}>
-              <Skeleton variant="circular" width="36px" height="36px" />
-              <div className={styles.skeletonRowContent}>
-                <Skeleton width="60%" height="12px" />
-                <Skeleton width="40%" height="10px" />
-              </div>
-              <Skeleton width="80px" height="12px" />
-              <Skeleton width="60px" height="12px" />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <Table
-          columns={columns}
-          data={MOCK_PRODUCTS}
-          getRowKey={(p) => p.id}
-          emptyMessage="No hay productos registrados"
-        />
-      )}
+      {renderContent()}
     </Card>
   );
 }
