@@ -7,6 +7,7 @@ import { FormField } from '../../../../components/forms/FormField';
 import { Input } from '../../../../components/common/inputs/Input';
 import { Button } from '../../../../components/common/actions/Button';
 import { Alert } from '../../../../components/feedback/alerts/Alert';
+import { useThemeStore } from '../../../../stores';
 import styles from './Login.module.css';
 
 interface FormErrors {
@@ -19,21 +20,13 @@ export default function Login() {
   const { login, isLoading, error, clearError } = useAuth();
   const toast = useToast();
 
+  const theme = useThemeStore((s) => s.theme);
+  const toggleTheme = useThemeStore((s) => s.toggleTheme);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    const current = document.documentElement.getAttribute('data-theme');
-    return current === 'light' ? 'light' : 'dark';
-  });
-
-  const toggleTheme = () => {
-    const next = theme === 'dark' ? 'light' : 'dark';
-    setTheme(next);
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
-  };
 
   const validate = (): FormErrors => {
     const next: FormErrors = {};

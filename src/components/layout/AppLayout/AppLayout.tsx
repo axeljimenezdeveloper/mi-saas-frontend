@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+﻿import { useState } from 'react';
 import {
   LayoutDashboard,
   Package,
@@ -17,9 +17,8 @@ import { Header } from '../Header';
 import { MainLayout } from '../MainLayout';
 import { useAuth } from '../../../context';
 import { useToast } from '../../feedback/alerts/Toast';
+import { useThemeStore } from '../../../stores';
 import styles from './AppLayout.module.css';
-
-type Theme = 'light' | 'dark';
 
 const NAV_ITEMS: SidebarItem[] = [
   { label: 'Dashboard', icon: <LayoutDashboard size={18} />, href: '/dashboard' },
@@ -34,20 +33,11 @@ export function AppLayout() {
   const { user, logout } = useAuth();
   const toast = useToast();
 
-  const [theme, setTheme] = useState<Theme>(() => {
-    const current = document.documentElement.getAttribute('data-theme');
-    return current === 'light' ? 'light' : 'dark';
-  });
+  const theme = useThemeStore((s) => s.theme);
+  const toggleTheme = useThemeStore((s) => s.toggleTheme);
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
 
   const handleLogout = () => {
     setIsUserMenuOpen(false);
