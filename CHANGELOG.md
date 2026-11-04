@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.3.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.2.0...v0.3.0) (2026-11-04)
+
+### Features
+
+* add AppRouter with protected routes and working login flow ([927b7de](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/927b7dedd0b7e209ed8199329ac6281e97c677e1))
+* add AuthContext with mock login and localStorage persistence ([7c77d00](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/7c77d008fc827e73bd2c5ed9a877c6745370c82b))
+* add billing page with full-bleed layout and sidebar alignment fix ([cacd8f6](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/cacd8f6bab8200b3905f6568293395e5d9572e5b))
+* add user logout dropdown and link new product button to form ([043b21d](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/043b21daf83c448a588b3422df364082f9d3de9c))
+* refactor products list to full-bleed layout with search and status filters ([82576d8](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/82576d844281f096ff48a327cfd1c1eef337da9e))
+
 ## [0.1.1](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.1.0...v0.1.1) (2026-11-04)
 
 ### Features
