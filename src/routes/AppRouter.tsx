@@ -6,6 +6,7 @@ import Dashboard from '../features/dashboard/pages/Dashboard';
 import ProductsList from '../features/inventory/pages/ProductsList';
 import NewProduct from '../features/inventory/pages/NewProduct';
 import Billing from '../features/billing/pages/Billing';
+import BillingNew from '../features/billing/pages/BillingNew';
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
       { path: 'products', element: <ProductsList /> },
       { path: 'products/new', element: <NewProduct /> },
       { path: 'billing', element: <Billing /> },
+      { path: 'billing/new', element: <BillingNew /> },
     ],
   },
   {

@@ -3,41 +3,37 @@
 .layout {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background-color: var(--color-bg);
 }
 
-/* ============ Body (sidebar + main) ============ */
 .body {
   display: flex;
   flex: 1;
   min-height: 0;
   position: relative;
+  overflow: hidden;
 }
 
-/* ============ Sidebar wrapper ============ */
 .sidebarWrapper {
   display: flex;
   flex-shrink: 0;
-  height: auto;
+  height: 100%;
   transition: transform var(--duration-normal) var(--ease-out);
 }
 
-/* ============ Main content ============ */
 .main {
   flex: 1;
   min-width: 0;
   overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
+  overflow-y: auto;
 }
 
-/* ============ Backdrop (mobile) ============ */
 .backdrop {
   display: none;
 }
 
-/* ============ Responsive mobile ============ */
 @media (max-width: 768px) {
   .sidebarWrapper {
     position: fixed;
@@ -68,10 +64,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sidebarWrapper {
-    transition: none;
-  }
-  .backdrop {
-    animation: none;
-  }
+  .sidebarWrapper { transition: none; }
+  .backdrop { animation: none; }
 }
