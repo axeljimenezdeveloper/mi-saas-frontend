@@ -1,0 +1,57 @@
+﻿/* src/features/dashboard/pages/Dashboard/Dashboard.module.css */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.iconWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.primary {
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.success {
+  background-color: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.warning {
+  background-color: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+.info {
+  background-color: var(--color-info-soft);
+  color: var(--color-info);
+}
+
+.statLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-1) 0;
+}
+
+.statValue {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
