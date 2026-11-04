@@ -1,5 +1,5 @@
-﻿import { useState } from 'react';
-import { useMediaQuery } from '../../../hooks/useMediaQuery';
+﻿import { useMediaQuery } from '../../../hooks/useMediaQuery';
+import { useSidebarStore } from '../../../stores';
 import styles from './MainLayout.module.css';
 
 export interface MainLayoutProps {
@@ -22,11 +22,11 @@ export function MainLayout({
   children,
   className,
 }: MainLayoutProps) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const isMobile = useMediaQuery('(max-width: 768px)');
 
-  const openSidebar = () => setIsSidebarOpen(true);
-  const closeSidebar = () => setIsSidebarOpen(false);
+  const isSidebarOpen = useSidebarStore((s) => s.isMobileOpen);
+  const openSidebar = useSidebarStore((s) => s.openMobile);
+  const closeSidebar = useSidebarStore((s) => s.closeMobile);
 
   // En mobile, al hacer click en cualquier link del sidebar, lo cerramos
   const handleSidebarClick = (e: React.MouseEvent) => {
@@ -65,4 +65,3 @@ export function MainLayout({
     </div>
   );
 }
-

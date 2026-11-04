@@ -1,19 +1,26 @@
-﻿import { describe, it, expect, vi } from 'vitest';
+﻿import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MainLayout } from './MainLayout';
+import { useSidebarStore } from '../../../stores';
 
 describe('MainLayout', () => {
   const defaultProps = {
     sidebar: <aside>Sidebar content</aside>,
-    renderHeader: (onMenuClick: () => void) => (
+    renderHeader: (onMenuClick: () => void, isMobile: boolean) => (
       <header>
         <button onClick={onMenuClick}>Menu</button>
         <span>Header content</span>
+        <span data-testid="is-mobile">{String(isMobile)}</span>
       </header>
     ),
     children: <main>Page content</main>,
   };
+
+  beforeEach(() => {
+    useSidebarStore.setState({ isCollapsed: false, isMobileOpen: false });
+    localStorage.clear();
+  });
 
   it('renders sidebar', () => {
     render(<MainLayout {...defaultProps} />);
@@ -31,8 +38,10 @@ describe('MainLayout', () => {
     expect(screen.getByText('Page content')).toBeInTheDocument();
   });
 
-  it('calls renderHeader with a function', () => {
-    const renderHeader = vi.fn(() => <header>Header</header>);
+  it('calls renderHeader with a function and isMobile flag', () => {
+    const renderHeader = vi.fn(
+      (_onMenuClick: () => void, _isMobile: boolean) => <header>Header</header>
+    );
     render(
       <MainLayout
         sidebar={<aside>Sidebar</aside>}
@@ -42,11 +51,19 @@ describe('MainLayout', () => {
     );
     expect(renderHeader).toHaveBeenCalledTimes(1);
     expect(typeof renderHeader.mock.calls[0][0]).toBe('function');
+    expect(typeof renderHeader.mock.calls[0][1]).toBe('boolean');
+  });
+
+  it('passes isMobile=false in jsdom (no matchMedia match)', () => {
+    render(<MainLayout {...defaultProps} />);
+    expect(screen.getByTestId('is-mobile')).toHaveTextContent('false');
   });
 
   it('does not render backdrop initially', () => {
     const { container } = render(<MainLayout {...defaultProps} />);
-    expect(container.querySelector('[class*="backdrop"]')).not.toBeInTheDocument();
+    expect(
+      container.querySelector('[class*="backdrop"]')
+    ).not.toBeInTheDocument();
   });
 
   it('opens sidebar (renders backdrop) when menu button is clicked', async () => {
@@ -59,13 +76,15 @@ describe('MainLayout', () => {
   it('closes sidebar when backdrop is clicked', async () => {
     const user = userEvent.setup();
     const { container } = render(<MainLayout {...defaultProps} />);
-    // Abre
     await user.click(screen.getByRole('button', { name: 'Menu' }));
-    const backdrop = container.querySelector('[class*="backdrop"]') as HTMLElement;
+    const backdrop = container.querySelector(
+      '[class*="backdrop"]'
+    ) as HTMLElement;
     expect(backdrop).toBeInTheDocument();
-    // Cierra
     await user.click(backdrop);
-    expect(container.querySelector('[class*="backdrop"]')).not.toBeInTheDocument();
+    expect(
+      container.querySelector('[class*="backdrop"]')
+    ).not.toBeInTheDocument();
   });
 
   it('closes sidebar when a link inside sidebar is clicked', async () => {
@@ -79,12 +98,12 @@ describe('MainLayout', () => {
       ),
     };
     const { container } = render(<MainLayout {...props} />);
-    // Abre
     await user.click(screen.getByRole('button', { name: 'Menu' }));
     expect(container.querySelector('[class*="backdrop"]')).toBeInTheDocument();
-    // Click en link del sidebar
     await user.click(screen.getByRole('link', { name: 'Dashboard' }));
-    expect(container.querySelector('[class*="backdrop"]')).not.toBeInTheDocument();
+    expect(
+      container.querySelector('[class*="backdrop"]')
+    ).not.toBeInTheDocument();
   });
 
   it('does not close sidebar when clicking inside sidebar but not on a link', async () => {
@@ -101,7 +120,6 @@ describe('MainLayout', () => {
     const { container } = render(<MainLayout {...props} />);
     await user.click(screen.getByRole('button', { name: 'Menu' }));
     await user.click(screen.getByText('Just a text inside sidebar'));
-    // Sigue abierto
     expect(container.querySelector('[class*="backdrop"]')).toBeInTheDocument();
   });
 

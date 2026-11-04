@@ -17,7 +17,7 @@ import { Header } from '../Header';
 import { MainLayout } from '../MainLayout';
 import { useAuth } from '../../../context';
 import { useToast } from '../../feedback/alerts/Toast';
-import { useThemeStore } from '../../../stores';
+import { useThemeStore, useSidebarStore } from '../../../stores';
 import styles from './AppLayout.module.css';
 
 const NAV_ITEMS: SidebarItem[] = [
@@ -36,7 +36,9 @@ export function AppLayout() {
   const theme = useThemeStore((s) => s.theme);
   const toggleTheme = useThemeStore((s) => s.toggleTheme);
 
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const isCollapsed = useSidebarStore((s) => s.isCollapsed);
+  const toggleCollapse = useSidebarStore((s) => s.toggleCollapse);
+
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const handleLogout = () => {
@@ -54,7 +56,7 @@ export function AppLayout() {
           activeHref={location.pathname}
           onNavigate={(href) => navigate(href)}
           isCollapsed={isCollapsed}
-          onToggleCollapse={() => setIsCollapsed((v) => !v)}
+          onToggleCollapse={toggleCollapse}
         />
       }
       renderHeader={(onMenuClick, isMobile) => (
