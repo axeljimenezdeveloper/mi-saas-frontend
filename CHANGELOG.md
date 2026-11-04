@@ -2,4 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.1.1](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.1.0...v0.1.1) (2026-11-04)
 
+### Features
+
+* add Alert component and show validation error alert in product form ([4871888](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/4871888e88d8b8b7ba63878a625c24b64587b719))
+* add Avatar component and integrate user badge in products list ([d2bdc24](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/d2bdc246f6c86931f51c68ccd4bb36f7b4f48522))
+* add Badge component and integrate status badges in product form ([6348de0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/6348de0adeab765d99b1edfdffa8cb20e76cef07))
+* add Button component with variants sizes and loading state ([bb43700](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/bb437000a053f2e171457ac4b60ecf2c4d640320))
+* add Card component and refactor product form to use it ([78ff09e](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/78ff09ecfcfc7e7aebd94be2c7c819a41c9f4ed2))
+* add CurrencyInput component and use it for product price field ([fcba773](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/fcba773a5052edbf8d9a68d88c58c0408709b1cb))
+* add EmptyState component and use it when products list is empty ([0c3c657](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/0c3c657785edb291a15c6e30fa4b4147296cab59))
+* add FormField component and refactor product form to use it ([b3a954b](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/b3a954b741129ee9195f5107d537fd0513eac4a5))
+* add FormGroup component and organize product form into sections ([db87152](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/db8715283eeaf0d659aad05647d53cf4a57c1930))
+* add Header component with brand search and actions slots ([b021e8a](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/b021e8aeb5c56daaac60677929300aefb4a73d29))
+* add Input component with variants sizes icons and error state ([f6a5eed](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/f6a5eedfe4ff276297baf48bd9385d04ca5046e1))
+* add MainLayout with responsive sidebar drawer and complete design system ([9ef8dea](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/9ef8dea2ab0d91058c51b829e36379e7181820b7))
+* add NewProduct page composing input textarea and button components ([0d60a79](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/0d60a7973042a656bb00b359724ebed21f7dec72))
+* add PageContainer layout component and refactor app to use it ([0a28865](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/0a288655e92dda1718e3279cf3b184a070a17b37))
+* add PageHeader component and refactor app to use layout components ([f2e1d8d](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/f2e1d8d234f627638b19842e4aeb274ab78a9cfb))
+* add product type radio group with conditional stock field ([987b1ca](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/987b1caaa57082fb636dbb882e8fca744b0c6a4c))
+* add Sidebar navigation component with collapse mode and badges ([8d6ce54](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/8d6ce544d5913b3f508801567ffa45fc11692e0e))
+* add Spinner component with loading state in products list ([a09441f](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/a09441fa42084a660c9032d1c779a1a5c8441239))
+* add Switch component and integrate featured toggle in product form ([582d043](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/582d0434f9f7a4217bedc72b9149fcc0d873adf4))
+* add Table component and create products list page with stock badges ([3850af2](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/3850af2959db8dc3d224eae11a40c47913b13928))
+* add Toast system with provider, hook, and global notifications ([3665eaf](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/3665eaf8abdf058528ab0b1202880e3fcf5fcef7))
+
+### Bug Fixes
+
+* add rtl cleanup between tests and remove empty test placeholders ([85c1fca](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/85c1fca5382b0b8bcc8e8715f33c42138da0b30f))
+* make Skeleton visible in light mode by using border-strong background ([51af668](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/51af668090d537150595052926405f6f12100aec))
+* restrict checkbox click area to box and increase checkbox group spacing ([c3b736f](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/c3b736fa68de8a659095db988b384aeee789e7bb))
+
+# Changelog
+
+All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
