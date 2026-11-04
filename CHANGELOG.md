@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.4.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.3.0...v0.4.0) (2026-11-04)
+
+### Features
+
+* add billing new invoice form with line items, IVA calculation, and form validation ([48a2a75](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/48a2a75ba3665d6b401bbc96accc46aa44a9df0a))
+* add settings page with company data preferences and account section ([62898a0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/62898a0e62370f8a72a687ead4963b1584833907))
+
 ## [0.3.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.2.0...v0.3.0) (2026-11-04)
 
 ### Features
