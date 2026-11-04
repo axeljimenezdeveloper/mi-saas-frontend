@@ -1,11 +1,11 @@
-﻿import { useState, useEffect } from 'react';
+﻿import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Pencil, Trash2, Package, RefreshCw } from 'lucide-react';
+import { Plus, Pencil, Trash2, Package, Search } from 'lucide-react';
 import { Table, type TableColumn } from '../../../../components/common/data-display/Table';
 import { Badge } from '../../../../components/common/data-display/Badge';
-import { Card } from '../../../../components/common/data-display/Card';
-import { Avatar } from '../../../../components/common/data-display/Avatar';
 import { Button } from '../../../../components/common/actions/Button';
+import { Input } from '../../../../components/common/inputs/Input';
+import { Select } from '../../../../components/common/inputs/Select';
 import { Skeleton } from '../../../../components/feedback/loading/Skeleton';
 import { EmptyState } from '../../../../components/feedback/states/EmptyState';
 import styles from './ProductsList.module.css';
@@ -28,6 +28,8 @@ const MOCK_PRODUCTS: Product[] = [
   { id: 3, name: 'Zapatos deportivos', sku: 'ZAP-DEP-003', category: 'Calzado', price: 60.0, stock: 0, status: 'out-of-stock' },
   { id: 4, name: 'Gorra bordada', sku: 'GOR-BOR-004', category: 'Accesorios', price: 15.0, stock: 120, status: 'in-stock' },
   { id: 5, name: 'Bufanda de lana', sku: 'BUF-LAN-005', category: 'Accesorios', price: 18.0, stock: 5, status: 'low-stock' },
+  { id: 6, name: 'Chaqueta de cuero', sku: 'CHA-CUE-006', category: 'Ropa', price: 95.0, stock: 15, status: 'in-stock' },
+  { id: 7, name: 'Cinturon de cuero', sku: 'CIN-CUE-007', category: 'Accesorios', price: 22.0, stock: 3, status: 'low-stock' },
 ];
 
 const STATUS_LABELS: Record<StockStatus, string> = {
@@ -42,6 +44,13 @@ const STATUS_VARIANTS: Record<StockStatus, 'success' | 'warning' | 'danger'> = {
   'out-of-stock': 'danger',
 };
 
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'Todos los estados' },
+  { value: 'in-stock', label: 'En stock' },
+  { value: 'low-stock', label: 'Stock bajo' },
+  { value: 'out-of-stock', label: 'Agotados' },
+];
+
 const formatBs = (amount: number): string =>
   new Intl.NumberFormat('es-VE', {
     style: 'currency',
@@ -52,28 +61,30 @@ const formatBs = (amount: number): string =>
 export default function ProductsList() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
 
   useEffect(() => {
-    if (!isLoading) return;
     const t = setTimeout(() => {
       setIsLoading(false);
       setProducts(MOCK_PRODUCTS);
-    }, 1500);
+    }, 1200);
     return () => clearTimeout(t);
-  }, [isLoading]);
+  }, []);
 
-  const handleReload = () => {
-    setIsLoading(true);
-  };
-
-  const handleEmpty = () => {
-    setProducts([]);
-  };
-
-  const handleCreateProduct = () => {
-    navigate('/products/new');
-  };
+  const filtered = useMemo(() => {
+    return products.filter((p) => {
+      const matchesSearch =
+        search.trim() === '' ||
+        p.name.toLowerCase().includes(search.toLowerCase()) ||
+        p.sku.toLowerCase().includes(search.toLowerCase()) ||
+        p.category.toLowerCase().includes(search.toLowerCase());
+      const matchesStatus =
+        statusFilter === 'all' || p.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }, [products, search, statusFilter]);
 
   const columns: TableColumn<Product>[] = [
     {
@@ -105,9 +116,7 @@ export default function ProductsList() {
       key: 'stock',
       header: 'Stock',
       align: 'center',
-      render: (p) => (
-        <span className={styles.stockNumber}>{p.stock}</span>
-      ),
+      render: (p) => <span className={styles.stockNumber}>{p.stock}</span>,
     },
     {
       key: 'status',
@@ -172,8 +181,12 @@ export default function ProductsList() {
         <EmptyState
           title="No hay productos registrados"
           description="Comienza agregando tu primer producto al inventario para poder facturarlo."
+          icon={<Package size={32} />}
           action={
-            <Button leftIcon={<Plus size={14} />} onClick={handleCreateProduct}>
+            <Button
+              leftIcon={<Plus size={14} />}
+              onClick={() => navigate('/products/new')}
+            >
               Crear primer producto
             </Button>
           }
@@ -181,10 +194,20 @@ export default function ProductsList() {
       );
     }
 
+    if (filtered.length === 0) {
+      return (
+        <EmptyState
+          title="No se encontraron productos"
+          description="Prueba con otro término de búsqueda o cambia el filtro de estado."
+          icon={<Search size={32} />}
+        />
+      );
+    }
+
     return (
       <Table
         columns={columns}
-        data={products}
+        data={filtered}
         getRowKey={(p) => p.id}
         emptyMessage="No hay productos registrados"
       />
@@ -192,45 +215,38 @@ export default function ProductsList() {
   };
 
   return (
-    <Card padding="none">
-      <div className={styles.toolbar}>
-        <div>
-          <h2 className={styles.title}>Inventario</h2>
-          <p className={styles.subtitle}>
-            {isLoading
-              ? 'Cargando productos...'
-              : `${products.length} productos registrados`}
-          </p>
-        </div>
-        <div className={styles.toolbarActions}>
-          <div className={styles.userBadge}>
-            <Avatar name="Axel Jimenez" size="sm" status="online" />
-            <span className={styles.userName}>Axel Jimenez</span>
+    <div className={styles.page}>
+      <div className={styles.panel}>
+        <div className={styles.toolbar}>
+          <div className={styles.toolbarLeft}>
+            <div className={styles.searchWrapper}>
+              <Input
+                placeholder="Buscar por nombre, SKU o categoria..."
+                leftIcon={<Search size={16} />}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                size="sm"
+              />
+            </div>
+            <div className={styles.filterWrapper}>
+              <Select
+                options={STATUS_OPTIONS}
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                size="sm"
+              />
+            </div>
           </div>
           <Button
-            variant="outline"
-            size="sm"
-            onClick={handleReload}
-            leftIcon={<RefreshCw size={14} />}
-            disabled={isLoading}
+            leftIcon={<Plus size={14} />}
+            onClick={() => navigate('/products/new')}
           >
-            Recargar
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleEmpty}
-            disabled={isLoading || products.length === 0}
-          >
-            Vaciar lista
-          </Button>
-          <Button leftIcon={<Plus size={14} />} onClick={handleCreateProduct}>
             Nuevo producto
           </Button>
         </div>
-      </div>
 
-      {renderContent()}
-    </Card>
+        {renderContent()}
+      </div>
+    </div>
   );
 }
