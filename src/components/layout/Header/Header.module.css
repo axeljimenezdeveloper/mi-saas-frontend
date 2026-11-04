@@ -20,7 +20,7 @@
 }
 
 .menuButton {
-  display: none;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 36px;
@@ -45,13 +45,6 @@
   outline-offset: 2px;
 }
 
-/* Mostrar el boton hamburguesa solo en mobile */
-@media (max-width: 768px) {
-  .menuButton {
-    display: inline-flex;
-  }
-}
-
 .brand {
   display: flex;
   align-items: center;
@@ -72,7 +65,6 @@
   margin: 0 auto;
 }
 
-/* En mobile ocultamos el search para priorizar brand y acciones */
 @media (max-width: 640px) {
   .search {
     display: none;
@@ -88,7 +80,6 @@
   margin-left: auto;
 }
 
-/* ============ Responsive padding ============ */
 @media (max-width: 640px) {
   .header {
     padding: 0 var(--space-4);
