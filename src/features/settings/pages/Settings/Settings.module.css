@@ -1,0 +1,137 @@
+﻿/* src/features/settings/pages/Settings/Settings.module.css */
+
+.page {
+  min-height: 100%;
+  background-color: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============ Header (full-bleed border) ============ */
+.pageHeader {
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-6) var(--space-6) var(--space-5);
+  flex-shrink: 0;
+}
+
+.headerContent {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.titleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  margin: 0;
+  line-height: var(--leading-tight);
+}
+
+.subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* ============ Content ============ */
+.content {
+  flex: 1;
+  padding: var(--space-6) var(--space-6) var(--space-8);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ============ Account card ============ */
+.accountCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.accountInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.accountDetails {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.accountNameRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.accountName {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.accountEmail {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ============ Footer ============ */
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 768px) {
+  .pageHeader {
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .content {
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .accountCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .accountCard > button {
+    width: 100%;
+  }
+
+  .footer {
+    flex-direction: column-reverse;
+  }
+}

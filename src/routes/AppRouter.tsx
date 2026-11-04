@@ -7,6 +7,7 @@ import ProductsList from '../features/inventory/pages/ProductsList';
 import NewProduct from '../features/inventory/pages/NewProduct';
 import Billing from '../features/billing/pages/Billing';
 import BillingNew from '../features/billing/pages/BillingNew';
+import Settings from '../features/settings/pages/Settings';
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
       { path: 'products/new', element: <NewProduct /> },
       { path: 'billing', element: <Billing /> },
       { path: 'billing/new', element: <BillingNew /> },
+      { path: 'settings', element: <Settings /> },
     ],
   },
   {
