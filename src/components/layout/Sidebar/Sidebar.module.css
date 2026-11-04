@@ -23,7 +23,6 @@
   align-items: center;
   height: 64px;
   padding: 0 var(--space-4);
-  border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
 }
 
@@ -183,5 +182,6 @@
 .nav:hover::-webkit-scrollbar-thumb {
   background-color: var(--color-border-strong);
 }
+
 
 

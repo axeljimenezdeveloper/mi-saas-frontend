@@ -5,6 +5,7 @@ import Login from '../features/auth/pages/Login';
 import Dashboard from '../features/dashboard/pages/Dashboard';
 import ProductsList from '../features/inventory/pages/ProductsList';
 import NewProduct from '../features/inventory/pages/NewProduct';
+import Billing from '../features/billing/pages/Billing';
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
       { path: 'dashboard', element: <Dashboard /> },
       { path: 'products', element: <ProductsList /> },
       { path: 'products/new', element: <NewProduct /> },
+      { path: 'billing', element: <Billing /> },
     ],
   },
   {
