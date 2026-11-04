@@ -1,4 +1,5 @@
 ﻿import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus, Pencil, Trash2, Package, RefreshCw } from 'lucide-react';
 import { Table, type TableColumn } from '../../../../components/common/data-display/Table';
 import { Badge } from '../../../../components/common/data-display/Badge';
@@ -49,6 +50,7 @@ const formatBs = (amount: number): string =>
   }).format(amount);
 
 export default function ProductsList() {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
 
@@ -67,6 +69,10 @@ export default function ProductsList() {
 
   const handleEmpty = () => {
     setProducts([]);
+  };
+
+  const handleCreateProduct = () => {
+    navigate('/products/new');
   };
 
   const columns: TableColumn<Product>[] = [
@@ -167,7 +173,7 @@ export default function ProductsList() {
           title="No hay productos registrados"
           description="Comienza agregando tu primer producto al inventario para poder facturarlo."
           action={
-            <Button leftIcon={<Plus size={14} />}>
+            <Button leftIcon={<Plus size={14} />} onClick={handleCreateProduct}>
               Crear primer producto
             </Button>
           }
@@ -218,7 +224,9 @@ export default function ProductsList() {
           >
             Vaciar lista
           </Button>
-          <Button leftIcon={<Plus size={14} />}>Nuevo producto</Button>
+          <Button leftIcon={<Plus size={14} />} onClick={handleCreateProduct}>
+            Nuevo producto
+          </Button>
         </div>
       </div>
 

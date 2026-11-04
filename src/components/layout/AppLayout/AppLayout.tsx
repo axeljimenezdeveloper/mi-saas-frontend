@@ -7,6 +7,7 @@ import {
   Moon,
   Sun,
   Bell,
+  LogOut,
 } from 'lucide-react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../../common/actions/Button';
@@ -15,6 +16,8 @@ import { Sidebar, type SidebarItem } from '../Sidebar';
 import { Header } from '../Header';
 import { MainLayout } from '../MainLayout';
 import { useAuth } from '../../../context';
+import { useToast } from '../../feedback/alerts/Toast';
+import styles from './AppLayout.module.css';
 
 type Theme = 'light' | 'dark';
 
@@ -28,7 +31,8 @@ const NAV_ITEMS: SidebarItem[] = [
 export function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const toast = useToast();
 
   const [theme, setTheme] = useState<Theme>(() => {
     const current = document.documentElement.getAttribute('data-theme');
@@ -36,6 +40,7 @@ export function AppLayout() {
   });
 
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -43,6 +48,13 @@ export function AppLayout() {
   }, [theme]);
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
+
+  const handleLogout = () => {
+    setIsUserMenuOpen(false);
+    logout();
+    toast.success('Sesion cerrada', 'Hasta pronto');
+    navigate('/login');
+  };
 
   return (
     <MainLayout
@@ -94,11 +106,46 @@ export function AppLayout() {
               >
                 {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
               </Button>
-              <Avatar
-                name={user?.name ?? 'Invitado'}
-                size="sm"
-                status="online"
-              />
+              <div className={styles.userMenuWrapper}>
+                <button
+                  type="button"
+                  className={styles.userButton}
+                  onClick={() => setIsUserMenuOpen((v) => !v)}
+                  aria-label="Abrir menu de usuario"
+                  aria-haspopup="menu"
+                  aria-expanded={isUserMenuOpen}
+                >
+                  <Avatar
+                    name={user?.name ?? 'Invitado'}
+                    size="sm"
+                    status="online"
+                  />
+                </button>
+                {isUserMenuOpen && (
+                  <>
+                    <div
+                      className={styles.userMenuBackdrop}
+                      onClick={() => setIsUserMenuOpen(false)}
+                      aria-hidden="true"
+                    />
+                    <div className={styles.userMenu} role="menu">
+                      <div className={styles.userInfo}>
+                        <p className={styles.userName}>{user?.name}</p>
+                        <p className={styles.userEmail}>{user?.email}</p>
+                      </div>
+                      <button
+                        type="button"
+                        className={styles.logoutButton}
+                        onClick={handleLogout}
+                        role="menuitem"
+                      >
+                        <LogOut size={16} />
+                        Cerrar sesion
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
             </>
           }
         />
