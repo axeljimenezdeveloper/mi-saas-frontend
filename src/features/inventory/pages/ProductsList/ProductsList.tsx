@@ -79,7 +79,15 @@ export default function ProductsList() {
       render: (p) => (
         <div className={styles.productCell}>
           <div className={styles.productIcon}>
-            <Package size={18} />
+            {p.images && p.images.length > 0 ? (
+              <img
+                src={p.images[0]}
+                alt=""
+                className={styles.productThumb}
+              />
+            ) : (
+              <Package size={18} />
+            )}
           </div>
           <div>
             <div className={styles.productName}>{p.name}</div>
@@ -243,4 +251,5 @@ export default function ProductsList() {
     </div>
   );
 }
+
 

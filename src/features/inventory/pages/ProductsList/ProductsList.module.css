@@ -47,6 +47,14 @@
   background-color: var(--color-primary-soft);
   color: var(--color-primary);
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.productThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .productName {
@@ -108,4 +116,5 @@
   justify-content: center;
   padding: var(--space-6);
 }
+
 

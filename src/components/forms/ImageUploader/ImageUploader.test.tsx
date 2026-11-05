@@ -16,7 +16,7 @@ describe('ImageUploader', () => {
       error: Error | null = null;
       onload: (() => void) | null = null;
       onerror: (() => void) | null = null;
-      readAsDataURL(_file: File) {
+      readAsDataURL() {
         this.result = FAKE_DATA_URL;
         setTimeout(() => this.onload?.(), 0);
       }
@@ -199,3 +199,4 @@ describe('ImageUploader', () => {
     expect(screen.getByText('1 de 3 imagen')).toBeInTheDocument();
   });
 });
+
