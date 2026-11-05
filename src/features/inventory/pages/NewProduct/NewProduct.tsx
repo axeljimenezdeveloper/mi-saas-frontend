@@ -12,6 +12,7 @@ import { Radio } from '../../../../components/common/inputs/Radio';
 import { Switch } from '../../../../components/common/inputs/Switch';
 import { Button } from '../../../../components/common/actions/Button';
 import { CurrencyInput } from '../../../../components/forms/CurrencyInput';
+import { ImageUploader } from '../../../../components/forms/ImageUploader';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { productSchema, type ProductFormData } from '../../../../schemas';
 import { useProductsStore } from '../../../../stores';
@@ -44,6 +45,7 @@ const DEFAULT_VALUES: ProductFormData = {
   price: undefined as unknown as number,
   stock: '',
   description: '',
+  images: [],
   active: true,
   taxable: true,
   featured: false,
@@ -65,6 +67,7 @@ export default function NewProduct() {
     defaultValues: DEFAULT_VALUES,
     mode: 'onChange',
   });
+
   const watchedType = useWatch({ control, name: 'type' });
   const isService = watchedType === 'service';
 
@@ -80,6 +83,7 @@ export default function NewProduct() {
         category: categoryLabel,
         price: data.price,
         stock: Number(data.stock) || 0,
+        images: data.images,
       });
       toast.success(
         'Producto creado',
@@ -197,6 +201,24 @@ export default function NewProduct() {
           </FormGroup>
 
           <FormGroup
+            title="Imagenes del producto"
+            description="Sube hasta 5 fotos del producto (opcional)"
+            layout="stack"
+          >
+            <Controller
+              control={control}
+              name="images"
+              render={({ field }) => (
+                <ImageUploader
+                  value={field.value}
+                  onChange={field.onChange}
+                  helperText="PNG, JPG, WEBP o GIF · Max 5 MB c/u"
+                />
+              )}
+            />
+          </FormGroup>
+
+          <FormGroup
             title="Configuracion"
             description="Tipo de producto, impuestos y visibilidad en el catalogo"
             layout="stack"
@@ -279,6 +301,3 @@ export default function NewProduct() {
     </div>
   );
 }
-
-
-

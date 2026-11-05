@@ -18,12 +18,12 @@ export const productSchema = z
       .positive({ error: 'El precio debe ser mayor a cero' }),
     stock: z.string(),
     description: z.string().optional(),
+    images: z.array(z.string()).default([]),
     active: z.boolean(),
     taxable: z.boolean(),
     featured: z.boolean(),
   })
   .superRefine((data, ctx) => {
-    // El stock solo es obligatorio si el producto NO es un servicio
     if (data.type === 'service') return;
 
     if (!data.stock || data.stock.trim() === '') {

@@ -10,6 +10,7 @@ export interface Product {
   price: number;
   stock: number;
   status: StockStatus;
+  images: string[];
 }
 
 export interface ProductsStore {
@@ -20,7 +21,6 @@ export interface ProductsStore {
   clearAll: () => void;
 }
 
-/** Calcula el status a partir del stock. */
 function computeStatus(stock: number): StockStatus {
   if (stock <= 0) return 'out-of-stock';
   if (stock <= 10) return 'low-stock';
