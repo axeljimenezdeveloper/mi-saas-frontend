@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.6.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.5.0...v0.6.0) (2026-11-05)
+
+### Features
+
+* add zod schemas and migrate settings form to react-hook-form ([2755916](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/275591667fc4950fef973f14b4860ecf300e8d69))
+* migrate billing form to react-hook-form with invoice zod schema ([adba9ea](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/adba9ea2da0e63969aebe10062d1017ad968b3b9))
+* migrate login and product forms to react-hook-form with zod schemas ([10a757f](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/10a757f149db530ed440b31d5ddc090e144ee7a8))
+
 ## [0.5.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.4.0...v0.5.0) (2026-11-05)
 
 ### Features
