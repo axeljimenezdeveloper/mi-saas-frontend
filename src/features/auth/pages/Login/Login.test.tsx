@@ -2,8 +2,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { ToastProvider } from '../../../../components/feedback/alerts/Toast';
-import { useAuthStore } from '../../../../stores';
+import { useAuthStore, useToastStore } from '../../../../stores';
 import Login from './Login';
 
 const mockNavigate = vi.fn();
@@ -20,9 +19,7 @@ vi.mock('react-router-dom', async () => {
 function renderLogin() {
   return render(
     <MemoryRouter>
-      <ToastProvider>
-        <Login />
-      </ToastProvider>
+      <Login />
     </MemoryRouter>
   );
 }
@@ -32,6 +29,7 @@ describe('Login', () => {
     localStorage.clear();
     mockNavigate.mockClear();
     useAuthStore.setState({ user: null, isLoading: false, error: null });
+    useToastStore.setState({ toasts: [] });
   });
 
   it('renders brand and title', () => {

@@ -2,7 +2,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { ToastProvider } from '../../../../components/feedback/alerts/Toast';
+import { useToastStore } from '../../../../stores';
 import BillingNew from './BillingNew';
 
 const mockNavigate = vi.fn();
@@ -19,15 +19,16 @@ vi.mock('react-router-dom', async () => {
 function renderBillingNew() {
   return render(
     <MemoryRouter>
-      <ToastProvider>
-        <BillingNew />
-      </ToastProvider>
+      <BillingNew />
     </MemoryRouter>
   );
 }
 
-// Helper para agregar un producto por su nombre visible
-async function addProduct(user: ReturnType<typeof userEvent.setup>, productLabel: string, qty?: string) {
+async function addProduct(
+  user: ReturnType<typeof userEvent.setup>,
+  productLabel: string,
+  qty?: string
+) {
   const select = screen.getByRole('combobox');
   const option = Array.from((select as HTMLSelectElement).options).find((o) =>
     o.textContent?.includes(productLabel)
@@ -45,6 +46,7 @@ async function addProduct(user: ReturnType<typeof userEvent.setup>, productLabel
 describe('BillingNew', () => {
   beforeEach(() => {
     mockNavigate.mockClear();
+    useToastStore.setState({ toasts: [] });
   });
 
   it('renders title and back button', () => {
@@ -79,7 +81,6 @@ describe('BillingNew', () => {
     renderBillingNew();
     await addProduct(user, 'Camisa azul talla M');
     await addProduct(user, 'Camisa azul talla M');
-    // Solo debe haber un item en la lista
     const allCamisas = screen.getAllByText('Camisa azul talla M');
     expect(allCamisas).toHaveLength(1);
   });
@@ -99,19 +100,12 @@ describe('BillingNew', () => {
     const user = userEvent.setup();
     renderBillingNew();
 
-    // Camisa: Bs. 25,00 x 2 = 50,00
     await addProduct(user, 'Camisa azul talla M', '2');
-    // Gorra: Bs. 15,00 x 1 = 15,00
     await addProduct(user, 'Gorra bordada', '1');
 
-    // Subtotal = 65,00
     const subtotalMatches = screen.getAllByText(/65,00/);
     expect(subtotalMatches.length).toBeGreaterThan(0);
-
-    // IVA 16% de 65 = 10,40
     expect(screen.getByText(/10,40/)).toBeInTheDocument();
-
-    // Total = 75,40
     expect(screen.getByText(/75,40/)).toBeInTheDocument();
   });
 

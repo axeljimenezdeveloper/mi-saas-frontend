@@ -2,8 +2,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { ToastProvider } from '../../../../components/feedback/alerts/Toast';
-import { useAuthStore } from '../../../../stores';
+import { ToastViewport } from '../../../../components/feedback/alerts/Toast';
+import { useAuthStore, useToastStore } from '../../../../stores';
 import Settings from './Settings';
 
 const mockNavigate = vi.fn();
@@ -20,9 +20,8 @@ vi.mock('react-router-dom', async () => {
 function renderSettings() {
   return render(
     <MemoryRouter>
-      <ToastProvider>
-        <Settings />
-      </ToastProvider>
+      <Settings />
+      <ToastViewport />
     </MemoryRouter>
   );
 }
@@ -31,6 +30,7 @@ describe('Settings', () => {
   beforeEach(() => {
     localStorage.clear();
     mockNavigate.mockClear();
+    useToastStore.setState({ toasts: [] });
     useAuthStore.setState({
       user: {
         id: '1',
