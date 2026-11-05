@@ -15,3 +15,12 @@ export type {
   InvoicesStore,
   InvoiceStatus,
 } from './invoicesStore';
+export { useCompanyStore } from './companyStore';
+export type {
+  CompanyData,
+  CompanyPreferences,
+  CompanyStore,
+  CompanyCurrency,
+  CompanyIva,
+  BusinessType,
+} from './companyStore';

@@ -1,20 +1,26 @@
 ﻿import { Navigate, useLocation } from 'react-router-dom';
-import { useAuthStore, selectIsAuthenticated } from '../stores';
+import { useAuthStore, selectIsAuthenticated, useCompanyStore } from '../stores';
 
 export interface ProtectedRouteProps {
   children: React.ReactNode;
+  /** Si es true, exige que el onboarding este completo. */
+  requireConfigured?: boolean;
 }
 
-/**
- * Envuelve rutas privadas. Si el usuario no esta autenticado,
- * redirige a /login guardando la ruta original para volver tras login.
- */
-export function ProtectedRoute({ children }: ProtectedRouteProps) {
+export function ProtectedRoute({
+  children,
+  requireConfigured = false,
+}: ProtectedRouteProps) {
   const isAuthenticated = useAuthStore(selectIsAuthenticated);
+  const isConfigured = useCompanyStore((s) => s.isConfigured);
   const location = useLocation();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  if (requireConfigured && !isConfigured) {
+    return <Navigate to="/onboarding" replace />;
   }
 
   return <>{children}</>;

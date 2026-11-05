@@ -1,4 +1,5 @@
-﻿import { useNavigate } from 'react-router-dom';
+﻿import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -7,6 +8,10 @@ import {
   LogOut,
   Mail,
   Shield,
+  RefreshCw,
+  MapPin,
+  DollarSign,
+  Percent,
 } from 'lucide-react';
 import { FormField } from '../../../../components/forms/FormField';
 import { FormGroup } from '../../../../components/forms/FormGroup';
@@ -17,8 +22,9 @@ import { Card } from '../../../../components/common/data-display/Card';
 import { Avatar } from '../../../../components/common/data-display/Avatar';
 import { Badge } from '../../../../components/common/data-display/Badge';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
-import { useAuthStore } from '../../../../stores';
+import { useAuthStore, useCompanyStore } from '../../../../stores';
 import { settingsSchema, type SettingsFormData } from '../../../../schemas';
+import { clearAllData } from '../../../demo/demoData';
 import styles from './Settings.module.css';
 
 const CURRENCY_OPTIONS = [
@@ -32,14 +38,6 @@ const IVA_OPTIONS = [
   { value: '16', label: '16% (General)' },
 ];
 
-const DEFAULT_VALUES: SettingsFormData = {
-  companyName: 'Mi Empresa C.A.',
-  rif: 'J-12345678-9',
-  address: 'Av. Principal, Caracas, Venezuela',
-  currency: 'VES',
-  defaultIva: '16',
-};
-
 export default function Settings() {
   const navigate = useNavigate();
   const toast = useToast();
@@ -47,31 +45,72 @@ export default function Settings() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
 
+  const company = useCompanyStore((s) => s.company);
+  const preferences = useCompanyStore((s) => s.preferences);
+  const setCompany = useCompanyStore((s) => s.setCompany);
+  const setPreferences = useCompanyStore((s) => s.setPreferences);
+
   const {
     register,
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    reset,
+    formState: { errors, isSubmitting, isValid, isDirty },
   } = useForm<SettingsFormData>({
     resolver: zodResolver(settingsSchema),
-    defaultValues: DEFAULT_VALUES,
-    mode: 'onBlur',
+    defaultValues: {
+      companyName: company.name,
+      rif: company.rif,
+      address: company.address,
+      currency: preferences.currency,
+      defaultIva: preferences.defaultIva,
+    },
+    mode: 'onChange',
   });
 
+  // Sincroniza el form cuando el store cambia (ej. despues del onboarding)
+  useEffect(() => {
+    reset({
+      companyName: company.name,
+      rif: company.rif,
+      address: company.address,
+      currency: preferences.currency,
+      defaultIva: preferences.defaultIva,
+    });
+  }, [company, preferences, reset]);
+
   const onSubmit = (data: SettingsFormData) => {
-    // Simula guardado (sin backend aun). Los datos ya estan validados por Zod.
-    setTimeout(() => {
-      toast.success(
-        'Configuracion guardada',
-        `Datos de ${data.companyName} actualizados`
-      );
-    }, 1000);
+    setCompany({
+      name: data.companyName.trim(),
+      rif: data.rif.trim(),
+      address: data.address?.trim() ?? '',
+    });
+    setPreferences({
+      currency: data.currency,
+      defaultIva: data.defaultIva,
+      businessType: preferences.businessType,
+    });
+    toast.success('Configuracion guardada', 'Los cambios fueron aplicados');
   };
 
   const handleLogout = () => {
     logout();
     toast.success('Sesion cerrada', 'Hasta pronto');
     navigate('/login');
+  };
+
+  const handleReset = () => {
+    const confirmed = window.confirm(
+      '¿Estas seguro? Esto eliminara TODOS los productos, facturas y datos de la empresa. Volveras al onboarding.'
+    );
+    if (!confirmed) return;
+
+    clearAllData();
+    toast.success(
+      'Datos restablecidos',
+      'Seras redirigido al onboarding'
+    );
+    navigate('/onboarding');
   };
 
   return (
@@ -88,11 +127,7 @@ export default function Settings() {
       </header>
 
       <div className={styles.content}>
-        <form
-          className={styles.form}
-          onSubmit={handleSubmit(onSubmit)}
-          noValidate
-        >
+        <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
           <FormGroup
             title="Datos de la empresa"
             description="Informacion fiscal y de contacto"
@@ -126,6 +161,7 @@ export default function Settings() {
               <Input
                 id="company-address"
                 placeholder="Av. Principal, Caracas, Venezuela"
+                leftIcon={<MapPin size={16} />}
                 {...register('address')}
               />
             </FormField>
@@ -144,6 +180,7 @@ export default function Settings() {
                   <Select
                     id="pref-currency"
                     options={CURRENCY_OPTIONS}
+                    leftIcon={<DollarSign size={16} />}
                     value={field.value}
                     onChange={(e) => field.onChange(e.target.value)}
                     onBlur={field.onBlur}
@@ -160,6 +197,7 @@ export default function Settings() {
                   <Select
                     id="pref-iva"
                     options={IVA_OPTIONS}
+                    leftIcon={<Percent size={16} />}
                     value={field.value}
                     onChange={(e) => field.onChange(e.target.value)}
                     onBlur={field.onBlur}
@@ -207,12 +245,38 @@ export default function Settings() {
             </Card>
           </FormGroup>
 
+          <FormGroup
+            title="Zona de peligro"
+            description="Acciones irreversibles sobre tus datos"
+            layout="stack"
+          >
+            <Card padding="md">
+              <div className={styles.dangerCard}>
+                <div>
+                  <p className={styles.dangerTitle}>Restablecer todos los datos</p>
+                  <p className={styles.dangerDescription}>
+                    Elimina productos, facturas y configuracion. Volveras al onboarding.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="danger"
+                  leftIcon={<RefreshCw size={14} />}
+                  onClick={handleReset}
+                >
+                  Restablecer
+                </Button>
+              </div>
+            </Card>
+          </FormGroup>
+
           <div className={styles.footer}>
             <Button
               type="submit"
               variant="primary"
               leftIcon={<Save size={14} />}
               isLoading={isSubmitting}
+              disabled={!isValid || !isDirty || isSubmitting}
             >
               Guardar cambios
             </Button>
@@ -222,3 +286,6 @@ export default function Settings() {
     </div>
   );
 }
+
+
+

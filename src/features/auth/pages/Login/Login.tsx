@@ -1,15 +1,16 @@
-﻿import { useNavigate } from 'react-router-dom';
+﻿import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Package, Mail, Lock, Eye, EyeOff, Sun, Moon, LogIn } from 'lucide-react';
-import { useState } from 'react';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { FormField } from '../../../../components/forms/FormField';
 import { Input } from '../../../../components/common/inputs/Input';
 import { Button } from '../../../../components/common/actions/Button';
 import { Alert } from '../../../../components/feedback/alerts/Alert';
-import { useThemeStore, useAuthStore } from '../../../../stores';
+import { useThemeStore, useAuthStore, useCompanyStore } from '../../../../stores';
 import { loginSchema, type LoginFormData } from '../../../../schemas';
+import { seedDemoData } from '../../../demo/demoData';
 import styles from './Login.module.css';
 
 export default function Login() {
@@ -25,6 +26,7 @@ export default function Login() {
   const clearError = useAuthStore((s) => s.clearError);
 
   const [showPassword, setShowPassword] = useState(false);
+  const [isDemoLoading, setIsDemoLoading] = useState(false);
 
   const {
     register,
@@ -41,8 +43,27 @@ export default function Login() {
     clearError();
     const success = await login(data.email, data.password);
     if (success) {
-      toast.success('Bienvenido', 'Sesión iniciada correctamente');
-      navigate('/dashboard');
+      toast.success('Bienvenido', 'Sesion iniciada correctamente');
+      const isConfigured = useCompanyStore.getState().isConfigured;
+      navigate(isConfigured ? '/dashboard' : '/onboarding');
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    clearError();
+    setIsDemoLoading(true);
+    try {
+      seedDemoData();
+      const success = await login('admin@invensaas.com', 'admin123');
+      if (success) {
+        toast.success(
+          'Modo demo activado',
+          'Se cargaron productos, facturas y empresa de ejemplo'
+        );
+        navigate('/dashboard');
+      }
+    } finally {
+      setIsDemoLoading(false);
     }
   };
 
@@ -63,20 +84,25 @@ export default function Login() {
         {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
       </button>
 
-      <div className={styles.card}>
-        <div className={styles.header}>
+      <div className={styles.container}>
+        <header className={styles.header}>
           <div className={styles.logo}>
             <Package size={28} />
           </div>
           <h1 className={styles.title}>InvenSaaS</h1>
           <p className={styles.subtitle}>
-            Gestiona el inventario y la facturación de tu negocio
+            Gestiona el inventario y la facturacion de tu negocio
           </p>
-        </div>
+          <button
+            type="button"
+            className={styles.demoLink}
+            onClick={fillDemoCredentials}
+          >
+            Rellenar credenciales de prueba
+          </button>
+        </header>
 
         <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
-          <h2 className={styles.formTitle}>Iniciar sesión</h2>
-
           {error && (
             <Alert variant="error" onClose={clearError}>
               {error}
@@ -126,23 +152,32 @@ export default function Login() {
             isLoading={isLoading}
             leftIcon={<LogIn size={16} />}
           >
-            {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+            {isLoading ? 'Iniciando sesion...' : 'Iniciar sesion'}
           </Button>
         </form>
 
-        <div className={styles.demoHint}>
-          <p className={styles.demoLabel}>Credenciales de prueba</p>
+        <div className={styles.footerLinks}>
           <button
             type="button"
-            className={styles.demoButton}
-            onClick={fillDemoCredentials}
+            className={styles.demoLink}
+            onClick={handleDemoLogin}
+            disabled={isDemoLoading || isLoading}
           >
-            <span>admin@invensaas.com</span>
-            <span className={styles.demoSeparator}>·</span>
-            <span>admin123</span>
+            {isDemoLoading ? 'Cargando demo...' : 'Probar con datos de ejemplo'}
           </button>
-          <p className={styles.demoNote}>Click para rellenar automáticamente</p>
         </div>
+
+        <footer className={styles.creator}>
+          <p className={styles.creatorName}>
+            Desarrollado por <strong>Axel Gabriel Jimenez Malaver</strong>
+          </p>
+          <p className={styles.creatorMeta}>
+            C.I. 27.870.662 · Ingenieria de Sistemas · UNA
+          </p>
+          <p className={styles.creatorMeta}>
+            Evaluacion de Proyectos (225) · Lapso 2026-2
+          </p>
+        </footer>
       </div>
     </div>
   );

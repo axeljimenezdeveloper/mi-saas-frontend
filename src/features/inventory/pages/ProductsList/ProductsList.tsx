@@ -8,6 +8,7 @@ import { Input } from '../../../../components/common/inputs/Input';
 import { Select } from '../../../../components/common/inputs/Select';
 import { Skeleton } from '../../../../components/feedback/loading/Skeleton';
 import { EmptyState } from '../../../../components/feedback/states/EmptyState';
+import { ConfirmDialog } from '../../../../components/common/overlay/ConfirmDialog';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { useProductsStore, type Product, type StockStatus } from '../../../../stores';
 import styles from './ProductsList.module.css';
@@ -48,6 +49,7 @@ export default function ProductsList() {
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setIsLoading(false), 600);
@@ -67,9 +69,14 @@ export default function ProductsList() {
     });
   }, [products, search, statusFilter]);
 
-  const handleDelete = (product: Product) => {
-    removeProduct(product.id);
-    toast.success('Producto eliminado', `${product.name} se quito del inventario`);
+  const handleConfirmDelete = () => {
+    if (!productToDelete) return;
+    removeProduct(productToDelete.id);
+    toast.success(
+      'Producto eliminado',
+      productToDelete.name + ' se quito del inventario'
+    );
+    setProductToDelete(null);
   };
 
   const columns: TableColumn<Product>[] = [
@@ -132,10 +139,10 @@ export default function ProductsList() {
             variant="ghost"
             size="sm"
             iconOnly
-            aria-label={`Editar ${p.name}`}
+            aria-label={'Editar ' + p.name}
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/products/${p.id}/edit`);
+              navigate('/products/' + p.id + '/edit');
             }}
           >
             <Pencil size={14} />
@@ -144,10 +151,10 @@ export default function ProductsList() {
             variant="ghost"
             size="sm"
             iconOnly
-            aria-label={`Eliminar ${p.name}`}
+            aria-label={'Eliminar ' + p.name}
             onClick={(e) => {
               e.stopPropagation();
-              handleDelete(p);
+              setProductToDelete(p);
             }}
             className={styles.deleteButton}
           >
@@ -202,7 +209,7 @@ export default function ProductsList() {
         <div className={styles.emptyWrapper}>
           <EmptyState
             title="No se encontraron productos"
-            description="Prueba con otro término de búsqueda o cambia el filtro de estado."
+            description="Prueba con otro termino de busqueda o cambia el filtro de estado."
             icon={<Search size={32} />}
           />
         </div>
@@ -252,10 +259,24 @@ export default function ProductsList() {
 
         {renderContent()}
       </div>
+
+      <ConfirmDialog
+        isOpen={productToDelete !== null}
+        onClose={() => setProductToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        title="Eliminar producto"
+        message={
+          <>
+            Estas seguro que quieres eliminar{' '}
+            <strong>{productToDelete?.name}</strong>?
+            <br />
+            Esta accion no se puede deshacer.
+          </>
+        }
+        confirmLabel="Si, eliminar"
+        cancelLabel="Cancelar"
+        variant="danger"
+      />
     </div>
   );
 }
-
-
-
-

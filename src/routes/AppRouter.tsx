@@ -2,6 +2,7 @@
 import { AppLayout } from '../components/layout/AppLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import Login from '../features/auth/pages/Login';
+import Onboarding from '../features/onboarding/pages/Onboarding';
 import Dashboard from '../features/dashboard/pages/Dashboard';
 import ProductsList from '../features/inventory/pages/ProductsList';
 import NewProduct from '../features/inventory/pages/NewProduct';
@@ -15,9 +16,17 @@ const router = createBrowserRouter([
     element: <Login />,
   },
   {
-    path: '/',
+    path: '/onboarding',
     element: (
       <ProtectedRoute>
+        <Onboarding />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/',
+    element: (
+      <ProtectedRoute requireConfigured>
         <AppLayout />
       </ProtectedRoute>
     ),
@@ -41,4 +50,3 @@ const router = createBrowserRouter([
 export function AppRouter() {
   return <RouterProvider router={router} />;
 }
-

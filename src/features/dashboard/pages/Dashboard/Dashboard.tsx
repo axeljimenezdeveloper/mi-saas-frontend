@@ -99,11 +99,11 @@ export default function Dashboard() {
       products
         .filter((p) => p.status !== 'in-stock')
         .sort((a, b) => a.stock - b.stock)
-        .slice(0, 5),
+        .slice(0, 3),
     [products]
   );
 
-  const recentInvoices = useMemo(() => invoices.slice(0, 5), [invoices]);
+  const recentInvoices = useMemo(() => invoices.slice(0, 3), [invoices]);
 
   const hasData = products.length > 0 || invoices.length > 0;
 
@@ -329,17 +329,19 @@ export default function Dashboard() {
                   <div>
                     <h3 className={styles.sectionTitle}>Facturas recientes</h3>
                     <p className={styles.sectionSubtitle}>
-                      Ultimas 5 facturas emitidas
+                      Ultimas 3 facturas emitidas
                     </p>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    rightIcon={<ArrowRight size={14} />}
-                    onClick={() => navigate('/billing')}
-                  >
-                    Ver todas
-                  </Button>
+                  {invoices.length > 3 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      rightIcon={<ArrowRight size={14} />}
+                      onClick={() => navigate('/billing')}
+                    >
+                      Ver todas ({invoices.length})
+                    </Button>
+                  )}
                 </div>
 
                 {recentInvoices.length === 0 ? (
@@ -393,3 +395,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+

@@ -3,7 +3,11 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { ToastViewport } from '../../../../components/feedback/alerts/Toast';
-import { useAuthStore, useToastStore } from '../../../../stores';
+import {
+  useAuthStore,
+  useToastStore,
+  useCompanyStore,
+} from '../../../../stores';
 import Settings from './Settings';
 
 const mockNavigate = vi.fn();
@@ -16,6 +20,18 @@ vi.mock('react-router-dom', async () => {
     useNavigate: () => mockNavigate,
   };
 });
+
+const SEED_COMPANY = {
+  name: 'Bodega El Sol, C.A.',
+  rif: 'J-31245678-9',
+  address: 'Av. Bolivar, Local 5, Porlamar',
+};
+
+const SEED_PREFERENCES = {
+  currency: 'VES' as const,
+  defaultIva: '16' as const,
+  businessType: 'retail' as const,
+};
 
 function renderSettings() {
   return render(
@@ -31,6 +47,11 @@ describe('Settings', () => {
     localStorage.clear();
     mockNavigate.mockClear();
     useToastStore.setState({ toasts: [] });
+    useCompanyStore.setState({
+      company: SEED_COMPANY,
+      preferences: SEED_PREFERENCES,
+      isConfigured: true,
+    });
     useAuthStore.setState({
       user: {
         id: '1',
@@ -66,12 +87,38 @@ describe('Settings', () => {
     expect(screen.getByLabelText('IVA por defecto')).toBeInTheDocument();
   });
 
-  it('renders company name and RIF with initial values', () => {
+  it('renders company name and RIF from store', () => {
     renderSettings();
     expect(screen.getByLabelText('Nombre de la empresa')).toHaveValue(
-      'Mi Empresa C.A.'
+      'Bodega El Sol, C.A.'
     );
-    expect(screen.getByLabelText('RIF')).toHaveValue('J-12345678-9');
+    expect(screen.getByLabelText('RIF')).toHaveValue('J-31245678-9');
+  });
+
+  it('renders account info from auth store', () => {
+    renderSettings();
+    expect(screen.getByText('Axel Jimenez')).toBeInTheDocument();
+    expect(screen.getByText('admin@invensaas.com')).toBeInTheDocument();
+  });
+
+  it('disables save button when nothing changed', () => {
+    renderSettings();
+    expect(
+      screen.getByRole('button', { name: /Guardar cambios/i })
+    ).toBeDisabled();
+  });
+
+  it('enables save button when a field changes', async () => {
+    const user = userEvent.setup();
+    renderSettings();
+    const input = screen.getByLabelText('Nombre de la empresa');
+    await user.clear(input);
+    await user.type(input, 'Otra Empresa');
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: /Guardar cambios/i })
+      ).toBeEnabled();
+    });
   });
 
   it('shows error when company name is cleared and blurred', async () => {
@@ -80,9 +127,11 @@ describe('Settings', () => {
     const input = screen.getByLabelText('Nombre de la empresa');
     await user.clear(input);
     await user.tab();
-    expect(
-      screen.getByText('El nombre de la empresa es obligatorio')
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText('El nombre de la empresa es obligatorio')
+      ).toBeInTheDocument();
+    });
   });
 
   it('shows error when RIF has invalid format', async () => {
@@ -92,9 +141,11 @@ describe('Settings', () => {
     await user.clear(input);
     await user.type(input, 'invalid-rif');
     await user.tab();
-    expect(
-      screen.getByText('Formato invalido. Ej: J-12345678-9')
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText('Formato invalido. Ej: J-12345678-9')
+      ).toBeInTheDocument();
+    });
   });
 
   it('accepts valid RIF format', async () => {
@@ -104,42 +155,34 @@ describe('Settings', () => {
     await user.clear(input);
     await user.type(input, 'V-98765432-1');
     await user.tab();
-    expect(
-      screen.queryByText('Formato invalido. Ej: J-12345678-9')
-    ).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Formato invalido. Ej: J-12345678-9')
+      ).not.toBeInTheDocument();
+    });
   });
 
-  it('shows validation errors on submit when fields are empty', async () => {
+  it('saves changes to store and shows toast', async () => {
     const user = userEvent.setup();
     renderSettings();
-    const nameInput = screen.getByLabelText('Nombre de la empresa');
-    const rifInput = screen.getByLabelText('RIF');
-    await user.clear(nameInput);
-    await user.clear(rifInput);
-    await user.click(screen.getByRole('button', { name: /Guardar cambios/i }));
-    expect(
-      screen.getByText('El nombre de la empresa es obligatorio')
-    ).toBeInTheDocument();
-    expect(screen.getByText('El RIF es obligatorio')).toBeInTheDocument();
-  });
+    const input = screen.getByLabelText('Nombre de la empresa');
+    await user.clear(input);
+    await user.type(input, 'Nueva Empresa');
 
-  it('shows success toast on valid submit', async () => {
-    const user = userEvent.setup();
-    renderSettings();
     await user.click(screen.getByRole('button', { name: /Guardar cambios/i }));
 
-    await waitFor(
-      () => {
-        expect(screen.getByText('Configuracion guardada')).toBeInTheDocument();
-      },
-      { timeout: 2000 }
-    );
+    await waitFor(() => {
+      expect(screen.getByText('Configuracion guardada')).toBeInTheDocument();
+    });
+    expect(useCompanyStore.getState().company.name).toBe('Nueva Empresa');
   });
 
-  it('logs out and navigates to /login when logout button is clicked', async () => {
+  it('logs out and navigates to /login', async () => {
     const user = userEvent.setup();
     renderSettings();
-    const logoutButtons = screen.getAllByRole('button', { name: /Cerrar sesion/i });
+    const logoutButtons = screen.getAllByRole('button', {
+      name: /Cerrar sesion/i,
+    });
     await user.click(logoutButtons[0]);
 
     expect(mockNavigate).toHaveBeenCalledWith('/login');

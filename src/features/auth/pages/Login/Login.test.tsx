@@ -2,7 +2,13 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { useAuthStore, useToastStore } from '../../../../stores';
+import {
+  useAuthStore,
+  useToastStore,
+  useCompanyStore,
+  useProductsStore,
+  useInvoicesStore,
+} from '../../../../stores';
 import Login from './Login';
 
 const mockNavigate = vi.fn();
@@ -30,14 +36,19 @@ describe('Login', () => {
     mockNavigate.mockClear();
     useAuthStore.setState({ user: null, isLoading: false, error: null });
     useToastStore.setState({ toasts: [] });
+    useCompanyStore.setState({
+      company: { name: '', rif: '', address: '' },
+      isConfigured: false,
+    });
+    useProductsStore.setState({ products: [] });
+    useInvoicesStore.setState({ invoices: [] });
   });
 
-  it('renders brand and title', () => {
+  it('renders brand, title and creator', () => {
     renderLogin();
     expect(screen.getByRole('heading', { name: 'InvenSaaS' })).toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: 'Iniciar sesión' })
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Axel Gabriel Jimenez Malaver/)).toBeInTheDocument();
+    expect(screen.getByText(/C\.I\. 27\.870\.662/)).toBeInTheDocument();
   });
 
   it('renders email and password inputs', () => {
@@ -46,16 +57,20 @@ describe('Login', () => {
     expect(screen.getByPlaceholderText('Tu contrasena')).toBeInTheDocument();
   });
 
-  it('renders demo credentials button', () => {
+  it('renders demo credentials link', () => {
     renderLogin();
-    expect(screen.getByText('admin@invensaas.com')).toBeInTheDocument();
-    expect(screen.getByText('admin123')).toBeInTheDocument();
+    expect(screen.getByText('Rellenar credenciales de prueba')).toBeInTheDocument();
+  });
+
+  it('renders demo data link', () => {
+    renderLogin();
+    expect(screen.getByText('Probar con datos de ejemplo')).toBeInTheDocument();
   });
 
   it('shows validation errors when submitting empty form', async () => {
     const user = userEvent.setup();
     renderLogin();
-    await user.click(screen.getByRole('button', { name: /Iniciar sesión/i }));
+    await user.click(screen.getByRole('button', { name: /Iniciar sesion/i }));
     expect(screen.getByText('El correo es obligatorio')).toBeInTheDocument();
     expect(screen.getByText('La contraseña es obligatoria')).toBeInTheDocument();
   });
@@ -65,26 +80,14 @@ describe('Login', () => {
     renderLogin();
     await user.type(screen.getByPlaceholderText('tu@empresa.com'), 'no-es-email');
     await user.type(screen.getByPlaceholderText('Tu contrasena'), 'admin123');
-    await user.click(screen.getByRole('button', { name: /Iniciar sesión/i }));
+    await user.click(screen.getByRole('button', { name: /Iniciar sesion/i }));
     expect(screen.getByText('Ingresa un correo válido')).toBeInTheDocument();
   });
 
-  it('shows validation error for short password', async () => {
+  it('fills demo credentials when link is clicked', async () => {
     const user = userEvent.setup();
     renderLogin();
-    await user.type(screen.getByPlaceholderText('tu@empresa.com'), 'admin@invensaas.com');
-    await user.type(screen.getByPlaceholderText('Tu contrasena'), '123');
-    await user.click(screen.getByRole('button', { name: /Iniciar sesión/i }));
-    expect(
-      screen.getByText('La contraseña debe tener al menos 6 caracteres')
-    ).toBeInTheDocument();
-  });
-
-  it('fills demo credentials when demo button is clicked', async () => {
-    const user = userEvent.setup();
-    renderLogin();
-    const demoButton = screen.getByText('admin@invensaas.com').closest('button')!;
-    await user.click(demoButton);
+    await user.click(screen.getByText('Rellenar credenciales de prueba'));
     expect(screen.getByPlaceholderText('tu@empresa.com')).toHaveValue('admin@invensaas.com');
     expect(screen.getByPlaceholderText('Tu contrasena')).toHaveValue('admin123');
   });
@@ -100,35 +103,50 @@ describe('Login', () => {
     expect(passwordInput).toHaveAttribute('type', 'password');
   });
 
-  it('shows error from store on invalid credentials', async () => {
+  it('navigates to /onboarding when not configured', async () => {
     const user = userEvent.setup();
     renderLogin();
-    await user.type(screen.getByPlaceholderText('tu@empresa.com'), 'wrong@email.com');
-    await user.type(screen.getByPlaceholderText('Tu contrasena'), 'wrongpass');
-    await user.click(screen.getByRole('button', { name: /Iniciar sesión/i }));
+    await user.type(screen.getByPlaceholderText('tu@empresa.com'), 'admin@invensaas.com');
+    await user.type(screen.getByPlaceholderText('Tu contrasena'), 'admin123');
+    await user.click(screen.getByRole('button', { name: /Iniciar sesion/i }));
 
     await waitFor(
       () => {
-        expect(
-          screen.getByText(/Credenciales incorrectas/i)
-        ).toBeInTheDocument();
+        expect(mockNavigate).toHaveBeenCalledWith('/onboarding');
       },
       { timeout: 2000 }
     );
   });
 
-  it('navigates to /dashboard on successful login', async () => {
+  it('navigates to /dashboard when already configured', async () => {
+    useCompanyStore.setState({ isConfigured: true });
     const user = userEvent.setup();
     renderLogin();
     await user.type(screen.getByPlaceholderText('tu@empresa.com'), 'admin@invensaas.com');
     await user.type(screen.getByPlaceholderText('Tu contrasena'), 'admin123');
-    await user.click(screen.getByRole('button', { name: /Iniciar sesión/i }));
+    await user.click(screen.getByRole('button', { name: /Iniciar sesion/i }));
 
     await waitFor(
       () => {
         expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
       },
       { timeout: 2000 }
+    );
+  });
+
+  it('demo data button loads demo data and navigates to dashboard', async () => {
+    const user = userEvent.setup();
+    renderLogin();
+    await user.click(screen.getByText('Probar con datos de ejemplo'));
+
+    await waitFor(
+      () => {
+        expect(useCompanyStore.getState().isConfigured).toBe(true);
+        expect(useProductsStore.getState().products.length).toBeGreaterThan(0);
+        expect(useInvoicesStore.getState().invoices.length).toBeGreaterThan(0);
+        expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      },
+      { timeout: 3000 }
     );
   });
 });
