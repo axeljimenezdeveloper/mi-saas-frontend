@@ -6,3 +6,12 @@ export { useAuthStore, selectIsAuthenticated } from './authStore';
 export type { User, AuthStore } from './authStore';
 export { useToastStore, useToast } from './toastStore';
 export type { ToastStore, ToastData, ToastVariant } from './toastStore';
+export { useProductsStore } from './productsStore';
+export type { Product, ProductsStore, StockStatus } from './productsStore';
+export { useInvoicesStore } from './invoicesStore';
+export type {
+  Invoice,
+  InvoiceLine,
+  InvoicesStore,
+  InvoiceStatus,
+} from './invoicesStore';

@@ -134,7 +134,7 @@ export default function BillingNew() {
     syncItemsToForm(next);
   };
 
-  const onSubmit = (_data: InvoiceFormData) => {
+  const onSubmit = () => {
     setTimeout(() => {
       toast.success(
         'Factura creada',
@@ -330,3 +330,4 @@ export default function BillingNew() {
     </div>
   );
 }
+

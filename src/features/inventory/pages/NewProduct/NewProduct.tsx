@@ -1,5 +1,5 @@
 ﻿import { useNavigate } from 'react-router-dom';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Package, Tag, Boxes, FolderTree, Save, X } from 'lucide-react';
 import { FormField } from '../../../../components/forms/FormField';
@@ -58,7 +58,6 @@ export default function NewProduct() {
     register,
     control,
     handleSubmit,
-    watch,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<ProductFormData>({
@@ -67,8 +66,8 @@ export default function NewProduct() {
     mode: 'onBlur',
   });
 
-  const watchedActive = watch('active');
-  const watchedType = watch('type');
+  const watchedActive = useWatch({ control, name: 'active' });
+  const watchedType = useWatch({ control, name: 'type' });
   const isService = watchedType === 'service';
 
   const onSubmit = (data: ProductFormData) => {
@@ -263,3 +262,5 @@ export default function NewProduct() {
     </form>
   );
 }
+
+
