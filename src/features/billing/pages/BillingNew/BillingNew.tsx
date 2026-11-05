@@ -1,5 +1,7 @@
 ﻿import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Plus,
   Trash2,
@@ -18,6 +20,11 @@ import { Select } from '../../../../components/common/inputs/Select';
 import { Button } from '../../../../components/common/actions/Button';
 import { Card } from '../../../../components/common/data-display/Card';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
+import {
+  invoiceSchema,
+  type InvoiceFormData,
+  type LineItemData,
+} from '../../../../schemas';
 import styles from './BillingNew.module.css';
 
 interface Product {
@@ -25,22 +32,6 @@ interface Product {
   name: string;
   sku: string;
   price: number;
-}
-
-interface LineItem {
-  productId: number;
-  productName: string;
-  price: number;
-  quantity: number;
-}
-
-interface FormErrors {
-  client?: string;
-  items?: string;
-}
-
-interface Touched {
-  client?: boolean;
 }
 
 const AVAILABLE_PRODUCTS: Product[] = [
@@ -65,25 +56,24 @@ const PRODUCT_OPTIONS = AVAILABLE_PRODUCTS.map((p) => ({
   label: `${p.name} - ${formatBs(p.price)}`,
 }));
 
-const validateClient = (value: string): string | undefined => {
-  if (!value.trim()) return 'El nombre del cliente es obligatorio';
-  if (value.trim().length < 3) return 'El nombre debe tener al menos 3 caracteres';
-  if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s.'-]+$/.test(value.trim()))
-    return 'El nombre solo puede contener letras y espacios';
-  return undefined;
-};
-
 export default function BillingNew() {
   const navigate = useNavigate();
   const toast = useToast();
 
-  const [client, setClient] = useState('');
-  const [items, setItems] = useState<LineItem[]>([]);
+  const [items, setItems] = useState<LineItemData[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<string>('');
   const [quantity, setQuantity] = useState('1');
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState<Touched>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<InvoiceFormData>({
+    resolver: zodResolver(invoiceSchema),
+    defaultValues: { client: '', items: [] },
+    mode: 'onBlur',
+  });
 
   const totals = useMemo(() => {
     const subtotal = items.reduce(
@@ -103,17 +93,9 @@ export default function BillingNew() {
     return undefined;
   }, [quantity]);
 
-  const handleClientChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setClient(value);
-    if (touched.client || errors.client) {
-      setErrors((prev) => ({ ...prev, client: validateClient(value) }));
-    }
-  };
-
-  const handleClientBlur = () => {
-    setTouched((prev) => ({ ...prev, client: true }));
-    setErrors((prev) => ({ ...prev, client: validateClient(client) }));
+  const syncItemsToForm = (newItems: LineItemData[]) => {
+    setItems(newItems);
+    setValue('items', newItems, { shouldValidate: errors.items !== undefined });
   };
 
   const handleAddItem = () => {
@@ -124,72 +106,47 @@ export default function BillingNew() {
     if (!product) return;
 
     const qty = Number(quantity);
+    const existing = items.find((i) => i.productId === product.id);
 
-    setItems((prev) => {
-      const existing = prev.find((i) => i.productId === product.id);
-      if (existing) {
-        return prev.map((i) =>
+    const next = existing
+      ? items.map((i) =>
           i.productId === product.id
             ? { ...i, quantity: i.quantity + qty }
             : i
-        );
-      }
-      return [
-        ...prev,
-        {
-          productId: product.id,
-          productName: product.name,
-          price: product.price,
-          quantity: qty,
-        },
-      ];
-    });
+        )
+      : [
+          ...items,
+          {
+            productId: product.id,
+            productName: product.name,
+            price: product.price,
+            quantity: qty,
+          },
+        ];
 
+    syncItemsToForm(next);
     setSelectedProductId('');
     setQuantity('1');
-    if (errors.items) {
-      setErrors((prev) => ({ ...prev, items: undefined }));
-    }
   };
 
   const handleRemoveItem = (productId: number) => {
-    setItems((prev) => prev.filter((i) => i.productId !== productId));
+    const next = items.filter((i) => i.productId !== productId);
+    syncItemsToForm(next);
   };
 
-  const validate = (): FormErrors => {
-    const next: FormErrors = {};
-    const clientError = validateClient(client);
-    if (clientError) next.client = clientError;
-    if (items.length === 0) next.items = 'Agrega al menos un producto a la factura';
-    return next;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setTouched({ client: true });
-    const nextErrors = validate();
-    if (Object.keys(nextErrors).length > 0) {
-      setErrors(nextErrors);
-      toast.error('No se pudo guardar la factura', 'Revisa los campos marcados');
-      return;
-    }
-    setErrors({});
-    setIsSubmitting(true);
+  const onSubmit = (_data: InvoiceFormData) => {
     setTimeout(() => {
-      setIsSubmitting(false);
       toast.success(
         'Factura creada',
-        `Factura generada para ${client} por ${formatBs(totals.total)}`
+        `Factura generada por ${formatBs(totals.total)}`
       );
       navigate('/billing');
     }, 1200);
   };
 
-  const handleCancel = () => {
-    navigate('/billing');
+  const onInvalid = () => {
+    toast.error('No se pudo guardar la factura', 'Revisa los campos marcados');
   };
-
-  const clientErrorToShow = touched.client ? errors.client : undefined;
 
   return (
     <div className={styles.page}>
@@ -198,7 +155,7 @@ export default function BillingNew() {
           <button
             type="button"
             className={styles.backButton}
-            onClick={handleCancel}
+            onClick={() => navigate('/billing')}
             aria-label="Volver"
             title="Volver a facturacion"
           >
@@ -212,7 +169,11 @@ export default function BillingNew() {
       </header>
 
       <div className={styles.content}>
-        <form className={styles.form} onSubmit={handleSubmit} noValidate>
+        <form
+          className={styles.form}
+          onSubmit={handleSubmit(onSubmit, onInvalid)}
+          noValidate
+        >
           <FormGroup
             title="Datos del cliente"
             description="Informacion basica para emitir la factura"
@@ -223,10 +184,8 @@ export default function BillingNew() {
                 id="invoice-client"
                 placeholder="Ej. Carlos Rodriguez"
                 leftIcon={<User size={16} />}
-                value={client}
-                onChange={handleClientChange}
-                onBlur={handleClientBlur}
-                error={clientErrorToShow}
+                error={errors.client?.message}
+                {...register('client')}
               />
             </FormField>
 
@@ -280,7 +239,7 @@ export default function BillingNew() {
             </div>
 
             {errors.items && (
-              <span className={styles.itemsError}>{errors.items}</span>
+              <span className={styles.itemsError}>{errors.items.message}</span>
             )}
 
             {items.length === 0 ? (
@@ -351,7 +310,7 @@ export default function BillingNew() {
             <Button
               type="button"
               variant="outline"
-              onClick={handleCancel}
+              onClick={() => navigate('/billing')}
               leftIcon={<X size={14} />}
               disabled={isSubmitting}
             >
