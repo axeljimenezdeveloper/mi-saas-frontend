@@ -1,18 +1,33 @@
 ﻿import { forwardRef, useEffect, useRef, useState } from 'react';
+import { Check } from 'lucide-react';
 import styles from './CurrencyInput.module.css';
 
 export type Currency = 'VES' | 'USD';
 
 export interface CurrencyInputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'value' | 'onChange' | 'type'> {
+  extends Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    'size' | 'value' | 'onChange' | 'type'
+  > {
+  /** Valor numerico del input. */
   value: number | undefined;
+  /** Callback que recibe el valor numerico. */
   onChange: (value: number | undefined) => void;
+  /** Moneda activa. */
   currency?: Currency;
+  /** Callback al cambiar la moneda (solo si showCurrencySelector). */
   onCurrencyChange?: (currency: Currency) => void;
+  /** Si es true, muestra un selector Bs./USD a la izquierda. */
   showCurrencySelector?: boolean;
+  /** Mensaje de error. */
   error?: string;
+  /** Si es true y no hay error, muestra borde verde + check. */
+  success?: boolean;
+  /** Texto de ayuda. */
   helperText?: string;
+  /** Tamano del input. */
   size?: 'sm' | 'md' | 'lg';
+  /** Si es true, ocupa el 100% del ancho. */
   fullWidth?: boolean;
 }
 
@@ -33,12 +48,6 @@ function formatNumber(value: number, currency: Currency): string {
   }).format(value);
 }
 
-/**
- * Parsea un string de entrada a numero.
- * Reglas:
- * - Si termina en separador + 1-2 digitos, ese es el decimal (sirve para Bs. y USD).
- * - Si no, todos los separadores son de miles.
- */
 function parseNumber(formatted: string): number | undefined {
   const cleaned = formatted.replace(/[^\d.,-]/g, '');
   if (!cleaned) return undefined;
@@ -54,7 +63,6 @@ function parseNumber(formatted: string): number | undefined {
   }
 
   integerPart = integerPart.replace(/[.,]/g, '');
-
   const normalized = decimalPart ? `${integerPart}.${decimalPart}` : integerPart;
   const num = parseFloat(normalized);
   return Number.isNaN(num) ? undefined : num;
@@ -69,6 +77,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
       onCurrencyChange,
       showCurrencySelector = false,
       error,
+      success = false,
       helperText,
       size = 'md',
       fullWidth = false,
@@ -84,7 +93,8 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
     const [displayValue, setDisplayValue] = useState<string>('');
     const isFocusedRef = useRef(false);
 
-    // Solo reformatea cuando el input NO esta enfocado
+    const showSuccess = success && !error && !disabled;
+
     useEffect(() => {
       if (isFocusedRef.current) return;
       if (value === undefined) {
@@ -102,7 +112,6 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
 
     const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
       isFocusedRef.current = true;
-      // Muestra el valor crudo para editar facilmente
       if (value !== undefined) {
         setDisplayValue(String(value));
       }
@@ -123,6 +132,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
       styles.wrapper,
       styles[size],
       error && styles.hasError,
+      showSuccess && styles.success,
       disabled && styles.isDisabled,
       fullWidth && styles.fullWidth,
       className,
@@ -163,6 +173,11 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
             placeholder={placeholder}
             {...rest}
           />
+          {showSuccess && (
+            <span className={styles.iconSuccess} aria-hidden="true">
+              <Check size={16} strokeWidth={3} />
+            </span>
+          )}
         </div>
         {error && <span className={styles.errorMessage}>{error}</span>}
         {!error && helperText && <span className={styles.helper}>{helperText}</span>}

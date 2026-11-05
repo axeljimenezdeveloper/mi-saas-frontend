@@ -1,21 +1,16 @@
 ﻿import { forwardRef } from 'react';
+import { Check } from 'lucide-react';
 import styles from './Input.module.css';
 
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
-  /** Estilo visual del input. */
   variant?: 'default' | 'filled' | 'outline';
-  /** Tamaño del input. */
   size?: 'sm' | 'md' | 'lg';
-  /** Mensaje de error. Si se pasa, el input se marca como inválido. */
   error?: string;
-  /** Texto de ayuda debajo del input. */
+  success?: boolean;
   helperText?: string;
-  /** Ícono a la izquierda del texto. */
   leftIcon?: React.ReactNode;
-  /** Ícono a la derecha del texto. */
   rightIcon?: React.ReactNode;
-  /** Si es true, ocupa el 100% del ancho. */
   fullWidth?: boolean;
 }
 
@@ -25,6 +20,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       variant = 'default',
       size = 'md',
       error,
+      success = false,
       helperText,
       leftIcon,
       rightIcon,
@@ -35,11 +31,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
+    const showSuccess = success && !error && !disabled;
     const wrapperClasses = [
       styles.inputWrapper,
       styles[variant],
       styles[size],
       error && styles.error,
+      showSuccess && styles.success,
       disabled && styles.disabled,
       fullWidth && styles.fullWidth,
       className,
@@ -58,7 +56,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             aria-invalid={!!error}
             {...rest}
           />
-          {rightIcon && <span className={styles.icon}>{rightIcon}</span>}
+          {rightIcon ? (
+            <span className={styles.icon}>{rightIcon}</span>
+          ) : showSuccess ? (
+            <span className={styles.iconSuccess} aria-hidden="true">
+              <Check size={16} strokeWidth={3} />
+            </span>
+          ) : null}
         </div>
         {error && <span className={styles.errorMessage}>{error}</span>}
         {!error && helperText && <span className={styles.helper}>{helperText}</span>}

@@ -1,8 +1,18 @@
-﻿import { useEffect } from 'react';
+﻿import { useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm, Controller, useWatch } from 'react-hook-form';
+import type { Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Package, Tag, Boxes, FolderTree, Save, X, ArrowLeft } from 'lucide-react';
+import {
+  Package,
+  Tag,
+  Boxes,
+  FolderTree,
+  Save,
+  X,
+  ArrowLeft,
+  AlertTriangle,
+} from 'lucide-react';
 import { FormField } from '../../../../components/forms/FormField';
 import { FormGroup } from '../../../../components/forms/FormGroup';
 import { Input } from '../../../../components/common/inputs/Input';
@@ -53,6 +63,10 @@ const DEFAULT_VALUES: ProductFormData = {
   featured: false,
 };
 
+function formatSku(value: string): string {
+  return value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+}
+
 export default function NewProduct() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -67,6 +81,37 @@ export default function NewProduct() {
     ? products.find((p) => String(p.id) === id)
     : undefined;
 
+  const resolver = useMemo<Resolver<ProductFormData>>(() => {
+    const zodRes = zodResolver(productSchema) as unknown as Resolver<ProductFormData>;
+
+    return async (values, context, options) => {
+      const result = await zodRes(values, context, options);
+      if (Object.keys(result.errors).length > 0) return result;
+
+      const skuValue = (values.sku ?? '').trim().toLowerCase();
+      if (skuValue) {
+        const duplicate = products.find(
+          (p) =>
+            p.sku.trim().toLowerCase() === skuValue &&
+            String(p.id) !== id
+        );
+        if (duplicate) {
+          return {
+            values: {},
+            errors: {
+              sku: {
+                type: 'manual',
+                message: `Este SKU ya esta en uso por "${duplicate.name}"`,
+              },
+            },
+          };
+        }
+      }
+
+      return result;
+    };
+  }, [products, id]);
+
   const {
     register,
     control,
@@ -74,12 +119,38 @@ export default function NewProduct() {
     reset,
     formState: { errors, isValid, isSubmitting },
   } = useForm<ProductFormData>({
-    resolver: zodResolver(productSchema),
+    resolver,
     defaultValues: DEFAULT_VALUES,
     mode: 'onChange',
   });
 
-  // Precarga en modo edicion
+  const watchedType = useWatch({ control, name: 'type' });
+  const watchedName = useWatch({ control, name: 'name' });
+  const watchedSku = useWatch({ control, name: 'sku' });
+  const watchedPrice = useWatch({ control, name: 'price' });
+  const watchedStock = useWatch({ control, name: 'stock' });
+  const watchedDescription = useWatch({ control, name: 'description' });
+
+  const isService = watchedType === 'service';
+
+  const nameValid = !errors.name && (watchedName?.trim().length ?? 0) >= 3;
+  const skuValid = !errors.sku && (watchedSku?.trim().length ?? 0) >= 3;
+  const priceValid = !errors.price && (watchedPrice ?? 0) > 0;
+  const stockValid =
+    !errors.stock &&
+    (isService || (watchedStock ?? '').toString().trim() !== '');
+
+  const duplicateName = useMemo(() => {
+    if (!watchedName || watchedName.trim().length < 3) return null;
+    return (
+      products.find(
+        (p) =>
+          p.name.trim().toLowerCase() === watchedName.trim().toLowerCase() &&
+          String(p.id) !== id
+      ) ?? null
+    );
+  }, [watchedName, products, id]);
+
   useEffect(() => {
     if (!editingProduct) return;
     const categoryEntry = CATEGORY_OPTIONS.find(
@@ -100,9 +171,6 @@ export default function NewProduct() {
     });
   }, [editingProduct, reset]);
 
-  const watchedType = useWatch({ control, name: 'type' });
-  const isService = watchedType === 'service';
-
   const onSubmit = (data: ProductFormData) => {
     const categoryLabel =
       CATEGORY_OPTIONS.find((o) => o.value === data.category)?.label ??
@@ -112,23 +180,29 @@ export default function NewProduct() {
       if (isEditMode && editingProduct) {
         updateProduct(editingProduct.id, {
           name: data.name.trim(),
-          sku: data.sku?.trim() ?? '',
+          sku: (data.sku ?? '').trim().toUpperCase(),
           category: categoryLabel,
           price: data.price,
           stock: Number(data.stock) || 0,
           images: data.images,
         });
-        toast.success('Producto actualizado', `${data.name.trim()} se actualizo correctamente`);
+        toast.success(
+          'Producto actualizado',
+          `${data.name.trim()} se actualizo correctamente`
+        );
       } else {
         addProduct({
           name: data.name.trim(),
-          sku: data.sku?.trim() ?? '',
+          sku: (data.sku ?? '').trim().toUpperCase(),
           category: categoryLabel,
           price: data.price,
           stock: Number(data.stock) || 0,
           images: data.images,
         });
-        toast.success('Producto creado', `${data.name.trim()} se agrego al inventario`);
+        toast.success(
+          'Producto creado',
+          `${data.name.trim()} se agrego al inventario`
+        );
       }
       navigate('/products');
     }, 600);
@@ -138,7 +212,6 @@ export default function NewProduct() {
     toast.error('No se pudo guardar el producto', 'Revisa los campos marcados');
   };
 
-  // Modo edicion pero el producto no existe
   if (isEditMode && !editingProduct) {
     return (
       <div className={styles.page}>
@@ -225,16 +298,33 @@ export default function NewProduct() {
                 placeholder="Ej. Camisa azul talla M"
                 leftIcon={<Package size={16} />}
                 error={errors.name?.message}
+                success={nameValid}
+                helperText={`${watchedName?.length ?? 0}/100 caracteres`}
                 {...register('name')}
               />
             </FormField>
 
-            <FormField label="SKU / Codigo" htmlFor="product-sku" optional>
-              <Input
-                id="product-sku"
-                placeholder="Ej. CAM-AZ-M-001"
-                leftIcon={<Tag size={16} />}
-                {...register('sku')}
+            <FormField
+              label="SKU / Codigo"
+              htmlFor="product-sku"
+              optional
+              helperText="Mayusculas, numeros y guiones (ej. CAM-AZ-001)"
+            >
+              <Controller
+                control={control}
+                name="sku"
+                render={({ field }) => (
+                  <Input
+                    id="product-sku"
+                    placeholder="Ej. CAM-AZ-M-001"
+                    leftIcon={<Tag size={16} />}
+                    value={field.value ?? ''}
+                    onChange={(e) => field.onChange(formatSku(e.target.value))}
+                    onBlur={field.onBlur}
+                    error={errors.sku?.message}
+                    success={skuValid}
+                  />
+                )}
               />
             </FormField>
 
@@ -268,6 +358,7 @@ export default function NewProduct() {
                     onChange={(v) => field.onChange(v)}
                     onBlur={field.onBlur}
                     error={errors.price?.message}
+                    success={priceValid}
                   />
                 )}
               />
@@ -281,9 +372,22 @@ export default function NewProduct() {
                 leftIcon={<Boxes size={16} />}
                 disabled={isService}
                 error={errors.stock?.message}
+                success={stockValid && !isService}
                 {...register('stock')}
               />
             </FormField>
+
+            {duplicateName && (
+              <div className={styles.fieldFullWidth}>
+                <div className={styles.warning}>
+                  <AlertTriangle size={14} />
+                  <span>
+                    Ya existe otro producto llamado "{duplicateName.name}". Puedes
+                    guardarlo igual, pero considera usar un nombre distinto.
+                  </span>
+                </div>
+              </div>
+            )}
           </FormGroup>
 
           <FormGroup
@@ -330,7 +434,7 @@ export default function NewProduct() {
               label="Descripcion"
               htmlFor="product-description"
               optional
-              helperText="Maximo 500 caracteres"
+              helperText={`${watchedDescription?.length ?? 0}/500 caracteres`}
             >
               <Textarea
                 id="product-description"
@@ -387,3 +491,10 @@ export default function NewProduct() {
     </div>
   );
 }
+
+
+
+
+
+
+

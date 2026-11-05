@@ -125,3 +125,20 @@
   color: var(--color-danger);
   padding-left: var(--space-1);
 }
+
+.wrapper.success {
+  border-color: var(--color-success);
+}
+
+.wrapper.success:focus-within {
+  border-color: var(--color-success);
+  box-shadow: 0 0 0 2px var(--color-success-soft);
+}
+
+.iconSuccess {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-success);
+  flex-shrink: 0;
+}

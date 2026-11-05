@@ -39,17 +39,20 @@ describe('MainLayout', () => {
   });
 
   it('calls renderHeader with a function and isMobile flag', () => {
-    const renderHeader = vi.fn(() => <header>Header</header>);
+    const renderHeaderMock = vi.fn<
+      (onMenuClick: () => void, isMobile: boolean) => React.ReactElement
+    >(() => <header>Header</header>);
     render(
       <MainLayout
         sidebar={<aside>Sidebar</aside>}
-        renderHeader={renderHeader}
+        renderHeader={renderHeaderMock}
         children={<main>Content</main>}
       />
     );
-    expect(renderHeader).toHaveBeenCalledTimes(1);
-    expect(typeof renderHeader.mock.calls[0][0]).toBe('function');
-    expect(typeof renderHeader.mock.calls[0][1]).toBe('boolean');
+    expect(renderHeaderMock).toHaveBeenCalledTimes(1);
+    const firstCall = renderHeaderMock.mock.calls[0];
+    expect(typeof firstCall[0]).toBe('function');
+    expect(typeof firstCall[1]).toBe('boolean');
   });
 
   it('passes isMobile=false in jsdom (no matchMedia match)', () => {
@@ -129,3 +132,4 @@ describe('MainLayout', () => {
     expect(root.className).toMatch(/custom-layout/);
   });
 });
+

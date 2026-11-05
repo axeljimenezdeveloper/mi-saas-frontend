@@ -156,6 +156,29 @@ export default function BillingNew() {
   };
 
   const onSubmit = (data: InvoiceFormData) => {
+    // Re-valida stock antes de guardar (por si cambio entre abrir el form y guardar)
+    const stockIssues: string[] = [];
+    items.forEach((item) => {
+      const current = products.find((p) => p.id === item.productId);
+      if (!current) {
+        stockIssues.push(`${item.productName} ya no existe en el inventario`);
+        return;
+      }
+      if (current.stock < item.quantity) {
+        stockIssues.push(
+          `${item.productName}: solo quedan ${current.stock} unidades (pediste ${item.quantity})`
+        );
+      }
+    });
+
+    if (stockIssues.length > 0) {
+      toast.error(
+        'Stock insuficiente',
+        stockIssues.join(' · ')
+      );
+      return;
+    }
+
     setTimeout(() => {
       // Descontar stock de cada producto vendido
       items.forEach((item) => {
@@ -403,6 +426,7 @@ export default function BillingNew() {
     </div>
   );
 }
+
 
 
 
