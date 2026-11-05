@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.7.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.6.0...v0.7.0) (2026-11-05)
+
+### Features
+
+* add ImageUploader component with drag and drop, previews, and validation ([ec7aa19](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/ec7aa1905010720681002bd8eb4015c4bcf05c6e))
+* add invoice status menu to mark invoices as paid, pending, or overdue ([b3d4c29](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/b3d4c2949733b41c34ac0cd71b49b88c94cc5948))
+* add product edit mode reusing new product form with route and list integration ([921e8f7](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/921e8f77994bb62362db3e6047df6bd2bca98522))
+* add products and invoices stores with in-memory persistence ([4ff7d23](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/4ff7d23abad4c827c5a77928c097e47a5cd0e8c0))
+* add strict sku validation, real-time success feedback, and character counters ([2593839](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/25938397e5f2f54b128aedce391440c191be19c2))
+* fix sidebar active state, move logout to sidebar footer, and make avatar link to settings ([199a7a7](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/199a7a7d4b3c58ddf30dfce50583b8d78cadfd83))
+* integrate ImageUploader into product form with schema and store support ([a648616](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/a64861614990dcbcd42d750bd034dfb075ad7e25))
+* migrate products list to store with functional delete and centered empty state ([468215e](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/468215eff441228cad918e196f44bf2324c4599c))
+* show product thumbnail in list when images are available ([642a7ae](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/642a7aea5968384baa834002f841d55b282017f3))
+* use real products in billing form, add validation, and fix layout ([af38cf1](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/af38cf13b8295d2111aa98477728d687a0010928))
+
 ## [0.6.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.5.0...v0.6.0) (2026-11-05)
 
 ### Features
