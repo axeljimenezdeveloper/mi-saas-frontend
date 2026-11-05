@@ -1,5 +1,6 @@
-﻿import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+﻿import { useNavigate } from 'react-router-dom';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Building2,
   Save,
@@ -17,25 +18,8 @@ import { Avatar } from '../../../../components/common/data-display/Avatar';
 import { Badge } from '../../../../components/common/data-display/Badge';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { useAuthStore } from '../../../../stores';
+import { settingsSchema, type SettingsFormData } from '../../../../schemas';
 import styles from './Settings.module.css';
-
-interface FormState {
-  companyName: string;
-  rif: string;
-  address: string;
-  currency: 'VES' | 'USD';
-  defaultIva: '0' | '8' | '16';
-}
-
-interface FormErrors {
-  companyName?: string;
-  rif?: string;
-}
-
-interface Touched {
-  companyName?: boolean;
-  rif?: boolean;
-}
 
 const CURRENCY_OPTIONS = [
   { value: 'VES', label: 'Bolivares (Bs.)' },
@@ -48,27 +32,12 @@ const IVA_OPTIONS = [
   { value: '16', label: '16% (General)' },
 ];
 
-const INITIAL_FORM: FormState = {
+const DEFAULT_VALUES: SettingsFormData = {
   companyName: 'Mi Empresa C.A.',
   rif: 'J-12345678-9',
   address: 'Av. Principal, Caracas, Venezuela',
   currency: 'VES',
   defaultIva: '16',
-};
-
-const RIF_REGEX = /^[VEJPG]-\d{8,9}-\d$/i;
-
-const validateCompanyName = (value: string): string | undefined => {
-  if (!value.trim()) return 'El nombre de la empresa es obligatorio';
-  if (value.trim().length < 3) return 'Debe tener al menos 3 caracteres';
-  return undefined;
-};
-
-const validateRif = (value: string): string | undefined => {
-  if (!value.trim()) return 'El RIF es obligatorio';
-  if (!RIF_REGEX.test(value.trim()))
-    return 'Formato invalido. Ej: J-12345678-9';
-  return undefined;
 };
 
 export default function Settings() {
@@ -78,67 +47,24 @@ export default function Settings() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
 
-  const [form, setForm] = useState<FormState>(INITIAL_FORM);
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState<Touched>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SettingsFormData>({
+    resolver: zodResolver(settingsSchema),
+    defaultValues: DEFAULT_VALUES,
+    mode: 'onBlur',
+  });
 
-  const handleChange =
-    (field: keyof FormState) =>
-    (
-      e: React.ChangeEvent<
-        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-      >
-    ) => {
-      const value = e.target.value;
-      setForm((f) => ({ ...f, [field]: value }));
-      if (touched[field as keyof Touched] || errors[field as keyof FormErrors]) {
-        setErrors((prev) => ({
-          ...prev,
-          [field]:
-            field === 'companyName'
-              ? validateCompanyName(value)
-              : field === 'rif'
-              ? validateRif(value)
-              : undefined,
-        }));
-      }
-    };
-
-  const handleBlur = (field: keyof Touched) => {
-    setTouched((prev) => ({ ...prev, [field]: true }));
-    setErrors((prev) => ({
-      ...prev,
-      [field]:
-        field === 'companyName'
-          ? validateCompanyName(form.companyName)
-          : validateRif(form.rif),
-    }));
-  };
-
-  const validate = (): FormErrors => {
-    const next: FormErrors = {};
-    const nameError = validateCompanyName(form.companyName);
-    const rifError = validateRif(form.rif);
-    if (nameError) next.companyName = nameError;
-    if (rifError) next.rif = rifError;
-    return next;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setTouched({ companyName: true, rif: true });
-    const nextErrors = validate();
-    if (Object.keys(nextErrors).length > 0) {
-      setErrors(nextErrors);
-      toast.error('No se pudo guardar', 'Revisa los campos marcados');
-      return;
-    }
-    setErrors({});
-    setIsSubmitting(true);
+  const onSubmit = (data: SettingsFormData) => {
+    // Simula guardado (sin backend aun). Los datos ya estan validados por Zod.
     setTimeout(() => {
-      setIsSubmitting(false);
-      toast.success('Configuracion guardada', 'Los cambios fueron aplicados');
+      toast.success(
+        'Configuracion guardada',
+        `Datos de ${data.companyName} actualizados`
+      );
     }, 1000);
   };
 
@@ -162,7 +88,11 @@ export default function Settings() {
       </header>
 
       <div className={styles.content}>
-        <form className={styles.form} onSubmit={handleSubmit} noValidate>
+        <form
+          className={styles.form}
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+        >
           <FormGroup
             title="Datos de la empresa"
             description="Informacion fiscal y de contacto"
@@ -173,10 +103,8 @@ export default function Settings() {
                 id="company-name"
                 placeholder="Ej. Mi Empresa C.A."
                 leftIcon={<Building2 size={16} />}
-                value={form.companyName}
-                onChange={handleChange('companyName')}
-                onBlur={() => handleBlur('companyName')}
-                error={touched.companyName ? errors.companyName : undefined}
+                error={errors.companyName?.message}
+                {...register('companyName')}
               />
             </FormField>
 
@@ -185,10 +113,8 @@ export default function Settings() {
                 id="company-rif"
                 placeholder="J-12345678-9"
                 leftIcon={<Shield size={16} />}
-                value={form.rif}
-                onChange={handleChange('rif')}
-                onBlur={() => handleBlur('rif')}
-                error={touched.rif ? errors.rif : undefined}
+                error={errors.rif?.message}
+                {...register('rif')}
               />
             </FormField>
 
@@ -200,8 +126,7 @@ export default function Settings() {
               <Input
                 id="company-address"
                 placeholder="Av. Principal, Caracas, Venezuela"
-                value={form.address}
-                onChange={handleChange('address')}
+                {...register('address')}
               />
             </FormField>
           </FormGroup>
@@ -212,20 +137,34 @@ export default function Settings() {
             layout="two-columns"
           >
             <FormField label="Moneda por defecto" htmlFor="pref-currency">
-              <Select
-                id="pref-currency"
-                options={CURRENCY_OPTIONS}
-                value={form.currency}
-                onChange={handleChange('currency')}
+              <Controller
+                control={control}
+                name="currency"
+                render={({ field }) => (
+                  <Select
+                    id="pref-currency"
+                    options={CURRENCY_OPTIONS}
+                    value={field.value}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    onBlur={field.onBlur}
+                  />
+                )}
               />
             </FormField>
 
             <FormField label="IVA por defecto" htmlFor="pref-iva">
-              <Select
-                id="pref-iva"
-                options={IVA_OPTIONS}
-                value={form.defaultIva}
-                onChange={handleChange('defaultIva')}
+              <Controller
+                control={control}
+                name="defaultIva"
+                render={({ field }) => (
+                  <Select
+                    id="pref-iva"
+                    options={IVA_OPTIONS}
+                    value={field.value}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    onBlur={field.onBlur}
+                  />
+                )}
               />
             </FormField>
           </FormGroup>
