@@ -1,14 +1,17 @@
 ﻿/* src/features/inventory/pages/ProductsList/ProductsList.module.css */
 
 .page {
-  min-height: 100%;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
   background-color: var(--color-surface);
 }
 
 .panel {
-  min-height: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 .toolbar {
@@ -97,3 +100,12 @@
   .toolbarLeft { flex-direction: column; align-items: stretch; }
   .searchWrapper, .filterWrapper { max-width: none; width: 100%; }
 }
+
+.emptyWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+}
+

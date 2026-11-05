@@ -8,29 +8,9 @@ import { Input } from '../../../../components/common/inputs/Input';
 import { Select } from '../../../../components/common/inputs/Select';
 import { Skeleton } from '../../../../components/feedback/loading/Skeleton';
 import { EmptyState } from '../../../../components/feedback/states/EmptyState';
+import { useToast } from '../../../../components/feedback/alerts/Toast';
+import { useProductsStore, type Product, type StockStatus } from '../../../../stores';
 import styles from './ProductsList.module.css';
-
-type StockStatus = 'in-stock' | 'low-stock' | 'out-of-stock';
-
-interface Product {
-  id: number;
-  name: string;
-  sku: string;
-  category: string;
-  price: number;
-  stock: number;
-  status: StockStatus;
-}
-
-const MOCK_PRODUCTS: Product[] = [
-  { id: 1, name: 'Camisa azul talla M', sku: 'CAM-AZ-M-001', category: 'Ropa', price: 25.0, stock: 42, status: 'in-stock' },
-  { id: 2, name: 'Pantalon negro talla 32', sku: 'PAN-NE-32-002', category: 'Ropa', price: 40.0, stock: 8, status: 'low-stock' },
-  { id: 3, name: 'Zapatos deportivos', sku: 'ZAP-DEP-003', category: 'Calzado', price: 60.0, stock: 0, status: 'out-of-stock' },
-  { id: 4, name: 'Gorra bordada', sku: 'GOR-BOR-004', category: 'Accesorios', price: 15.0, stock: 120, status: 'in-stock' },
-  { id: 5, name: 'Bufanda de lana', sku: 'BUF-LAN-005', category: 'Accesorios', price: 18.0, stock: 5, status: 'low-stock' },
-  { id: 6, name: 'Chaqueta de cuero', sku: 'CHA-CUE-006', category: 'Ropa', price: 95.0, stock: 15, status: 'in-stock' },
-  { id: 7, name: 'Cinturon de cuero', sku: 'CIN-CUE-007', category: 'Accesorios', price: 22.0, stock: 3, status: 'low-stock' },
-];
 
 const STATUS_LABELS: Record<StockStatus, string> = {
   'in-stock': 'En stock',
@@ -60,16 +40,17 @@ const formatBs = (amount: number): string =>
 
 export default function ProductsList() {
   const navigate = useNavigate();
+  const toast = useToast();
+
+  const products = useProductsStore((s) => s.products);
+  const removeProduct = useProductsStore((s) => s.removeProduct);
+
   const [isLoading, setIsLoading] = useState(true);
-  const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      setIsLoading(false);
-      setProducts(MOCK_PRODUCTS);
-    }, 1200);
+    const t = setTimeout(() => setIsLoading(false), 600);
     return () => clearTimeout(t);
   }, []);
 
@@ -86,6 +67,11 @@ export default function ProductsList() {
     });
   }, [products, search, statusFilter]);
 
+  const handleDelete = (product: Product) => {
+    removeProduct(product.id);
+    toast.success('Producto eliminado', `${product.name} se quito del inventario`);
+  };
+
   const columns: TableColumn<Product>[] = [
     {
       key: 'name',
@@ -97,7 +83,7 @@ export default function ProductsList() {
           </div>
           <div>
             <div className={styles.productName}>{p.name}</div>
-            <div className={styles.productSku}>{p.sku}</div>
+            <div className={styles.productSku}>{p.sku || 'Sin SKU'}</div>
           </div>
         </div>
       ),
@@ -148,7 +134,10 @@ export default function ProductsList() {
             size="sm"
             iconOnly
             aria-label={`Eliminar ${p.name}`}
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete(p);
+            }}
           >
             <Trash2 size={14} />
           </Button>
@@ -178,29 +167,33 @@ export default function ProductsList() {
 
     if (products.length === 0) {
       return (
-        <EmptyState
-          title="No hay productos registrados"
-          description="Comienza agregando tu primer producto al inventario para poder facturarlo."
-          icon={<Package size={32} />}
-          action={
-            <Button
-              leftIcon={<Plus size={14} />}
-              onClick={() => navigate('/products/new')}
-            >
-              Crear primer producto
-            </Button>
-          }
-        />
+        <div className={styles.emptyWrapper}>
+          <EmptyState
+            title="No hay productos registrados"
+            description="Comienza agregando tu primer producto al inventario para poder facturarlo."
+            icon={<Package size={32} />}
+            action={
+              <Button
+                leftIcon={<Plus size={14} />}
+                onClick={() => navigate('/products/new')}
+              >
+                Crear primer producto
+              </Button>
+            }
+          />
+        </div>
       );
     }
 
     if (filtered.length === 0) {
       return (
-        <EmptyState
-          title="No se encontraron productos"
-          description="Prueba con otro término de búsqueda o cambia el filtro de estado."
-          icon={<Search size={32} />}
-        />
+        <div className={styles.emptyWrapper}>
+          <EmptyState
+            title="No se encontraron productos"
+            description="Prueba con otro término de búsqueda o cambia el filtro de estado."
+            icon={<Search size={32} />}
+          />
+        </div>
       );
     }
 
@@ -250,3 +243,4 @@ export default function ProductsList() {
     </div>
   );
 }
+
