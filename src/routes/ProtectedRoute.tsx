@@ -1,5 +1,5 @@
 ﻿import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context';
+import { useAuthStore, selectIsAuthenticated } from '../stores';
 
 export interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -10,7 +10,7 @@ export interface ProtectedRouteProps {
  * redirige a /login guardando la ruta original para volver tras login.
  */
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated } = useAuth();
+  const isAuthenticated = useAuthStore(selectIsAuthenticated);
   const location = useLocation();
 
   if (!isAuthenticated) {
@@ -19,4 +19,3 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   return <>{children}</>;
 }
-

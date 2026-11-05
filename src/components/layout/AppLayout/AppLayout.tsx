@@ -15,9 +15,12 @@ import { Avatar } from '../../common/data-display/Avatar';
 import { Sidebar, type SidebarItem } from '../Sidebar';
 import { Header } from '../Header';
 import { MainLayout } from '../MainLayout';
-import { useAuth } from '../../../context';
 import { useToast } from '../../feedback/alerts/Toast';
-import { useThemeStore, useSidebarStore } from '../../../stores';
+import {
+  useThemeStore,
+  useSidebarStore,
+  useAuthStore,
+} from '../../../stores';
 import styles from './AppLayout.module.css';
 
 const NAV_ITEMS: SidebarItem[] = [
@@ -30,7 +33,6 @@ const NAV_ITEMS: SidebarItem[] = [
 export function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
   const toast = useToast();
 
   const theme = useThemeStore((s) => s.theme);
@@ -38,6 +40,9 @@ export function AppLayout() {
 
   const isCollapsed = useSidebarStore((s) => s.isCollapsed);
   const toggleCollapse = useSidebarStore((s) => s.toggleCollapse);
+
+  const user = useAuthStore((s) => s.user);
+  const logout = useAuthStore((s) => s.logout);
 
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 

@@ -1,13 +1,12 @@
 ﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Package, Mail, Lock, Eye, EyeOff, Sun, Moon, LogIn } from 'lucide-react';
-import { useAuth } from '../../../../context';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { FormField } from '../../../../components/forms/FormField';
 import { Input } from '../../../../components/common/inputs/Input';
 import { Button } from '../../../../components/common/actions/Button';
 import { Alert } from '../../../../components/feedback/alerts/Alert';
-import { useThemeStore } from '../../../../stores';
+import { useThemeStore, useAuthStore } from '../../../../stores';
 import styles from './Login.module.css';
 
 interface FormErrors {
@@ -17,11 +16,15 @@ interface FormErrors {
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login, isLoading, error, clearError } = useAuth();
   const toast = useToast();
 
   const theme = useThemeStore((s) => s.theme);
   const toggleTheme = useThemeStore((s) => s.toggleTheme);
+
+  const login = useAuthStore((s) => s.login);
+  const isLoading = useAuthStore((s) => s.isLoading);
+  const error = useAuthStore((s) => s.error);
+  const clearError = useAuthStore((s) => s.clearError);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

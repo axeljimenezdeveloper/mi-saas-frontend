@@ -3,10 +3,9 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { ToastProvider } from '../../../../components/feedback/alerts/Toast';
-import { AuthProvider } from '../../../../context';
+import { useAuthStore } from '../../../../stores';
 import Login from './Login';
 
-// Mock de useNavigate para verificar redirecciones
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<typeof import('react-router-dom')>(
@@ -22,9 +21,7 @@ function renderLogin() {
   return render(
     <MemoryRouter>
       <ToastProvider>
-        <AuthProvider>
-          <Login />
-        </AuthProvider>
+        <Login />
       </ToastProvider>
     </MemoryRouter>
   );
@@ -34,6 +31,7 @@ describe('Login', () => {
   beforeEach(() => {
     localStorage.clear();
     mockNavigate.mockClear();
+    useAuthStore.setState({ user: null, isLoading: false, error: null });
   });
 
   it('renders brand and title', () => {
@@ -104,7 +102,7 @@ describe('Login', () => {
     expect(passwordInput).toHaveAttribute('type', 'password');
   });
 
-  it('shows error from context on invalid credentials', async () => {
+  it('shows error from store on invalid credentials', async () => {
     const user = userEvent.setup();
     renderLogin();
     await user.type(screen.getByPlaceholderText('tu@empresa.com'), 'wrong@email.com');

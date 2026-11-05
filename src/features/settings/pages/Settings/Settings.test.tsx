@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { ToastProvider } from '../../../../components/feedback/alerts/Toast';
-import { AuthProvider } from '../../../../context';
+import { useAuthStore } from '../../../../stores';
 import Settings from './Settings';
 
 const mockNavigate = vi.fn();
@@ -21,9 +21,7 @@ function renderSettings() {
   return render(
     <MemoryRouter>
       <ToastProvider>
-        <AuthProvider>
-          <Settings />
-        </AuthProvider>
+        <Settings />
       </ToastProvider>
     </MemoryRouter>
   );
@@ -33,6 +31,16 @@ describe('Settings', () => {
   beforeEach(() => {
     localStorage.clear();
     mockNavigate.mockClear();
+    useAuthStore.setState({
+      user: {
+        id: '1',
+        name: 'Axel Jimenez',
+        email: 'admin@invensaas.com',
+        role: 'admin',
+      },
+      isLoading: false,
+      error: null,
+    });
   });
 
   it('renders title and subtitle', () => {
@@ -135,5 +143,6 @@ describe('Settings', () => {
     await user.click(logoutButtons[0]);
 
     expect(mockNavigate).toHaveBeenCalledWith('/login');
+    expect(useAuthStore.getState().user).toBeNull();
   });
 });

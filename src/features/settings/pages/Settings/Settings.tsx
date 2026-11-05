@@ -2,8 +2,6 @@
 import { useNavigate } from 'react-router-dom';
 import {
   Building2,
-  Settings as SettingsIcon,
-  User,
   Save,
   LogOut,
   Mail,
@@ -17,8 +15,8 @@ import { Button } from '../../../../components/common/actions/Button';
 import { Card } from '../../../../components/common/data-display/Card';
 import { Avatar } from '../../../../components/common/data-display/Avatar';
 import { Badge } from '../../../../components/common/data-display/Badge';
-import { useAuth } from '../../../../context';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
+import { useAuthStore } from '../../../../stores';
 import styles from './Settings.module.css';
 
 interface FormState {
@@ -76,7 +74,9 @@ const validateRif = (value: string): string | undefined => {
 export default function Settings() {
   const navigate = useNavigate();
   const toast = useToast();
-  const { user, logout } = useAuth();
+
+  const user = useAuthStore((s) => s.user);
+  const logout = useAuthStore((s) => s.logout);
 
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
