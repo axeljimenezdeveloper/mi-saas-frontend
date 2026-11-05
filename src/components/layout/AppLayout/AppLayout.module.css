@@ -1,107 +1,57 @@
 ﻿/* src/components/layout/AppLayout/AppLayout.module.css */
 
-.userMenuWrapper {
-  position: relative;
+/* ============ Avatar link (header) ============ */
+.userLink {
   display: inline-flex;
-  align-items: center;
-}
-
-.userButton {
-  display: inline-flex;
-  align-items: center;
-  padding: 0;
-  background: transparent;
-  border: none;
-  cursor: pointer;
   border-radius: var(--radius-full);
   transition: box-shadow var(--duration-fast) var(--ease-out);
 }
 
-.userButton:hover {
+.userLink:hover {
   box-shadow: 0 0 0 2px var(--color-primary-soft);
 }
 
-.userButton:focus-visible {
+.userLink:focus-visible {
   outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
-.userMenuBackdrop {
-  position: fixed;
-  inset: 0;
-  z-index: var(--z-dropdown);
-}
-
-.userMenu {
-  position: absolute;
-  top: calc(100% + var(--space-2));
-  right: 0;
-  min-width: 220px;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
-  padding: var(--space-2);
-  z-index: calc(var(--z-dropdown) + 1);
-  animation: menuFadeIn var(--duration-fast) var(--ease-out);
-}
-
-@keyframes menuFadeIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .userMenu {
-    animation: none;
-  }
-}
-
-.userInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: var(--space-2) var(--space-3);
-  border-bottom: 1px solid var(--color-border);
-  margin-bottom: var(--space-1);
-}
-
-.userName {
-  font-size: var(--text-sm);
-  font-weight: var(--weight-semibold);
-  color: var(--color-text);
-  margin: 0;
-}
-
-.userEmail {
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-  margin: 0;
-}
-
+/* ============ Logout button (sidebar footer) ============ */
 .logoutButton {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  justify-content: flex-start;
+  gap: var(--space-3);
   width: 100%;
   padding: var(--space-2) var(--space-3);
+  min-height: 36px;
   background: transparent;
   border: none;
-  border-radius: var(--radius-sm);
-  color: var(--color-danger);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
   font-family: var(--font-sans);
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
   text-align: left;
   cursor: pointer;
-  transition: background-color var(--duration-fast) var(--ease-out);
+  white-space: nowrap;
+  overflow: hidden;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
 }
 
 .logoutButton:hover {
   background-color: var(--color-danger-soft);
+  color: var(--color-danger);
 }
 
 .logoutButton:focus-visible {
   outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
+}
+
+.logoutButtonCollapsed {
+  justify-content: center;
+  padding: var(--space-2);
 }

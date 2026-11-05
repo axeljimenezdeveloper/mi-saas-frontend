@@ -70,7 +70,9 @@ export function Sidebar({
       <nav className={styles.nav}>
         <ul className={styles.list}>
           {items.map((item) => {
-            const isActive = item.href === activeHref;
+            const isActive =
+              item.href === activeHref ||
+              (activeHref?.startsWith(item.href + '/') ?? false);
             const itemClasses = [styles.item, isActive && styles.active]
               .filter(Boolean)
               .join(' ');
@@ -104,3 +106,4 @@ export function Sidebar({
     </aside>
   );
 }
+
