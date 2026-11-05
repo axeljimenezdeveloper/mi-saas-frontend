@@ -133,7 +133,10 @@ export default function ProductsList() {
             size="sm"
             iconOnly
             aria-label={`Editar ${p.name}`}
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/products/${p.id}/edit`);
+            }}
           >
             <Pencil size={14} />
           </Button>
@@ -252,6 +255,7 @@ export default function ProductsList() {
     </div>
   );
 }
+
 
 
 

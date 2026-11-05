@@ -1,4 +1,5 @@
-﻿import { useNavigate } from 'react-router-dom';
+﻿import { useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Package, Tag, Boxes, FolderTree, Save, X, ArrowLeft } from 'lucide-react';
@@ -11,6 +12,7 @@ import { Checkbox } from '../../../../components/common/inputs/Checkbox';
 import { Radio } from '../../../../components/common/inputs/Radio';
 import { Switch } from '../../../../components/common/inputs/Switch';
 import { Button } from '../../../../components/common/actions/Button';
+import { EmptyState } from '../../../../components/feedback/states/EmptyState';
 import { CurrencyInput } from '../../../../components/forms/CurrencyInput';
 import { ImageUploader } from '../../../../components/forms/ImageUploader';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
@@ -53,8 +55,17 @@ const DEFAULT_VALUES: ProductFormData = {
 
 export default function NewProduct() {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const toast = useToast();
+
+  const products = useProductsStore((s) => s.products);
   const addProduct = useProductsStore((s) => s.addProduct);
+  const updateProduct = useProductsStore((s) => s.updateProduct);
+
+  const isEditMode = !!id;
+  const editingProduct = isEditMode
+    ? products.find((p) => String(p.id) === id)
+    : undefined;
 
   const {
     register,
@@ -68,6 +79,27 @@ export default function NewProduct() {
     mode: 'onChange',
   });
 
+  // Precarga en modo edicion
+  useEffect(() => {
+    if (!editingProduct) return;
+    const categoryEntry = CATEGORY_OPTIONS.find(
+      (o) => o.label === editingProduct.category
+    );
+    reset({
+      name: editingProduct.name,
+      sku: editingProduct.sku,
+      category: (categoryEntry?.value ?? 'other') as ProductFormData['category'],
+      type: 'physical',
+      price: editingProduct.price,
+      stock: String(editingProduct.stock),
+      description: '',
+      images: editingProduct.images ?? [],
+      active: true,
+      taxable: true,
+      featured: false,
+    });
+  }, [editingProduct, reset]);
+
   const watchedType = useWatch({ control, name: 'type' });
   const isService = watchedType === 'service';
 
@@ -77,19 +109,27 @@ export default function NewProduct() {
       data.category;
 
     setTimeout(() => {
-      addProduct({
-        name: data.name.trim(),
-        sku: data.sku?.trim() ?? '',
-        category: categoryLabel,
-        price: data.price,
-        stock: Number(data.stock) || 0,
-        images: data.images,
-      });
-      toast.success(
-        'Producto creado',
-        `${data.name.trim()} se agrego correctamente al inventario`
-      );
-      reset(DEFAULT_VALUES);
+      if (isEditMode && editingProduct) {
+        updateProduct(editingProduct.id, {
+          name: data.name.trim(),
+          sku: data.sku?.trim() ?? '',
+          category: categoryLabel,
+          price: data.price,
+          stock: Number(data.stock) || 0,
+          images: data.images,
+        });
+        toast.success('Producto actualizado', `${data.name.trim()} se actualizo correctamente`);
+      } else {
+        addProduct({
+          name: data.name.trim(),
+          sku: data.sku?.trim() ?? '',
+          category: categoryLabel,
+          price: data.price,
+          stock: Number(data.stock) || 0,
+          images: data.images,
+        });
+        toast.success('Producto creado', `${data.name.trim()} se agrego al inventario`);
+      }
       navigate('/products');
     }, 600);
   };
@@ -97,6 +137,54 @@ export default function NewProduct() {
   const onInvalid = () => {
     toast.error('No se pudo guardar el producto', 'Revisa los campos marcados');
   };
+
+  // Modo edicion pero el producto no existe
+  if (isEditMode && !editingProduct) {
+    return (
+      <div className={styles.page}>
+        <header className={styles.pageHeader}>
+          <div className={styles.headerContent}>
+            <div className={styles.headerLeft}>
+              <button
+                type="button"
+                className={styles.backButton}
+                onClick={() => navigate('/products')}
+                aria-label="Volver"
+              >
+                <ArrowLeft size={18} />
+              </button>
+              <div className={styles.titleBlock}>
+                <h1 className={styles.title}>Producto no encontrado</h1>
+                <p className={styles.subtitle}>
+                  El producto que buscas no existe o fue eliminado
+                </p>
+              </div>
+            </div>
+          </div>
+        </header>
+        <div className={styles.content}>
+          <div className={styles.emptyWrapper}>
+            <EmptyState
+              title="Producto no encontrado"
+              description="Vuelve al inventario y verifica la lista de productos."
+              icon={<Package size={32} />}
+              action={
+                <Button onClick={() => navigate('/products')}>
+                  Volver al inventario
+                </Button>
+              }
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const pageTitle = isEditMode ? 'Editar producto' : 'Nuevo producto';
+  const pageSubtitle = isEditMode
+    ? 'Actualiza los datos del producto'
+    : 'Agrega un producto al inventario de tu negocio';
+  const submitLabel = isEditMode ? 'Guardar cambios' : 'Guardar producto';
 
   return (
     <div className={styles.page}>
@@ -113,10 +201,8 @@ export default function NewProduct() {
               <ArrowLeft size={18} />
             </button>
             <div className={styles.titleBlock}>
-              <h1 className={styles.title}>Nuevo producto</h1>
-              <p className={styles.subtitle}>
-                Agrega un producto al inventario de tu negocio
-              </p>
+              <h1 className={styles.title}>{pageTitle}</h1>
+              <p className={styles.subtitle}>{pageSubtitle}</p>
             </div>
           </div>
         </div>
@@ -293,7 +379,7 @@ export default function NewProduct() {
               isLoading={isSubmitting}
               disabled={!isValid || isSubmitting}
             >
-              Guardar producto
+              {submitLabel}
             </Button>
           </div>
         </form>

@@ -26,6 +26,7 @@ const router = createBrowserRouter([
       { path: 'dashboard', element: <Dashboard /> },
       { path: 'products', element: <ProductsList /> },
       { path: 'products/new', element: <NewProduct /> },
+      { path: 'products/:id/edit', element: <NewProduct /> },
       { path: 'billing', element: <Billing /> },
       { path: 'billing/new', element: <BillingNew /> },
       { path: 'settings', element: <Settings /> },
@@ -40,3 +41,4 @@ const router = createBrowserRouter([
 export function AppRouter() {
   return <RouterProvider router={router} />;
 }
+
