@@ -1,5 +1,9 @@
-﻿import { useState } from 'react';
+﻿import { useNavigate } from 'react-router-dom';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Package, Tag, Boxes, FolderTree, Save, X } from 'lucide-react';
+import { FormField } from '../../../../components/forms/FormField';
+import { FormGroup } from '../../../../components/forms/FormGroup';
 import { Input } from '../../../../components/common/inputs/Input';
 import { Textarea } from '../../../../components/common/inputs/Textarea';
 import { Select } from '../../../../components/common/inputs/Select';
@@ -9,35 +13,10 @@ import { Switch } from '../../../../components/common/inputs/Switch';
 import { Badge } from '../../../../components/common/data-display/Badge';
 import { Card } from '../../../../components/common/data-display/Card';
 import { Button } from '../../../../components/common/actions/Button';
-import { Alert } from '../../../../components/feedback/alerts/Alert';
-import { useToast } from '../../../../components/feedback/alerts/Toast';
-import { FormField } from '../../../../components/forms/FormField';
-import { FormGroup } from '../../../../components/forms/FormGroup';
 import { CurrencyInput } from '../../../../components/forms/CurrencyInput';
+import { useToast } from '../../../../components/feedback/alerts/Toast';
+import { productSchema, type ProductFormData } from '../../../../schemas';
 import styles from './NewProduct.module.css';
-
-type ProductType = 'physical' | 'digital' | 'service';
-
-interface FormState {
-  name: string;
-  sku: string;
-  category: string;
-  type: ProductType;
-  price: number | undefined;
-  stock: string;
-  description: string;
-  active: boolean;
-  taxable: boolean;
-  featured: boolean;
-}
-
-interface FormErrors {
-  name?: string;
-  category?: string;
-  type?: string;
-  price?: string;
-  stock?: string;
-}
 
 const CATEGORY_OPTIONS = [
   { value: 'electronics', label: 'Electrónica' },
@@ -48,18 +27,22 @@ const CATEGORY_OPTIONS = [
   { value: 'other', label: 'Otros' },
 ];
 
-const PRODUCT_TYPE_OPTIONS: { value: ProductType; label: string; helper: string }[] = [
+const PRODUCT_TYPE_OPTIONS: {
+  value: ProductFormData['type'];
+  label: string;
+  helper: string;
+}[] = [
   { value: 'physical', label: 'Físico', helper: 'Producto tangible con stock' },
   { value: 'digital', label: 'Digital', helper: 'Software, licencia o descarga' },
   { value: 'service', label: 'Servicio', helper: 'Trabajo o asesoría sin stock' },
 ];
 
-const INITIAL_FORM: FormState = {
+const DEFAULT_VALUES: ProductFormData = {
   name: '',
   sku: '',
-  category: '',
+  category: 'other',
   type: 'physical',
-  price: undefined,
+  price: undefined as unknown as number,
   stock: '',
   description: '',
   active: true,
@@ -68,88 +51,47 @@ const INITIAL_FORM: FormState = {
 };
 
 export default function NewProduct() {
+  const navigate = useNavigate();
   const toast = useToast();
-  const [form, setForm] = useState<FormState>(INITIAL_FORM);
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showErrorAlert, setShowErrorAlert] = useState(false);
 
-  const handleChange =
-    (field: keyof FormState) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-      const target = e.target as HTMLInputElement;
-      const value = target.type === 'checkbox' ? target.checked : target.value;
-      setForm((f) => ({ ...f, [field]: value }));
-      if (errors[field as keyof FormErrors]) {
-        setErrors((prev) => ({ ...prev, [field]: undefined }));
-      }
-    };
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<ProductFormData>({
+    resolver: zodResolver(productSchema),
+    defaultValues: DEFAULT_VALUES,
+    mode: 'onBlur',
+  });
 
-  const handlePriceChange = (value: number | undefined) => {
-    setForm((f) => ({ ...f, price: value }));
-    if (errors.price) {
-      setErrors((prev) => ({ ...prev, price: undefined }));
-    }
-  };
+  const watchedActive = watch('active');
+  const watchedType = watch('type');
+  const isService = watchedType === 'service';
 
-  const validate = (): FormErrors => {
-    const next: FormErrors = {};
-    if (!form.name.trim()) next.name = 'El nombre del producto es obligatorio';
-    if (!form.category.trim()) next.category = 'Debes seleccionar una categoría';
-    if (!form.type) next.type = 'Debes seleccionar un tipo de producto';
-    if (form.price === undefined) next.price = 'El precio unitario es obligatorio';
-    else if (form.price <= 0) next.price = 'El precio debe ser mayor a cero';
-    if (form.type !== 'service') {
-      if (!form.stock.trim()) next.stock = 'El stock inicial es obligatorio';
-      else if (Number(form.stock) < 0) next.stock = 'El stock no puede ser negativo';
-    }
-    return next;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const nextErrors = validate();
-    if (Object.keys(nextErrors).length > 0) {
-      setErrors(nextErrors);
-      setShowErrorAlert(true);
-      toast.error(
-        'No se pudo guardar el producto',
-        'Revisa los campos marcados en rojo'
-      );
-      return;
-    }
-    setShowErrorAlert(false);
-    setIsSubmitting(true);
+  const onSubmit = (data: ProductFormData) => {
     setTimeout(() => {
-      setIsSubmitting(false);
-      setForm(INITIAL_FORM);
       toast.success(
         'Producto creado',
-        'El producto se agrego correctamente al inventario'
+        `${data.name} se agrego correctamente al inventario`
       );
-    }, 1500);
+      reset(DEFAULT_VALUES);
+      navigate('/products');
+    }, 1200);
   };
 
-  const handleCancel = () => {
-    setForm(INITIAL_FORM);
-    setErrors({});
-    setShowErrorAlert(false);
+  const onInvalid = () => {
+    toast.error('No se pudo guardar el producto', 'Revisa los campos marcados');
   };
-
-  const isService = form.type === 'service';
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit} noValidate>
-      {showErrorAlert && (
-        <Alert
-          variant="error"
-          title="No se pudo guardar el producto"
-          onClose={() => setShowErrorAlert(false)}
-        >
-          Revisa los campos marcados en rojo e intenta nuevamente.
-        </Alert>
-      )}
-
+    <form
+      className={styles.form}
+      onSubmit={handleSubmit(onSubmit, onInvalid)}
+      noValidate
+    >
       <Card
         header={
           <div className={styles.cardHeader}>
@@ -157,11 +99,11 @@ export default function NewProduct() {
             <div className={styles.sectionBadges}>
               <Badge variant="primary" size="sm">Nuevo</Badge>
               <Badge
-                variant={form.active ? 'success' : 'neutral'}
+                variant={watchedActive ? 'success' : 'neutral'}
                 size="sm"
                 withDot
               >
-                {form.active ? 'Activo' : 'Inactivo'}
+                {watchedActive ? 'Activo' : 'Inactivo'}
               </Badge>
             </div>
           </div>
@@ -178,9 +120,8 @@ export default function NewProduct() {
                 id="product-name"
                 placeholder="Ej. Camisa azul talla M"
                 leftIcon={<Package size={16} />}
-                value={form.name}
-                onChange={handleChange('name')}
-                error={errors.name}
+                error={errors.name?.message}
+                {...register('name')}
               />
             </FormField>
 
@@ -189,29 +130,42 @@ export default function NewProduct() {
                 id="product-sku"
                 placeholder="Ej. CAM-AZ-M-001"
                 leftIcon={<Tag size={16} />}
-                value={form.sku}
-                onChange={handleChange('sku')}
+                {...register('sku')}
               />
             </FormField>
 
             <FormField label="Categoria" htmlFor="product-category">
-              <Select
-                id="product-category"
-                placeholder="Selecciona una categoria"
-                leftIcon={<FolderTree size={16} />}
-                options={CATEGORY_OPTIONS}
-                value={form.category}
-                onChange={handleChange('category')}
-                error={errors.category}
+              <Controller
+                control={control}
+                name="category"
+                render={({ field }) => (
+                  <Select
+                    id="product-category"
+                    placeholder="Selecciona una categoria"
+                    leftIcon={<FolderTree size={16} />}
+                    options={CATEGORY_OPTIONS}
+                    value={field.value}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    onBlur={field.onBlur}
+                    error={errors.category?.message}
+                  />
+                )}
               />
             </FormField>
 
             <FormField label="Precio unitario (Bs.)" htmlFor="product-price">
-              <CurrencyInput
-                id="product-price"
-                value={form.price}
-                onChange={handlePriceChange}
-                error={errors.price}
+              <Controller
+                control={control}
+                name="price"
+                render={({ field }) => (
+                  <CurrencyInput
+                    id="product-price"
+                    value={field.value}
+                    onChange={(v) => field.onChange(v)}
+                    onBlur={field.onBlur}
+                    error={errors.price?.message}
+                  />
+                )}
               />
             </FormField>
 
@@ -221,11 +175,9 @@ export default function NewProduct() {
                 type="number"
                 placeholder={isService ? 'No aplica para servicios' : '0'}
                 leftIcon={<Boxes size={16} />}
-                value={form.stock}
-                onChange={handleChange('stock')}
-                error={errors.stock}
-                min="0"
                 disabled={isService}
+                error={errors.stock?.message}
+                {...register('stock')}
               />
             </FormField>
           </FormGroup>
@@ -242,18 +194,13 @@ export default function NewProduct() {
                   <Radio
                     key={opt.value}
                     id={`product-type-${opt.value}`}
-                    name="product-type"
                     value={opt.value}
                     label={opt.label}
                     helperText={opt.helper}
-                    checked={form.type === opt.value}
-                    onChange={handleChange('type')}
+                    {...register('type')}
                   />
                 ))}
               </div>
-              {errors.type && (
-                <span className={styles.fieldError}>{errors.type}</span>
-              )}
             </div>
 
             <FormField
@@ -265,9 +212,8 @@ export default function NewProduct() {
               <Textarea
                 id="product-description"
                 placeholder="Describe el producto, materiales, caracteristicas..."
-                value={form.description}
-                onChange={handleChange('description')}
                 rows={4}
+                {...register('description')}
               />
             </FormField>
 
@@ -276,22 +222,19 @@ export default function NewProduct() {
                 id="product-active"
                 label="Producto activo"
                 helperText="Visible en el catalogo y disponible para facturacion"
-                checked={form.active}
-                onChange={handleChange('active')}
+                {...register('active')}
               />
               <Checkbox
                 id="product-taxable"
                 label="Aplicar IVA (16%)"
                 helperText="El precio incluye el impuesto al valor agregado"
-                checked={form.taxable}
-                onChange={handleChange('taxable')}
+                {...register('taxable')}
               />
               <Switch
                 id="product-featured"
                 label="Destacar en la tienda"
                 helperText="Aparecera en la seccion de productos destacados"
-                checked={form.featured}
-                onChange={handleChange('featured')}
+                {...register('featured')}
               />
             </div>
           </FormGroup>
@@ -302,7 +245,7 @@ export default function NewProduct() {
         <Button
           type="button"
           variant="outline"
-          onClick={handleCancel}
+          onClick={() => navigate('/products')}
           leftIcon={<X size={14} />}
           disabled={isSubmitting}
         >
@@ -320,4 +263,3 @@ export default function NewProduct() {
     </form>
   );
 }
-

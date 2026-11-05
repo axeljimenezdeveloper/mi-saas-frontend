@@ -1,18 +1,16 @@
-﻿import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+﻿import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Package, Mail, Lock, Eye, EyeOff, Sun, Moon, LogIn } from 'lucide-react';
+import { useState } from 'react';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { FormField } from '../../../../components/forms/FormField';
 import { Input } from '../../../../components/common/inputs/Input';
 import { Button } from '../../../../components/common/actions/Button';
 import { Alert } from '../../../../components/feedback/alerts/Alert';
 import { useThemeStore, useAuthStore } from '../../../../stores';
+import { loginSchema, type LoginFormData } from '../../../../schemas';
 import styles from './Login.module.css';
-
-interface FormErrors {
-  email?: string;
-  password?: string;
-}
 
 export default function Login() {
   const navigate = useNavigate();
@@ -26,58 +24,31 @@ export default function Login() {
   const error = useAuthStore((s) => s.error);
   const clearError = useAuthStore((s) => s.clearError);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<FormErrors>({});
 
-  const validate = (): FormErrors => {
-    const next: FormErrors = {};
-    if (!email.trim()) {
-      next.email = 'El correo es obligatorio';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      next.email = 'Ingresa un correo válido';
-    }
-    if (!password.trim()) {
-      next.password = 'La contraseña es obligatoria';
-    } else if (password.length < 6) {
-      next.password = 'La contraseña debe tener al menos 6 caracteres';
-    }
-    return next;
-  };
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' },
+    mode: 'onBlur',
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: LoginFormData) => {
     clearError();
-
-    const nextErrors = validate();
-    if (Object.keys(nextErrors).length > 0) {
-      setErrors(nextErrors);
-      return;
-    }
-    setErrors({});
-
-    const success = await login(email, password);
+    const success = await login(data.email, data.password);
     if (success) {
       toast.success('Bienvenido', 'Sesión iniciada correctamente');
       navigate('/dashboard');
     }
   };
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-    if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-    if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }));
-  };
-
   const fillDemoCredentials = () => {
-    setEmail('admin@invensaas.com');
-    setPassword('admin123');
-    setErrors({});
+    setValue('email', 'admin@invensaas.com', { shouldValidate: false });
+    setValue('password', 'admin123', { shouldValidate: false });
     clearError();
   };
 
@@ -103,7 +74,7 @@ export default function Login() {
           </p>
         </div>
 
-        <form className={styles.form} onSubmit={handleSubmit} noValidate>
+        <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
           <h2 className={styles.formTitle}>Iniciar sesión</h2>
 
           {error && (
@@ -118,11 +89,10 @@ export default function Login() {
               type="email"
               placeholder="tu@empresa.com"
               leftIcon={<Mail size={16} />}
-              value={email}
-              onChange={handleEmailChange}
-              error={errors.email}
+              error={errors.email?.message}
               autoComplete="email"
               autoFocus
+              {...register('email')}
             />
           </FormField>
 
@@ -142,10 +112,9 @@ export default function Login() {
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               }
-              value={password}
-              onChange={handlePasswordChange}
-              error={errors.password}
+              error={errors.password?.message}
               autoComplete="current-password"
+              {...register('password')}
             />
           </FormField>
 
