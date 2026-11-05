@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react';
-import { Package, Tag, DollarSign, Boxes, FolderTree, Save, X } from 'lucide-react';
+import { Package, Tag, Boxes, FolderTree, Save, X } from 'lucide-react';
 import { Input } from '../../../../components/common/inputs/Input';
 import { Textarea } from '../../../../components/common/inputs/Textarea';
 import { Select } from '../../../../components/common/inputs/Select';
@@ -320,3 +320,4 @@ export default function NewProduct() {
     </form>
   );
 }
+

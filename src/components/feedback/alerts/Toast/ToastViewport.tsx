@@ -1,7 +1,7 @@
 ﻿import { createPortal } from 'react-dom';
 import { Toast } from './Toast';
 import { useToastStore } from '../../../../stores/toastStore';
-import styles from './ToastProvider.module.css';
+import styles from './ToastViewport.module.css';
 
 /**
  * Renderiza la cola de toasts en un portal al document.body.
@@ -25,3 +25,4 @@ export function ToastViewport() {
 
   return createPortal(container, document.body);
 }
+

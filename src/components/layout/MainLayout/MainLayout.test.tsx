@@ -39,9 +39,7 @@ describe('MainLayout', () => {
   });
 
   it('calls renderHeader with a function and isMobile flag', () => {
-    const renderHeader = vi.fn(
-      (_onMenuClick: () => void, _isMobile: boolean) => <header>Header</header>
-    );
+    const renderHeader = vi.fn(() => <header>Header</header>);
     render(
       <MainLayout
         sidebar={<aside>Sidebar</aside>}
