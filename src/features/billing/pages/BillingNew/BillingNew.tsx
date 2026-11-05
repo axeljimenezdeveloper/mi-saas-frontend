@@ -1,6 +1,6 @@
 ﻿import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Plus,
@@ -19,28 +19,15 @@ import { Input } from '../../../../components/common/inputs/Input';
 import { Select } from '../../../../components/common/inputs/Select';
 import { Button } from '../../../../components/common/actions/Button';
 import { Card } from '../../../../components/common/data-display/Card';
+import { EmptyState } from '../../../../components/feedback/states/EmptyState';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
+import { useProductsStore, useInvoicesStore } from '../../../../stores';
 import {
   invoiceSchema,
   type InvoiceFormData,
   type LineItemData,
 } from '../../../../schemas';
 import styles from './BillingNew.module.css';
-
-interface Product {
-  id: number;
-  name: string;
-  sku: string;
-  price: number;
-}
-
-const AVAILABLE_PRODUCTS: Product[] = [
-  { id: 1, name: 'Camisa azul talla M', sku: 'CAM-AZ-M-001', price: 25.0 },
-  { id: 2, name: 'Pantalon negro talla 32', sku: 'PAN-NE-32-002', price: 40.0 },
-  { id: 3, name: 'Zapatos deportivos', sku: 'ZAP-DEP-003', price: 60.0 },
-  { id: 4, name: 'Gorra bordada', sku: 'GOR-BOR-004', price: 15.0 },
-  { id: 5, name: 'Bufanda de lana', sku: 'BUF-LAN-005', price: 18.0 },
-];
 
 const IVA_RATE = 0.16;
 
@@ -51,14 +38,12 @@ const formatBs = (amount: number): string =>
     minimumFractionDigits: 2,
   }).format(amount);
 
-const PRODUCT_OPTIONS = AVAILABLE_PRODUCTS.map((p) => ({
-  value: String(p.id),
-  label: `${p.name} - ${formatBs(p.price)}`,
-}));
-
 export default function BillingNew() {
   const navigate = useNavigate();
   const toast = useToast();
+
+  const products = useProductsStore((s) => s.products);
+  const addInvoice = useInvoicesStore((s) => s.addInvoice);
 
   const [items, setItems] = useState<LineItemData[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<string>('');
@@ -66,14 +51,27 @@ export default function BillingNew() {
 
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<InvoiceFormData>({
     resolver: zodResolver(invoiceSchema),
     defaultValues: { client: '', items: [] },
-    mode: 'onBlur',
+    mode: 'onChange',
   });
+
+  const clientValue = useWatch({ control, name: 'client' });
+
+  // Productos reales del inventario (no hardcoded)
+  const productOptions = useMemo(
+    () =>
+      products.map((p) => ({
+        value: String(p.id),
+        label: `${p.name} - ${formatBs(p.price)}`,
+      })),
+    [products]
+  );
 
   const totals = useMemo(() => {
     const subtotal = items.reduce(
@@ -93,16 +91,21 @@ export default function BillingNew() {
     return undefined;
   }, [quantity]);
 
+  // Boton guardar: solo activo cuando hay cliente valido + al menos 1 item
+  const canSubmit =
+    !errors.client &&
+    (clientValue?.trim().length ?? 0) >= 3 &&
+    items.length > 0 &&
+    !isSubmitting;
+
   const syncItemsToForm = (newItems: LineItemData[]) => {
     setItems(newItems);
-    setValue('items', newItems, { shouldValidate: errors.items !== undefined });
+    setValue('items', newItems, { shouldValidate: true });
   };
 
   const handleAddItem = () => {
     if (!selectedProductId || quantityError) return;
-    const product = AVAILABLE_PRODUCTS.find(
-      (p) => String(p.id) === selectedProductId
-    );
+    const product = products.find((p) => String(p.id) === selectedProductId);
     if (!product) return;
 
     const qty = Number(quantity);
@@ -130,23 +133,69 @@ export default function BillingNew() {
   };
 
   const handleRemoveItem = (productId: number) => {
-    const next = items.filter((i) => i.productId !== productId);
-    syncItemsToForm(next);
+    syncItemsToForm(items.filter((i) => i.productId !== productId));
   };
 
-  const onSubmit = () => {
+  const onSubmit = (data: InvoiceFormData) => {
     setTimeout(() => {
+      addInvoice({
+        client: data.client,
+        items,
+        total: totals.total,
+      });
       toast.success(
         'Factura creada',
-        `Factura generada por ${formatBs(totals.total)}`
+        `Factura generada para ${data.client} por ${formatBs(totals.total)}`
       );
       navigate('/billing');
-    }, 1200);
+    }, 600);
   };
 
   const onInvalid = () => {
     toast.error('No se pudo guardar la factura', 'Revisa los campos marcados');
   };
+
+  // ─── Empty state si no hay productos en inventario ───
+  if (products.length === 0) {
+    return (
+      <div className={styles.page}>
+        <header className={styles.pageHeader}>
+          <div className={styles.headerContent}>
+            <button
+              type="button"
+              className={styles.backButton}
+              onClick={() => navigate('/billing')}
+              aria-label="Volver"
+              title="Volver a facturacion"
+            >
+              <ArrowLeft size={18} />
+            </button>
+            <div className={styles.titleBlock}>
+              <h1 className={styles.title}>Nueva factura</h1>
+              <p className={styles.subtitle}>Crea una factura para un cliente</p>
+            </div>
+          </div>
+        </header>
+        <div className={styles.content}>
+          <div className={styles.emptyWrapper}>
+            <EmptyState
+              title="No tienes productos aun"
+              description="Antes de crear una factura necesitas tener productos en tu inventario."
+              icon={<Package size={32} />}
+              action={
+                <Button
+                  leftIcon={<Plus size={14} />}
+                  onClick={() => navigate('/products/new')}
+                >
+                  Crear primer producto
+                </Button>
+              }
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>
@@ -202,13 +251,13 @@ export default function BillingNew() {
 
           <FormGroup
             title="Productos"
-            description="Selecciona los productos y cantidades a facturar"
+            description="Selecciona los productos de tu inventario y las cantidades a facturar"
             layout="stack"
           >
             <div className={styles.addRow}>
               <div className={styles.productSelect}>
                 <Select
-                  options={PRODUCT_OPTIONS}
+                  options={productOptions}
                   placeholder="Selecciona un producto"
                   leftIcon={<Package size={16} />}
                   value={selectedProductId}
@@ -321,6 +370,7 @@ export default function BillingNew() {
               variant="primary"
               leftIcon={<Save size={14} />}
               isLoading={isSubmitting}
+              disabled={!canSubmit}
             >
               Guardar factura
             </Button>
@@ -330,4 +380,3 @@ export default function BillingNew() {
     </div>
   );
 }
-

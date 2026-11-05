@@ -2,9 +2,9 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { useInvoicesStore } from '../../../../stores';
 import Billing from './Billing';
 
-// Mock de useNavigate para verificar redirecciones
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<typeof import('react-router-dom')>(
@@ -15,6 +15,15 @@ vi.mock('react-router-dom', async () => {
     useNavigate: () => mockNavigate,
   };
 });
+
+const SEED_INVOICES = [
+  { id: 1, number: 'FAC-2026-0001', client: 'Carlos Rodriguez', date: '2026-11-01', total: 1250.0, status: 'paid' as const, items: [] },
+  { id: 2, number: 'FAC-2026-0002', client: 'Maria Gonzalez', date: '2026-11-02', total: 840.5, status: 'pending' as const, items: [] },
+  { id: 3, number: 'FAC-2026-0003', client: 'Pedro Martinez', date: '2026-11-02', total: 3200.0, status: 'paid' as const, items: [] },
+  { id: 4, number: 'FAC-2026-0004', client: 'Ana Lopez', date: '2026-10-28', total: 450.0, status: 'overdue' as const, items: [] },
+  { id: 5, number: 'FAC-2026-0005', client: 'Luis Hernandez', date: '2026-11-03', total: 1890.75, status: 'pending' as const, items: [] },
+  { id: 6, number: 'FAC-2026-0006', client: 'Carmen Diaz', date: '2026-11-04', total: 620.0, status: 'paid' as const, items: [] },
+];
 
 function renderBilling() {
   return render(
@@ -27,6 +36,7 @@ function renderBilling() {
 describe('Billing', () => {
   beforeEach(() => {
     mockNavigate.mockClear();
+    useInvoicesStore.setState({ invoices: SEED_INVOICES });
   });
 
   it('shows skeleton loading initially', () => {
@@ -40,7 +50,7 @@ describe('Billing', () => {
       () => {
         expect(screen.getByText('FAC-2026-0001')).toBeInTheDocument();
       },
-      { timeout: 2500 }
+      { timeout: 2000 }
     );
     expect(screen.getByText('Carlos Rodriguez')).toBeInTheDocument();
     expect(screen.getByText('Maria Gonzalez')).toBeInTheDocument();
@@ -53,7 +63,7 @@ describe('Billing', () => {
       () => {
         expect(screen.getAllByText('Pagada').length).toBeGreaterThan(0);
       },
-      { timeout: 2500 }
+      { timeout: 2000 }
     );
     expect(screen.getAllByText('Pendiente').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Vencida').length).toBeGreaterThan(0);
@@ -65,7 +75,7 @@ describe('Billing', () => {
       () => {
         expect(screen.getByPlaceholderText('Buscar por cliente o numero...')).toBeInTheDocument();
       },
-      { timeout: 2500 }
+      { timeout: 2000 }
     );
     expect(screen.getByRole('combobox')).toBeInTheDocument();
   });
@@ -77,7 +87,7 @@ describe('Billing', () => {
       () => {
         expect(screen.getByText('FAC-2026-0001')).toBeInTheDocument();
       },
-      { timeout: 2500 }
+      { timeout: 2000 }
     );
 
     const searchInput = screen.getByPlaceholderText('Buscar por cliente o numero...');
@@ -94,7 +104,7 @@ describe('Billing', () => {
       () => {
         expect(screen.getByText('FAC-2026-0001')).toBeInTheDocument();
       },
-      { timeout: 2500 }
+      { timeout: 2000 }
     );
 
     const select = screen.getByRole('combobox');
@@ -111,7 +121,7 @@ describe('Billing', () => {
       () => {
         expect(screen.getByText('FAC-2026-0001')).toBeInTheDocument();
       },
-      { timeout: 2500 }
+      { timeout: 2000 }
     );
 
     const searchInput = screen.getByPlaceholderText('Buscar por cliente o numero...');
@@ -127,11 +137,10 @@ describe('Billing', () => {
       () => {
         expect(screen.getByText('FAC-2026-0001')).toBeInTheDocument();
       },
-      { timeout: 2500 }
+      { timeout: 2000 }
     );
 
     await user.click(screen.getByRole('button', { name: /Nueva factura/i }));
     expect(mockNavigate).toHaveBeenCalledWith('/billing/new');
   });
 });
-

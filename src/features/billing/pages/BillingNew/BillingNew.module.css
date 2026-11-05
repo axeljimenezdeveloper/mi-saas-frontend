@@ -1,10 +1,10 @@
 ﻿/* src/features/billing/pages/BillingNew/BillingNew.module.css */
 
 .page {
-  min-height: 100%;
-  background-color: var(--color-surface);
+  flex: 1 0 auto;
   display: flex;
   flex-direction: column;
+  background-color: var(--color-surface);
 }
 
 /* ============ Header (full-bleed border) ============ */
@@ -271,4 +271,22 @@
   }
 
   .footer { flex-direction: column-reverse; }
+}
+
+
+.emptyWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+}
+
+
+.emptyWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
 }

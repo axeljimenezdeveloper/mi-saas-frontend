@@ -2,7 +2,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { useToastStore } from '../../../../stores';
+import { useProductsStore, useInvoicesStore } from '../../../../stores';
 import BillingNew from './BillingNew';
 
 const mockNavigate = vi.fn();
@@ -15,6 +15,14 @@ vi.mock('react-router-dom', async () => {
     useNavigate: () => mockNavigate,
   };
 });
+
+const SEED_PRODUCTS = [
+  { id: 1, name: 'Camisa azul talla M', sku: 'CAM-AZ-M-001', category: 'Ropa', price: 25.0, stock: 42, status: 'in-stock' as const, images: [] },
+  { id: 2, name: 'Pantalon negro talla 32', sku: 'PAN-NE-32-002', category: 'Ropa', price: 40.0, stock: 8, status: 'low-stock' as const, images: [] },
+  { id: 3, name: 'Zapatos deportivos', sku: 'ZAP-DEP-003', category: 'Calzado', price: 60.0, stock: 0, status: 'out-of-stock' as const, images: [] },
+  { id: 4, name: 'Gorra bordada', sku: 'GOR-BOR-004', category: 'Accesorios', price: 15.0, stock: 120, status: 'in-stock' as const, images: [] },
+  { id: 5, name: 'Bufanda de lana', sku: 'BUF-LAN-005', category: 'Accesorios', price: 18.0, stock: 5, status: 'low-stock' as const, images: [] },
+];
 
 function renderBillingNew() {
   return render(
@@ -46,7 +54,8 @@ async function addProduct(
 describe('BillingNew', () => {
   beforeEach(() => {
     mockNavigate.mockClear();
-    useToastStore.setState({ toasts: [] });
+    useProductsStore.setState({ products: SEED_PRODUCTS });
+    useInvoicesStore.setState({ invoices: [] });
   });
 
   it('renders title and back button', () => {
@@ -109,24 +118,27 @@ describe('BillingNew', () => {
     expect(screen.getByText(/75,40/)).toBeInTheDocument();
   });
 
-  it('shows validation errors when submitting empty form', async () => {
-    const user = userEvent.setup();
+  it('disables submit button when form is empty', () => {
     renderBillingNew();
-    await user.click(screen.getByRole('button', { name: 'Guardar factura' }));
-    expect(screen.getByText('El nombre del cliente es obligatorio')).toBeInTheDocument();
-    expect(screen.getByText('Agrega al menos un producto a la factura')).toBeInTheDocument();
-    expect(mockNavigate).not.toHaveBeenCalled();
+    const submitButton = screen.getByRole('button', { name: /Guardar factura/i });
+    expect(submitButton).toBeDisabled();
   });
 
-  it('shows validation error when client name is too short', async () => {
+  it('disables submit button when only client is filled', async () => {
     const user = userEvent.setup();
     renderBillingNew();
-    await user.type(screen.getByPlaceholderText('Ej. Carlos Rodriguez'), 'AB');
-    await addProduct(user, 'Gorra bordada');
-    await user.click(screen.getByRole('button', { name: 'Guardar factura' }));
-    expect(
-      screen.getByText('El nombre debe tener al menos 3 caracteres')
-    ).toBeInTheDocument();
+    await user.type(screen.getByPlaceholderText('Ej. Carlos Rodriguez'), 'Carlos Rodriguez');
+    const submitButton = screen.getByRole('button', { name: /Guardar factura/i });
+    expect(submitButton).toBeDisabled();
+  });
+
+  it('enables submit button when client and items are valid', async () => {
+    const user = userEvent.setup();
+    renderBillingNew();
+    await user.type(screen.getByPlaceholderText('Ej. Carlos Rodriguez'), 'Carlos Rodriguez');
+    await addProduct(user, 'Camisa azul talla M');
+    const submitButton = screen.getByRole('button', { name: /Guardar factura/i });
+    await waitFor(() => expect(submitButton).toBeEnabled());
   });
 
   it('navigates to /billing on successful submit', async () => {
@@ -134,7 +146,7 @@ describe('BillingNew', () => {
     renderBillingNew();
     await user.type(screen.getByPlaceholderText('Ej. Carlos Rodriguez'), 'Carlos Rodriguez');
     await addProduct(user, 'Camisa azul talla M');
-    await user.click(screen.getByRole('button', { name: 'Guardar factura' }));
+    await user.click(screen.getByRole('button', { name: /Guardar factura/i }));
 
     await waitFor(
       () => {
@@ -163,4 +175,14 @@ describe('BillingNew', () => {
     const addButton = screen.getByRole('button', { name: 'Agregar' });
     expect(addButton).toBeDisabled();
   });
+
+  it('shows empty state when there are no products in inventory', () => {
+    useProductsStore.setState({ products: [] });
+    renderBillingNew();
+    expect(screen.getByText('No tienes productos aun')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Crear primer producto' })
+    ).toBeInTheDocument();
+  });
 });
+

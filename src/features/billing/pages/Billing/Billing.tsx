@@ -8,27 +8,8 @@ import { Input } from '../../../../components/common/inputs/Input';
 import { Select } from '../../../../components/common/inputs/Select';
 import { Skeleton } from '../../../../components/feedback/loading/Skeleton';
 import { EmptyState } from '../../../../components/feedback/states/EmptyState';
+import { useInvoicesStore, type Invoice, type InvoiceStatus } from '../../../../stores';
 import styles from './Billing.module.css';
-
-type InvoiceStatus = 'paid' | 'pending' | 'overdue';
-
-interface Invoice {
-  id: number;
-  number: string;
-  client: string;
-  date: string;
-  total: number;
-  status: InvoiceStatus;
-}
-
-const MOCK_INVOICES: Invoice[] = [
-  { id: 1, number: 'FAC-2026-0001', client: 'Carlos Rodriguez', date: '2026-11-01', total: 1250.0, status: 'paid' },
-  { id: 2, number: 'FAC-2026-0002', client: 'Maria Gonzalez', date: '2026-11-02', total: 840.5, status: 'pending' },
-  { id: 3, number: 'FAC-2026-0003', client: 'Pedro Martinez', date: '2026-11-02', total: 3200.0, status: 'paid' },
-  { id: 4, number: 'FAC-2026-0004', client: 'Ana Lopez', date: '2026-10-28', total: 450.0, status: 'overdue' },
-  { id: 5, number: 'FAC-2026-0005', client: 'Luis Hernandez', date: '2026-11-03', total: 1890.75, status: 'pending' },
-  { id: 6, number: 'FAC-2026-0006', client: 'Carmen Diaz', date: '2026-11-04', total: 620.0, status: 'paid' },
-];
 
 const STATUS_LABELS: Record<InvoiceStatus, string> = {
   paid: 'Pagada',
@@ -63,16 +44,14 @@ const formatDate = (iso: string): string => {
 
 export default function Billing() {
   const navigate = useNavigate();
+  const invoices = useInvoicesStore((s) => s.invoices);
+
   const [isLoading, setIsLoading] = useState(true);
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      setIsLoading(false);
-      setInvoices(MOCK_INVOICES);
-    }, 1200);
+    const t = setTimeout(() => setIsLoading(false), 600);
     return () => clearTimeout(t);
   }, []);
 
@@ -165,29 +144,33 @@ export default function Billing() {
 
     if (invoices.length === 0) {
       return (
-        <EmptyState
-          title="No hay facturas registradas"
-          description="Crea tu primera factura para comenzar a facturar a tus clientes."
-          icon={<DollarSign size={32} />}
-          action={
-            <Button
-              leftIcon={<Plus size={14} />}
-              onClick={() => navigate('/billing/new')}
-            >
-              Crear primera factura
-            </Button>
-          }
-        />
+        <div className={styles.emptyWrapper}>
+          <EmptyState
+            title="No hay facturas registradas"
+            description="Crea tu primera factura para comenzar a facturar a tus clientes."
+            icon={<DollarSign size={32} />}
+            action={
+              <Button
+                leftIcon={<Plus size={14} />}
+                onClick={() => navigate('/billing/new')}
+              >
+                Crear primera factura
+              </Button>
+            }
+          />
+        </div>
       );
     }
 
     if (filtered.length === 0) {
       return (
-        <EmptyState
-          title="No se encontraron facturas"
-          description="Prueba con otro término de búsqueda o cambia el filtro de estado."
-          icon={<Search size={32} />}
-        />
+        <div className={styles.emptyWrapper}>
+          <EmptyState
+            title="No se encontraron facturas"
+            description="Prueba con otro término de búsqueda o cambia el filtro de estado."
+            icon={<Search size={32} />}
+          />
+        </div>
       );
     }
 
