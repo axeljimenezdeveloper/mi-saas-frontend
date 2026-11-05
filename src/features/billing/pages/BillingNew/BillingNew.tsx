@@ -44,6 +44,7 @@ export default function BillingNew() {
 
   const products = useProductsStore((s) => s.products);
   const addInvoice = useInvoicesStore((s) => s.addInvoice);
+  const decrementStock = useProductsStore((s) => s.decrementStock);
 
   const [items, setItems] = useState<LineItemData[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<string>('');
@@ -110,6 +111,24 @@ export default function BillingNew() {
 
     const qty = Number(quantity);
     const existing = items.find((i) => i.productId === product.id);
+    const currentInInvoice = existing?.quantity ?? 0;
+    const available = product.stock - currentInInvoice;
+
+    if (available <= 0) {
+      toast.error(
+        'Producto agotado',
+        `${product.name} no tiene stock disponible`
+      );
+      return;
+    }
+
+    if (qty > available) {
+      toast.error(
+        'Stock insuficiente',
+        `Solo hay ${available} unidad${available === 1 ? '' : 'es'} disponible${available === 1 ? '' : 's'} de ${product.name}`
+      );
+      return;
+    }
 
     const next = existing
       ? items.map((i) =>
@@ -138,6 +157,10 @@ export default function BillingNew() {
 
   const onSubmit = (data: InvoiceFormData) => {
     setTimeout(() => {
+      // Descontar stock de cada producto vendido
+      items.forEach((item) => {
+        decrementStock(item.productId, item.quantity);
+      });
       addInvoice({
         client: data.client,
         items,
@@ -380,3 +403,7 @@ export default function BillingNew() {
     </div>
   );
 }
+
+
+
+

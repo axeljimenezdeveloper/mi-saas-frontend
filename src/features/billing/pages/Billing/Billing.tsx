@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Eye, FileText, Search, DollarSign } from 'lucide-react';
+import { Plus, FileText, Search, DollarSign, MoreVertical, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 import { Table, type TableColumn } from '../../../../components/common/data-display/Table';
 import { Badge } from '../../../../components/common/data-display/Badge';
 import { Button } from '../../../../components/common/actions/Button';
@@ -45,10 +45,12 @@ const formatDate = (iso: string): string => {
 export default function Billing() {
   const navigate = useNavigate();
   const invoices = useInvoicesStore((s) => s.invoices);
+  const updateStatus = useInvoicesStore((s) => s.updateStatus);
 
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setIsLoading(false), 600);
@@ -110,17 +112,72 @@ export default function Billing() {
       key: 'actions',
       header: '',
       align: 'right',
-      width: '80px',
+      width: '100px',
       render: (inv) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          iconOnly
-          aria-label={`Ver ${inv.number}`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Eye size={14} />
-        </Button>
+        <div className={styles.actionsCell}>
+          <Button
+            variant="ghost"
+            size="sm"
+            iconOnly
+            aria-label={`Acciones para ${inv.number}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpenMenuId(openMenuId === inv.id ? null : inv.id);
+            }}
+          >
+            <MoreVertical size={16} />
+          </Button>
+          {openMenuId === inv.id && (
+            <>
+              <div
+                className={styles.menuBackdrop}
+                onClick={() => setOpenMenuId(null)}
+                aria-hidden="true"
+              />
+              <div className={styles.menu}>
+                {inv.status !== 'paid' && (
+                  <button
+                    type="button"
+                    className={styles.menuItem}
+                    onClick={() => {
+                      updateStatus(inv.id, 'paid');
+                      setOpenMenuId(null);
+                    }}
+                  >
+                    <CheckCircle2 size={14} />
+                    Marcar como pagada
+                  </button>
+                )}
+                {inv.status !== 'pending' && (
+                  <button
+                    type="button"
+                    className={styles.menuItem}
+                    onClick={() => {
+                      updateStatus(inv.id, 'pending');
+                      setOpenMenuId(null);
+                    }}
+                  >
+                    <Clock size={14} />
+                    Marcar como pendiente
+                  </button>
+                )}
+                {inv.status === 'pending' && (
+                  <button
+                    type="button"
+                    className={styles.menuItem}
+                    onClick={() => {
+                      updateStatus(inv.id, 'overdue');
+                      setOpenMenuId(null);
+                    }}
+                  >
+                    <AlertCircle size={14} />
+                    Marcar como vencida
+                  </button>
+                )}
+              </div>
+            </>
+          )}
+        </div>
       ),
     },
   ];
@@ -220,3 +277,6 @@ export default function Billing() {
     </div>
   );
 }
+
+
+

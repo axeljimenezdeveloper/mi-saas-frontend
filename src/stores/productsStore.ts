@@ -18,6 +18,7 @@ export interface ProductsStore {
   addProduct: (product: Omit<Product, 'id' | 'status'>) => Product;
   removeProduct: (id: number) => void;
   updateProduct: (id: number, data: Partial<Omit<Product, 'id'>>) => void;
+  decrementStock: (id: number, quantity: number) => void;
   clearAll: () => void;
 }
 
@@ -53,10 +54,16 @@ export const useProductsStore = create<ProductsStore>((set) => ({
       products: state.products.map((p) => {
         if (p.id !== id) return p;
         const next = { ...p, ...data };
-        return {
-          ...next,
-          status: computeStatus(next.stock),
-        };
+        return { ...next, status: computeStatus(next.stock) };
+      }),
+    })),
+
+  decrementStock: (id, quantity) =>
+    set((state) => ({
+      products: state.products.map((p) => {
+        if (p.id !== id) return p;
+        const newStock = Math.max(0, p.stock - quantity);
+        return { ...p, stock: newStock, status: computeStatus(newStock) };
       }),
     })),
 

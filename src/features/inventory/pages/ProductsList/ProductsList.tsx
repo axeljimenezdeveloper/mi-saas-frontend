@@ -146,6 +146,7 @@ export default function ProductsList() {
               e.stopPropagation();
               handleDelete(p);
             }}
+            className={styles.deleteButton}
           >
             <Trash2 size={14} />
           </Button>
@@ -251,5 +252,6 @@ export default function ProductsList() {
     </div>
   );
 }
+
 
 

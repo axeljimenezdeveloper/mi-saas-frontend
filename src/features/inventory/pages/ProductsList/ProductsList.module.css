@@ -118,3 +118,8 @@
 }
 
 
+
+.deleteButton.deleteButton:hover:not(:disabled) {
+  background-color: var(--color-danger-soft);
+  color: var(--color-danger);
+}
