@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.5.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.4.0...v0.5.0) (2026-11-05)
+
+### Features
+
+* add useAuthStore with mock login and selective persistence ([4f0229e](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/4f0229ed7e5b8364834ad0b628c40e9b4ebf2ab3))
+* add useSidebarStore with partial persistence for collapse state ([262048e](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/262048e01dbe204e60a39fd38da2f41a9d1a43a8))
+* add useThemeStore with zustand and manual localStorage sync ([cf9a8a4](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/cf9a8a47f9863fe707229769bb94b489990e4459))
+
+### Bug Fixes
+
+* resolve eslint errors in tests and hooks ([742fa26](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/742fa26866169681029abf5f63fa58c23c60f2b7))
+
 ## [0.4.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.3.0...v0.4.0) (2026-11-04)
 
 ### Features
