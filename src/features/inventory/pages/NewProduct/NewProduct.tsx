@@ -1,7 +1,7 @@
 ﻿import { useNavigate } from 'react-router-dom';
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Package, Tag, Boxes, FolderTree, Save, X } from 'lucide-react';
+import { Package, Tag, Boxes, FolderTree, Save, X, ArrowLeft } from 'lucide-react';
 import { FormField } from '../../../../components/forms/FormField';
 import { FormGroup } from '../../../../components/forms/FormGroup';
 import { Input } from '../../../../components/common/inputs/Input';
@@ -10,12 +10,11 @@ import { Select } from '../../../../components/common/inputs/Select';
 import { Checkbox } from '../../../../components/common/inputs/Checkbox';
 import { Radio } from '../../../../components/common/inputs/Radio';
 import { Switch } from '../../../../components/common/inputs/Switch';
-import { Badge } from '../../../../components/common/data-display/Badge';
-import { Card } from '../../../../components/common/data-display/Card';
 import { Button } from '../../../../components/common/actions/Button';
 import { CurrencyInput } from '../../../../components/forms/CurrencyInput';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { productSchema, type ProductFormData } from '../../../../schemas';
+import { useProductsStore } from '../../../../stores';
 import styles from './NewProduct.module.css';
 
 const CATEGORY_OPTIONS = [
@@ -53,32 +52,42 @@ const DEFAULT_VALUES: ProductFormData = {
 export default function NewProduct() {
   const navigate = useNavigate();
   const toast = useToast();
+  const addProduct = useProductsStore((s) => s.addProduct);
 
   const {
     register,
     control,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors, isValid, isSubmitting },
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: DEFAULT_VALUES,
-    mode: 'onBlur',
+    mode: 'onChange',
   });
-
-  const watchedActive = useWatch({ control, name: 'active' });
   const watchedType = useWatch({ control, name: 'type' });
   const isService = watchedType === 'service';
 
   const onSubmit = (data: ProductFormData) => {
+    const categoryLabel =
+      CATEGORY_OPTIONS.find((o) => o.value === data.category)?.label ??
+      data.category;
+
     setTimeout(() => {
+      addProduct({
+        name: data.name.trim(),
+        sku: data.sku?.trim() ?? '',
+        category: categoryLabel,
+        price: data.price,
+        stock: Number(data.stock) || 0,
+      });
       toast.success(
         'Producto creado',
-        `${data.name} se agrego correctamente al inventario`
+        `${data.name.trim()} se agrego correctamente al inventario`
       );
       reset(DEFAULT_VALUES);
       navigate('/products');
-    }, 1200);
+    }, 600);
   };
 
   const onInvalid = () => {
@@ -86,29 +95,35 @@ export default function NewProduct() {
   };
 
   return (
-    <form
-      className={styles.form}
-      onSubmit={handleSubmit(onSubmit, onInvalid)}
-      noValidate
-    >
-      <Card
-        header={
-          <div className={styles.cardHeader}>
-            <span className={styles.sectionTitle}>Nuevo producto</span>
-            <div className={styles.sectionBadges}>
-              <Badge variant="primary" size="sm">Nuevo</Badge>
-              <Badge
-                variant={watchedActive ? 'success' : 'neutral'}
-                size="sm"
-                withDot
-              >
-                {watchedActive ? 'Activo' : 'Inactivo'}
-              </Badge>
+    <div className={styles.page}>
+      <header className={styles.pageHeader}>
+        <div className={styles.headerContent}>
+          <div className={styles.headerLeft}>
+            <button
+              type="button"
+              className={styles.backButton}
+              onClick={() => navigate('/products')}
+              aria-label="Volver"
+              title="Volver a productos"
+            >
+              <ArrowLeft size={18} />
+            </button>
+            <div className={styles.titleBlock}>
+              <h1 className={styles.title}>Nuevo producto</h1>
+              <p className={styles.subtitle}>
+                Agrega un producto al inventario de tu negocio
+              </p>
             </div>
           </div>
-        }
-      >
-        <div className={styles.sections}>
+        </div>
+      </header>
+
+      <div className={styles.content}>
+        <form
+          className={styles.form}
+          onSubmit={handleSubmit(onSubmit, onInvalid)}
+          noValidate
+        >
           <FormGroup
             title="Informacion del producto"
             description="Datos basicos para identificar el producto en el inventario"
@@ -196,6 +211,7 @@ export default function NewProduct() {
                     value={opt.value}
                     label={opt.label}
                     helperText={opt.helper}
+                    fullWidth
                     {...register('type')}
                   />
                 ))}
@@ -237,30 +253,32 @@ export default function NewProduct() {
               />
             </div>
           </FormGroup>
-        </div>
-      </Card>
 
-      <div className={styles.footer}>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => navigate('/products')}
-          leftIcon={<X size={14} />}
-          disabled={isSubmitting}
-        >
-          Cancelar
-        </Button>
-        <Button
-          type="submit"
-          variant="primary"
-          leftIcon={<Save size={14} />}
-          isLoading={isSubmitting}
-        >
-          Guardar producto
-        </Button>
+          <div className={styles.footer}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate('/products')}
+              leftIcon={<X size={14} />}
+              disabled={isSubmitting}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              leftIcon={<Save size={14} />}
+              isLoading={isSubmitting}
+              disabled={!isValid || isSubmitting}
+            >
+              Guardar producto
+            </Button>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   );
 }
+
 
 

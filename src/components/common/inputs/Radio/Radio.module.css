@@ -168,3 +168,7 @@
   color: var(--color-danger);
   padding-left: calc(20px + var(--space-3));
 }
+
+.fullWidth {
+  width: 100%;
+}

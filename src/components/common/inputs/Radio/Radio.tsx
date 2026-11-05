@@ -11,6 +11,8 @@ export interface RadioProps
   error?: string;
   /** Tamaño del radio. */
   size?: 'sm' | 'md' | 'lg';
+  /** Si es true, ocupa el 100% del ancho del contenedor. */
+  fullWidth?: boolean;
 }
 
 export const Radio = forwardRef<HTMLInputElement, RadioProps>(
@@ -20,6 +22,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       helperText,
       error,
       size = 'md',
+      fullWidth = false,
       disabled,
       id,
       className,
@@ -35,6 +38,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       styles[size],
       error && styles.error,
       disabled && styles.disabled,
+      fullWidth && styles.fullWidth,
       className,
     ]
       .filter(Boolean)
