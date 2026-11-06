@@ -1,6 +1,16 @@
-﻿import { useState, useEffect, useMemo } from 'react';
+﻿import { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { Plus, FileText, Search, DollarSign, MoreVertical, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import {
+  Plus,
+  FileText,
+  Search,
+  DollarSign,
+  MoreVertical,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+} from 'lucide-react';
 import { Table, type TableColumn } from '../../../../components/common/data-display/Table';
 import { Badge } from '../../../../components/common/data-display/Badge';
 import { Button } from '../../../../components/common/actions/Button';
@@ -39,8 +49,13 @@ const formatBs = (amount: number): string =>
 
 const formatDate = (iso: string): string => {
   const [y, m, d] = iso.split('-');
-  return `${d}/${m}/${y}`;
+  return d + '/' + m + '/' + y;
 };
+
+interface MenuPosition {
+  top: number;
+  right: number;
+}
 
 export default function Billing() {
   const navigate = useNavigate();
@@ -51,11 +66,45 @@ export default function Billing() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const [menuPosition, setMenuPosition] = useState<MenuPosition>({ top: 0, right: 0 });
+  const menuButtonRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
 
   useEffect(() => {
     const t = setTimeout(() => setIsLoading(false), 600);
     return () => clearTimeout(t);
   }, []);
+
+  // Cierra el menu al hacer scroll o resize (para que no quede flotando mal posicionado)
+  useEffect(() => {
+    if (openMenuId === null) return;
+    const close = () => setOpenMenuId(null);
+    window.addEventListener('scroll', close, true);
+    window.addEventListener('resize', close);
+    return () => {
+      window.removeEventListener('scroll', close, true);
+      window.removeEventListener('resize', close);
+    };
+  }, [openMenuId]);
+
+  const handleOpenMenu = (invoiceId: number) => {
+    if (openMenuId === invoiceId) {
+      setOpenMenuId(null);
+      return;
+    }
+    const button = menuButtonRefs.current.get(invoiceId);
+    if (!button) return;
+    const rect = button.getBoundingClientRect();
+    setMenuPosition({
+      top: rect.bottom + 4,
+      right: window.innerWidth - rect.right,
+    });
+    setOpenMenuId(invoiceId);
+  };
+
+  const handleStatusChange = (invoiceId: number, status: InvoiceStatus) => {
+    updateStatus(invoiceId, status);
+    setOpenMenuId(null);
+  };
 
   const filtered = useMemo(() => {
     return invoices.filter((inv) => {
@@ -112,72 +161,24 @@ export default function Billing() {
       key: 'actions',
       header: '',
       align: 'right',
-      width: '100px',
+      width: '80px',
       render: (inv) => (
-        <div className={styles.actionsCell}>
-          <Button
-            variant="ghost"
-            size="sm"
-            iconOnly
-            aria-label={`Acciones para ${inv.number}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setOpenMenuId(openMenuId === inv.id ? null : inv.id);
-            }}
-          >
-            <MoreVertical size={16} />
-          </Button>
-          {openMenuId === inv.id && (
-            <>
-              <div
-                className={styles.menuBackdrop}
-                onClick={() => setOpenMenuId(null)}
-                aria-hidden="true"
-              />
-              <div className={styles.menu}>
-                {inv.status !== 'paid' && (
-                  <button
-                    type="button"
-                    className={styles.menuItem}
-                    onClick={() => {
-                      updateStatus(inv.id, 'paid');
-                      setOpenMenuId(null);
-                    }}
-                  >
-                    <CheckCircle2 size={14} />
-                    Marcar como pagada
-                  </button>
-                )}
-                {inv.status !== 'pending' && (
-                  <button
-                    type="button"
-                    className={styles.menuItem}
-                    onClick={() => {
-                      updateStatus(inv.id, 'pending');
-                      setOpenMenuId(null);
-                    }}
-                  >
-                    <Clock size={14} />
-                    Marcar como pendiente
-                  </button>
-                )}
-                {inv.status === 'pending' && (
-                  <button
-                    type="button"
-                    className={styles.menuItem}
-                    onClick={() => {
-                      updateStatus(inv.id, 'overdue');
-                      setOpenMenuId(null);
-                    }}
-                  >
-                    <AlertCircle size={14} />
-                    Marcar como vencida
-                  </button>
-                )}
-              </div>
-            </>
-          )}
-        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          iconOnly
+          aria-label={'Acciones para ' + inv.number}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleOpenMenu(inv.id);
+          }}
+          ref={(el) => {
+            if (el) menuButtonRefs.current.set(inv.id, el);
+            else menuButtonRefs.current.delete(inv.id);
+          }}
+        >
+          <MoreVertical size={16} />
+        </Button>
       ),
     },
   ];
@@ -224,7 +225,7 @@ export default function Billing() {
         <div className={styles.emptyWrapper}>
           <EmptyState
             title="No se encontraron facturas"
-            description="Prueba con otro término de búsqueda o cambia el filtro de estado."
+            description="Prueba con otro termino de busqueda o cambia el filtro de estado."
             icon={<Search size={32} />}
           />
         </div>
@@ -240,6 +241,59 @@ export default function Billing() {
       />
     );
   };
+
+  const activeInvoice = openMenuId !== null
+    ? invoices.find((i) => i.id === openMenuId)
+    : null;
+
+  const menuPortal = openMenuId !== null && activeInvoice
+    ? createPortal(
+        <>
+          <div
+            className={styles.menuBackdrop}
+            onClick={() => setOpenMenuId(null)}
+            aria-hidden="true"
+          />
+          <div
+            className={styles.menu}
+            style={{ top: menuPosition.top, right: menuPosition.right }}
+            role="menu"
+          >
+            {activeInvoice.status !== 'paid' && (
+              <button
+                type="button"
+                className={styles.menuItem}
+                onClick={() => handleStatusChange(activeInvoice.id, 'paid')}
+              >
+                <CheckCircle2 size={14} />
+                Marcar como pagada
+              </button>
+            )}
+            {activeInvoice.status !== 'pending' && (
+              <button
+                type="button"
+                className={styles.menuItem}
+                onClick={() => handleStatusChange(activeInvoice.id, 'pending')}
+              >
+                <Clock size={14} />
+                Marcar como pendiente
+              </button>
+            )}
+            {activeInvoice.status === 'pending' && (
+              <button
+                type="button"
+                className={styles.menuItem}
+                onClick={() => handleStatusChange(activeInvoice.id, 'overdue')}
+              >
+                <AlertCircle size={14} />
+                Marcar como vencida
+              </button>
+            )}
+          </div>
+        </>,
+        document.body
+      )
+    : null;
 
   return (
     <div className={styles.page}>
@@ -274,9 +328,8 @@ export default function Billing() {
 
         {renderContent()}
       </div>
+
+      {menuPortal}
     </div>
   );
 }
-
-
-
