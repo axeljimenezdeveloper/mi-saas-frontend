@@ -3,6 +3,7 @@
   Package,
   Receipt,
   Settings,
+  BookOpen,
   Moon,
   Sun,
   Bell,
@@ -23,6 +24,7 @@ const NAV_ITEMS: SidebarItem[] = [
   { label: 'Inventario', icon: <Package size={18} />, href: '/products' },
   { label: 'Facturacion', icon: <Receipt size={18} />, href: '/billing' },
   { label: 'Configuracion', icon: <Settings size={18} />, href: '/settings' },
+  { label: 'Documentacion', icon: <BookOpen size={18} />, href: '/docs' },
 ];
 
 export function AppLayout() {
@@ -133,3 +135,4 @@ export function AppLayout() {
     </MainLayout>
   );
 }
+
