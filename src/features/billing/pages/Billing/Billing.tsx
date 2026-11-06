@@ -19,6 +19,7 @@ import { Select } from '../../../../components/common/inputs/Select';
 import { Skeleton } from '../../../../components/feedback/loading/Skeleton';
 import { EmptyState } from '../../../../components/feedback/states/EmptyState';
 import { useInvoicesStore, type Invoice, type InvoiceStatus } from '../../../../stores';
+import { useToast } from '../../../../components/feedback/alerts/Toast';
 import styles from './Billing.module.css';
 
 const STATUS_LABELS: Record<InvoiceStatus, string> = {
@@ -61,6 +62,7 @@ export default function Billing() {
   const navigate = useNavigate();
   const invoices = useInvoicesStore((s) => s.invoices);
   const updateStatus = useInvoicesStore((s) => s.updateStatus);
+  const toast = useToast();
 
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -102,8 +104,30 @@ export default function Billing() {
   };
 
   const handleStatusChange = (invoiceId: number, status: InvoiceStatus) => {
+    const invoice = invoices.find((i) => i.id === invoiceId);
     updateStatus(invoiceId, status);
     setOpenMenuId(null);
+
+    if (invoice) {
+      const statusLabel =
+        status === 'paid'
+          ? 'pagada'
+          : status === 'pending'
+          ? 'pendiente'
+          : 'vencida';
+      const toastVariant =
+        status === 'paid'
+          ? 'success'
+          : status === 'pending'
+          ? 'info'
+          : 'warning';
+
+      toast[toastVariant](
+        'Factura ' + invoice.number + ' marcada como ' + statusLabel,
+        'Cliente: ' + invoice.client + ' · Total: ' + formatBs(invoice.total),
+        { category: 'billing', actionUrl: '/billing' }
+      );
+    }
   };
 
   const filtered = useMemo(() => {
@@ -329,6 +353,8 @@ export default function Billing() {
     </div>
   );
 }
+
+
 
 
 
