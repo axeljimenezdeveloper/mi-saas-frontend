@@ -1,6 +1,15 @@
 ﻿import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Pencil, Trash2, Package, Search } from 'lucide-react';
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  Package,
+  Search,
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown,
+} from 'lucide-react';
 import { Table, type TableColumn } from '../../../../components/common/data-display/Table';
 import { Badge } from '../../../../components/common/data-display/Badge';
 import { Button } from '../../../../components/common/actions/Button';
@@ -9,6 +18,7 @@ import { Select } from '../../../../components/common/inputs/Select';
 import { Skeleton } from '../../../../components/feedback/loading/Skeleton';
 import { EmptyState } from '../../../../components/feedback/states/EmptyState';
 import { ConfirmDialog } from '../../../../components/common/overlay/ConfirmDialog';
+import { Pagination } from '../../../../components/common/navigation/Pagination';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { useProductsStore, type Product, type StockStatus } from '../../../../stores';
 import styles from './ProductsList.module.css';
@@ -32,6 +42,11 @@ const STATUS_OPTIONS = [
   { value: 'out-of-stock', label: 'Agotados' },
 ];
 
+const ITEMS_PER_PAGE = 10;
+
+type SortField = 'name' | 'price' | 'stock' | null;
+type SortDirection = 'asc' | 'desc';
+
 const formatBs = (amount: number): string =>
   new Intl.NumberFormat('es-VE', {
     style: 'currency',
@@ -50,11 +65,19 @@ export default function ProductsList() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortField, setSortField] = useState<SortField>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
   useEffect(() => {
     const t = setTimeout(() => setIsLoading(false), 600);
     return () => clearTimeout(t);
   }, []);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, statusFilter]);
 
   const filtered = useMemo(() => {
     return products.filter((p) => {
@@ -69,6 +92,47 @@ export default function ProductsList() {
     });
   }, [products, search, statusFilter]);
 
+  const sorted = useMemo(() => {
+    if (!sortField) return filtered;
+    return [...filtered].sort((a, b) => {
+      let cmp = 0;
+      if (sortField === 'name') {
+        cmp = a.name.localeCompare(b.name);
+      } else if (sortField === 'price') {
+        cmp = a.price - b.price;
+      } else if (sortField === 'stock') {
+        cmp = a.stock - b.stock;
+      }
+      return sortDirection === 'asc' ? cmp : -cmp;
+    });
+  }, [filtered, sortField, sortDirection]);
+
+  const totalPages = Math.ceil(sorted.length / ITEMS_PER_PAGE);
+  const paginated = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return sorted.slice(start, start + ITEMS_PER_PAGE);
+  }, [sorted, currentPage]);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      if (sortDirection === 'asc') {
+        setSortDirection('desc');
+      } else {
+        setSortField(null);
+        setSortDirection('asc');
+      }
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) return <ArrowUpDown size={12} className={styles.sortIcon} />;
+    if (sortDirection === 'asc') return <ArrowUp size={12} className={styles.sortIconActive} />;
+    return <ArrowDown size={12} className={styles.sortIconActive} />;
+  };
+
   const handleConfirmDelete = () => {
     if (!productToDelete) return;
     removeProduct(productToDelete.id);
@@ -78,6 +142,10 @@ export default function ProductsList() {
       { category: 'inventory' }
     );
     setProductToDelete(null);
+    // Si al borrar se queda vacia la pagina actual, ir a la anterior
+    if (paginated.length === 1 && currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   const columns: TableColumn<Product>[] = [
@@ -218,12 +286,21 @@ export default function ProductsList() {
     }
 
     return (
-      <Table
-        columns={columns}
-        data={filtered}
-        getRowKey={(p) => p.id}
-        emptyMessage="No hay productos registrados"
-      />
+      <>
+        <Table
+          columns={columns}
+          data={paginated}
+          getRowKey={(p) => p.id}
+          emptyMessage="No hay productos registrados"
+        />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          totalItems={sorted.length}
+          itemsPerPage={ITEMS_PER_PAGE}
+        />
+      </>
     );
   };
 
@@ -258,6 +335,31 @@ export default function ProductsList() {
           </Button>
         </div>
 
+        <div className={styles.sortBar}>
+          <span className={styles.sortLabel}>Ordenar por:</span>
+          <button
+            type="button"
+            className={[styles.sortButton, sortField === 'name' && styles.sortButtonActive].filter(Boolean).join(' ')}
+            onClick={() => handleSort('name')}
+          >
+            Nombre {getSortIcon('name')}
+          </button>
+          <button
+            type="button"
+            className={[styles.sortButton, sortField === 'price' && styles.sortButtonActive].filter(Boolean).join(' ')}
+            onClick={() => handleSort('price')}
+          >
+            Precio {getSortIcon('price')}
+          </button>
+          <button
+            type="button"
+            className={[styles.sortButton, sortField === 'stock' && styles.sortButtonActive].filter(Boolean).join(' ')}
+            onClick={() => handleSort('stock')}
+          >
+            Stock {getSortIcon('stock')}
+          </button>
+        </div>
+
         {renderContent()}
       </div>
 
@@ -268,7 +370,7 @@ export default function ProductsList() {
         title="Eliminar producto"
         message={
           <>
-            Estas seguro que quieres eliminar{' '}
+            ¿Estas seguro que quieres eliminar{' '}
             <strong>{productToDelete?.name}</strong>?
             <br />
             Esta accion no se puede deshacer.
@@ -281,4 +383,3 @@ export default function ProductsList() {
     </div>
   );
 }
-
