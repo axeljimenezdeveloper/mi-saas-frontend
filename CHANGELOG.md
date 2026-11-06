@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.8.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.7.0...v0.8.0) (2026-11-06)
+
+### Features
+
+* add business-focused documentation page with sidebar entry ([8dd879e](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/8dd879eda4247708896e83a363ab2539103bf895))
+* add modal, confirm dialog for deletions, and dashboard widget limits ([cc5aead](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/cc5aead949096242d1a4e7181a5a1a740389e061))
+
+### Bug Fixes
+
+* render billing actions menu with portal to prevent clipping ([ded4ed2](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/ded4ed25fb07808d02d3a7a0016cfb813cd7ebdc))
+* render billing actions menu with portal to prevent clipping ([377976d](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/377976d694b673893d3d5b8992f46fd160d610a1))
+
 ## [0.7.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.6.0...v0.7.0) (2026-11-05)
 
 ### Features
