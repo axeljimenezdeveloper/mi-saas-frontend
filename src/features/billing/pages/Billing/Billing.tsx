@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo, useRef } from 'react';
+﻿import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -67,7 +67,6 @@ export default function Billing() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
   const [menuPosition, setMenuPosition] = useState<MenuPosition>({ top: 0, right: 0 });
-  const menuButtonRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
 
   useEffect(() => {
     const t = setTimeout(() => setIsLoading(false), 600);
@@ -86,14 +85,15 @@ export default function Billing() {
     };
   }, [openMenuId]);
 
-  const handleOpenMenu = (invoiceId: number) => {
+  const handleOpenMenu = (
+    invoiceId: number,
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
     if (openMenuId === invoiceId) {
       setOpenMenuId(null);
       return;
     }
-    const button = menuButtonRefs.current.get(invoiceId);
-    if (!button) return;
-    const rect = button.getBoundingClientRect();
+    const rect = e.currentTarget.getBoundingClientRect();
     setMenuPosition({
       top: rect.bottom + 4,
       right: window.innerWidth - rect.right,
@@ -170,11 +170,7 @@ export default function Billing() {
           aria-label={'Acciones para ' + inv.number}
           onClick={(e) => {
             e.stopPropagation();
-            handleOpenMenu(inv.id);
-          }}
-          ref={(el) => {
-            if (el) menuButtonRefs.current.set(inv.id, el);
-            else menuButtonRefs.current.delete(inv.id);
+            handleOpenMenu(inv.id, e);
           }}
         >
           <MoreVertical size={16} />
@@ -333,3 +329,6 @@ export default function Billing() {
     </div>
   );
 }
+
+
+
