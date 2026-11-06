@@ -24,3 +24,13 @@ export type {
   CompanyIva,
   BusinessType,
 } from './companyStore';
+export {
+  useNotificationsStore,
+  useNotificationsActions,
+  selectUnreadCount,
+} from './notificationsStore';
+export type {
+  AppNotification,
+  NotificationsStore,
+  NotificationVariant,
+} from './notificationsStore';

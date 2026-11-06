@@ -10,6 +10,7 @@ import Billing from '../features/billing/pages/Billing';
 import BillingNew from '../features/billing/pages/BillingNew';
 import Settings from '../features/settings/pages/Settings';
 import Docs from '../features/docs/pages/Docs';
+import Notifications from '../features/notifications/pages/Notifications';
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,7 @@ const router = createBrowserRouter([
       { path: 'billing/new', element: <BillingNew /> },
       { path: 'settings', element: <Settings /> },
       { path: 'docs', element: <Docs /> },
+      { path: 'notifications', element: <Notifications /> },
     ],
   },
   {
@@ -52,4 +54,3 @@ const router = createBrowserRouter([
 export function AppRouter() {
   return <RouterProvider router={router} />;
 }
-

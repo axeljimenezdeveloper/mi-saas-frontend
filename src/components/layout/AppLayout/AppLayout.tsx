@@ -6,7 +6,6 @@
   BookOpen,
   Moon,
   Sun,
-  Bell,
   LogOut,
 } from 'lucide-react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
@@ -15,6 +14,7 @@ import { Avatar } from '../../common/data-display/Avatar';
 import { Sidebar, type SidebarItem } from '../Sidebar';
 import { Header } from '../Header';
 import { MainLayout } from '../MainLayout';
+import { NotificationPanel } from '../../feedback/notifications/NotificationPanel';
 import { useToast } from '../../feedback/alerts/Toast';
 import { useThemeStore, useSidebarStore, useAuthStore } from '../../../stores';
 import styles from './AppLayout.module.css';
@@ -93,14 +93,7 @@ export function AppLayout() {
           }
           actions={
             <>
-              <Button
-                variant="ghost"
-                size="sm"
-                iconOnly
-                aria-label="Notificaciones"
-              >
-                <Bell size={18} />
-              </Button>
+              <NotificationPanel />
               <Button
                 variant="ghost"
                 size="sm"
@@ -135,4 +128,3 @@ export function AppLayout() {
     </MainLayout>
   );
 }
-
