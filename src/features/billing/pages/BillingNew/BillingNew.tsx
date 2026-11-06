@@ -191,7 +191,8 @@ export default function BillingNew() {
       });
       toast.success(
         'Factura creada',
-        `Factura generada para ${data.client} por ${formatBs(totals.total)}`
+        `Factura generada para ${data.client} por ${formatBs(totals.total)}`,
+          { category: 'billing', actionUrl: '/billing' }
       );
       navigate('/billing');
     }, 600);

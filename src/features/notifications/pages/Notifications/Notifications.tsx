@@ -80,7 +80,7 @@ function timeAgo(timestamp: number): string {
 export default function Notifications() {
   const navigate = useNavigate();
   const notifications = useNotificationsStore((s) => s.notifications);
-  const { markAsRead, markAllAsRead, removeNotification, clearAll, clearByCategory } =
+  const { markAsRead, markAllAsRead, removeNotification, clearAll } =
     useNotificationsActions();
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
@@ -345,3 +345,4 @@ function NotificationRow({
     </li>
   );
 }
+

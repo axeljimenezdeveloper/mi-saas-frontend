@@ -74,7 +74,8 @@ export default function ProductsList() {
     removeProduct(productToDelete.id);
     toast.success(
       'Producto eliminado',
-      productToDelete.name + ' se quito del inventario'
+      productToDelete.name + ' se quito del inventario',
+      { category: 'inventory' }
     );
     setProductToDelete(null);
   };
@@ -280,3 +281,4 @@ export default function ProductsList() {
     </div>
   );
 }
+

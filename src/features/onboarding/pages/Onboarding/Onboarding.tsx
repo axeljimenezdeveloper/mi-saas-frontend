@@ -96,7 +96,8 @@ export default function Onboarding() {
     reset(DEMO_VALUES);
     toast.info(
       'Datos de ejemplo cargados',
-      'Puedes editarlos antes de finalizar'
+      'Puedes editarlos antes de finalizar',
+      { category: 'system' }
     );
   };
 
@@ -121,7 +122,8 @@ export default function Onboarding() {
     completeOnboarding();
     toast.success(
       '¡Bienvenido a InvenSaaS!',
-      `${data.name.trim()} esta listo para comenzar`
+      `${data.name.trim()} esta listo para comenzar`,
+      { category: 'system' }
     );
     navigate('/dashboard');
   };

@@ -43,7 +43,7 @@ export default function Login() {
     clearError();
     const success = await login(data.email, data.password);
     if (success) {
-      toast.success('Bienvenido', 'Sesion iniciada correctamente');
+      toast.success('Bienvenido', 'Sesion iniciada correctamente', { category: 'auth' });
       const isConfigured = useCompanyStore.getState().isConfigured;
       navigate(isConfigured ? '/dashboard' : '/onboarding');
     }
@@ -58,7 +58,8 @@ export default function Login() {
       if (success) {
         toast.success(
           'Modo demo activado',
-          'Se cargaron productos, facturas y empresa de ejemplo'
+          'Se cargaron productos, facturas y empresa de ejemplo',
+          { category: 'system' }
         );
         navigate('/dashboard');
       }
@@ -182,3 +183,4 @@ export default function Login() {
     </div>
   );
 }
+

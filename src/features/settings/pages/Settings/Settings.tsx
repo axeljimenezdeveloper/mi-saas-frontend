@@ -90,12 +90,12 @@ export default function Settings() {
       defaultIva: data.defaultIva,
       businessType: preferences.businessType,
     });
-    toast.success('Configuracion guardada', 'Los cambios fueron aplicados');
+    toast.success('Configuracion guardada', 'Los cambios fueron aplicados', { category: 'system' });
   };
 
   const handleLogout = () => {
     logout();
-    toast.success('Sesion cerrada', 'Hasta pronto');
+    toast.success('Sesion cerrada', 'Hasta pronto', { category: 'auth' });
     navigate('/login');
   };
 
@@ -108,7 +108,8 @@ export default function Settings() {
     clearAllData();
     toast.success(
       'Datos restablecidos',
-      'Seras redirigido al onboarding'
+      'Seras redirigido al onboarding',
+      { category: 'system' }
     );
     navigate('/onboarding');
   };
@@ -286,6 +287,7 @@ export default function Settings() {
     </div>
   );
 }
+
 
 
 

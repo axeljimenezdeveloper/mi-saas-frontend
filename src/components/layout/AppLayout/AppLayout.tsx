@@ -43,7 +43,7 @@ export function AppLayout() {
 
   const handleLogout = () => {
     logout();
-    toast.success('Sesion cerrada', 'Hasta pronto');
+    toast.success('Sesion cerrada', 'Hasta pronto', { category: 'auth' });
     navigate('/login');
   };
 
@@ -128,3 +128,4 @@ export function AppLayout() {
     </MainLayout>
   );
 }
+

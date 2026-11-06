@@ -188,7 +188,8 @@ export default function NewProduct() {
         });
         toast.success(
           'Producto actualizado',
-          `${data.name.trim()} se actualizo correctamente`
+          `${data.name.trim()} se actualizo correctamente`,
+          { category: 'inventory' }
         );
       } else {
         addProduct({
@@ -201,7 +202,8 @@ export default function NewProduct() {
         });
         toast.success(
           'Producto creado',
-          `${data.name.trim()} se agrego al inventario`
+          `${data.name.trim()} se agrego al inventario`,
+          { category: 'inventory' }
         );
       }
       navigate('/products');
@@ -491,6 +493,7 @@ export default function NewProduct() {
     </div>
   );
 }
+
 
 
 
