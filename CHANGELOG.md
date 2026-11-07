@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.9.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.8.0...v0.9.0) (2026-11-07)
+
+### Features
+
+* add notifications page with filtering, categories, and bulk actions ([8d4781d](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/8d4781d73d9e25e76a0dea6ca486e23d0af5ef88))
+* add pagination and date sorting to billing list ([deebf84](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/deebf84ddf6e87d1bbea45dbae83b48fc45a2f23))
+* add pagination component and integrate with sorting in products list ([ff6c0bf](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/ff6c0bfd349123b619bbdea6ad3a26d5fdaf53f5))
+* add pagination to notifications page ([dc180c3](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/dc180c374c5c34494269964b19f1865499a5ec4e))
+* categorize all toasts by domain (inventory, billing, auth, system) ([95ae427](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/95ae42752488d96fc4f03504505175dc6e436a84))
+* notify on invoice status changes with category and action url ([bc99297](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/bc99297f3942c62ac516bea81aa3b2965e9f9dea))
+
 ## [0.8.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.7.0...v0.8.0) (2026-11-06)
 
 ### Features
