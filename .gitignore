@@ -24,3 +24,12 @@ dist-ssr
 *.sw?
 coverage
 tree.txt
+
+# Environment variables (NUNCA commitear)
+.env
+.env.local
+.env.*.local
+
+# Archivos de dumps temporales
+cambios-frontend.txt
+schemas-dump.txt
