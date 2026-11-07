@@ -214,3 +214,10 @@
     font-size: var(--text-xl);
   }
 }
+
+/* ============ Remember me row ============ */
+.rememberRow {
+  display: flex;
+  align-items: center;
+  padding-top: var(--space-1);
+}

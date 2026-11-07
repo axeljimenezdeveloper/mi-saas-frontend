@@ -9,23 +9,22 @@ export interface User {
 }
 
 export interface AuthStore {
-  /** Usuario logueado o null si no hay sesion. */
   user: User | null;
-  /** Si es true, hay una operacion de login en curso. */
   isLoading: boolean;
-  /** Error del ultimo intento de login (o null). */
   error: string | null;
-  /** Intenta iniciar sesion. Retorna true si fue exitoso. */
-  login: (email: string, password: string) => Promise<boolean>;
-  /** Cierra la sesion actual. */
+  /** Si es true, la sesion se persiste en localStorage. */
+  rememberMe: boolean;
+  login: (
+    email: string,
+    password: string,
+    rememberMe?: boolean
+  ) => Promise<boolean>;
   logout: () => void;
-  /** Limpia el error del login. */
   clearError: () => void;
 }
 
 const STORAGE_KEY = 'mi-saas-auth-user';
 
-/** Credenciales de prueba (en un SaaS real vendrian del backend). */
 const MOCK_CREDENTIALS = {
   email: 'admin@vendra.com',
   password: 'admin123',
@@ -44,11 +43,15 @@ export const useAuthStore = create<AuthStore>()(
       user: null,
       isLoading: false,
       error: null,
+      rememberMe: true,
 
-      login: async (email: string, password: string): Promise<boolean> => {
-        set({ isLoading: true, error: null });
+      login: async (
+        email: string,
+        password: string,
+        rememberMe = true
+      ): Promise<boolean> => {
+        set({ isLoading: true, error: null, rememberMe });
 
-        // Simula latencia de red
         await new Promise((resolve) => setTimeout(resolve, 800));
 
         if (
@@ -72,13 +75,14 @@ export const useAuthStore = create<AuthStore>()(
     }),
     {
       name: STORAGE_KEY,
-      // Solo persistimos el user. isLoading y error son transitorios.
-      partialize: (state) => ({ user: state.user }),
+      // Solo persistimos user si rememberMe=true. isLoading y error son
+      // transitorios; rememberMe no se persiste (es por sesion).
+      partialize: (state) => ({
+        user: state.rememberMe ? state.user : null,
+      }),
     }
   )
 );
 
-/** Selector: true si hay sesion activa. */
 export const selectIsAuthenticated = (state: AuthStore): boolean =>
   state.user !== null;
-

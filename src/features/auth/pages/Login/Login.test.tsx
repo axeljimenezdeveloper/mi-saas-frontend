@@ -34,7 +34,7 @@ describe('Login', () => {
   beforeEach(() => {
     localStorage.clear();
     mockNavigate.mockClear();
-    useAuthStore.setState({ user: null, isLoading: false, error: null });
+    useAuthStore.setState({ user: null, isLoading: false, error: null, rememberMe: true });
     useToastStore.setState({ toasts: [] });
     useCompanyStore.setState({
       company: { name: '', rif: '', address: '' },
@@ -150,5 +150,6 @@ describe('Login', () => {
     );
   });
 });
+
 
 

@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,6 +6,7 @@ import { Package, Mail, Lock, Eye, EyeOff, Sun, Moon, LogIn } from 'lucide-react
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { FormField } from '../../../../components/forms/FormField';
 import { Input } from '../../../../components/common/inputs/Input';
+import { Checkbox } from '../../../../components/common/inputs/Checkbox';
 import { Button } from '../../../../components/common/actions/Button';
 import { Alert } from '../../../../components/feedback/alerts/Alert';
 import { useThemeStore, useAuthStore, useCompanyStore } from '../../../../stores';
@@ -24,9 +25,19 @@ export default function Login() {
   const isLoading = useAuthStore((s) => s.isLoading);
   const error = useAuthStore((s) => s.error);
   const clearError = useAuthStore((s) => s.clearError);
+  const isAuthenticated = useAuthStore((s) => s.user !== null);
 
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [isDemoLoading, setIsDemoLoading] = useState(false);
+
+  // Auto-redirect: si ya hay sesion, ir a dashboard u onboarding
+  useEffect(() => {
+    if (isAuthenticated) {
+      const isConfigured = useCompanyStore.getState().isConfigured;
+      navigate(isConfigured ? '/dashboard' : '/onboarding', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const {
     register,
@@ -41,11 +52,11 @@ export default function Login() {
 
   const onSubmit = async (data: LoginFormData) => {
     clearError();
-    const success = await login(data.email, data.password);
+    const success = await login(data.email, data.password, rememberMe);
     if (success) {
-      toast.success('Bienvenido', 'Sesion iniciada correctamente', { category: 'auth' });
-      const isConfigured = useCompanyStore.getState().isConfigured;
-      navigate(isConfigured ? '/dashboard' : '/onboarding');
+      toast.success('Bienvenido', 'Sesion iniciada correctamente', {
+        category: 'auth',
+      });
     }
   };
 
@@ -54,14 +65,13 @@ export default function Login() {
     setIsDemoLoading(true);
     try {
       seedDemoData();
-      const success = await login('admin@vendra.com', 'admin123');
+      const success = await login('admin@vendra.com', 'admin123', rememberMe);
       if (success) {
         toast.success(
           'Modo demo activado',
           'Se cargaron productos, facturas y empresa de ejemplo',
           { category: 'system' }
         );
-        navigate('/dashboard');
       }
     } finally {
       setIsDemoLoading(false);
@@ -145,6 +155,15 @@ export default function Login() {
             />
           </FormField>
 
+          <div className={styles.rememberRow}>
+            <Checkbox
+              id="login-remember"
+              label="Recordarme"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />
+          </div>
+
           <Button
             type="submit"
             variant="primary"
@@ -183,7 +202,3 @@ export default function Login() {
     </div>
   );
 }
-
-
-
-

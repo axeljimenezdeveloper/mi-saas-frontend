@@ -70,7 +70,9 @@ export const useCompanyStore = create<CompanyStore>()(
       partialize: (state) => ({
         company: state.company,
         preferences: state.preferences,
+        isConfigured: state.isConfigured,
       }),
     }
   )
 );
+
