@@ -322,3 +322,125 @@
     height: 200px;
   }
 }
+
+/* ============ Stat cards (rediseño) ============ */
+.statCard {
+  /* Sin hover: las tarjetas de stats son estáticas */
+}
+
+.statTop {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.statIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  flex-shrink: 0;
+}
+
+.iconPrimary {
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.iconSuccess {
+  background-color: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.iconWarning {
+  background-color: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+.iconInfo {
+  background-color: var(--color-info-soft);
+  color: var(--color-info);
+}
+
+.statInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.statValue {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.statValueCurrency {
+  font-size: var(--text-2xl);
+}
+
+/* Progress bar segmentada */
+.statBar {
+  display: flex;
+  height: 6px;
+  gap: 2px;
+  margin-bottom: var(--space-3);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background-color: var(--color-bg-subtle);
+}
+
+.barSuccess,
+.barWarning,
+.barDanger,
+.barInfo {
+  border-radius: var(--radius-full);
+  transition: flex var(--duration-normal) var(--ease-out);
+}
+
+.barSuccess { background-color: var(--color-success); }
+.barWarning { background-color: var(--color-warning); }
+.barDanger { background-color: var(--color-danger); }
+.barInfo { background-color: var(--color-info); }
+
+/* Leyenda */
+.statLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.dotSuccess { background-color: var(--color-success); }
+.dotWarning { background-color: var(--color-warning); }
+.dotDanger { background-color: var(--color-danger); }
+.dotInfo { background-color: var(--color-info); }
+
+/* Ellipsis en el saludo para nombres largos */
+.subtitle {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+

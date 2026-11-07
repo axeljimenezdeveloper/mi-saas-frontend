@@ -25,26 +25,25 @@ import { EmptyState } from '../../../../components/feedback/states/EmptyState';
 import {
   useProductsStore,
   useInvoicesStore,
-  useAuthStore,
+  useCompanyStore,
 } from '../../../../stores';
 import styles from './Dashboard.module.css';
 
 const formatBs = (amount: number): string =>
+  'Bs. ' +
   new Intl.NumberFormat('es-VE', {
-    style: 'currency',
-    currency: 'VES',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
 
 const formatDate = (iso: string): string => {
   const [y, m, d] = iso.split('-');
-  return `${d}/${m}/${y}`;
+  return d + '/' + m + '/' + y;
 };
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const user = useAuthStore((s) => s.user);
+  const companyName = useCompanyStore((s) => s.company.name);
   const products = useProductsStore((s) => s.products);
   const invoices = useInvoicesStore((s) => s.invoices);
 
@@ -58,6 +57,7 @@ export default function Dashboard() {
     const overdueInvoices = invoices.filter((i) => i.status === 'overdue');
 
     const totalRevenue = paidInvoices.reduce((acc, i) => acc + i.total, 0);
+    const totalPending = pendingInvoices.reduce((acc, i) => acc + i.total, 0);
 
     return {
       activeProducts,
@@ -67,12 +67,12 @@ export default function Dashboard() {
       pendingInvoices: pendingInvoices.length,
       overdueInvoices: overdueInvoices.length,
       totalRevenue,
+      totalPending,
       totalProducts: products.length,
       totalInvoices: invoices.length,
     };
   }, [products, invoices]);
 
-  // Datos para el grafico: ventas por dia (ultimos 7 dias)
   const chartData = useMemo(() => {
     const today = new Date();
     const days: { label: string; revenue: number; date: string }[] = [];
@@ -107,14 +107,18 @@ export default function Dashboard() {
 
   const hasData = products.length > 0 || invoices.length > 0;
 
+  const greeting = companyName
+    ? 'Hola, ' + companyName
+    : 'Resumen general de tu negocio';
+
   return (
     <div className={styles.page}>
       <header className={styles.pageHeader}>
         <div className={styles.headerContent}>
           <div className={styles.titleBlock}>
             <h1 className={styles.title}>Dashboard</h1>
-            <p className={styles.subtitle}>
-              {user?.name ? `Hola, ${user.name.split(' ')[0]}` : 'Resumen general de tu negocio'}
+            <p className={styles.subtitle} title={companyName || undefined}>
+              {greeting}
             </p>
           </div>
         </div>
@@ -141,75 +145,163 @@ export default function Dashboard() {
           <>
             {/* ============ STATS ============ */}
             <div className={styles.statsGrid}>
-              <Card padding="md">
-                <div className={styles.stat}>
-                  <div className={`${styles.iconWrapper} ${styles.primary}`}>
+              {/* Productos */}
+              <Card padding="md" className={styles.statCard}>
+                <div className={styles.statTop}>
+                  <div className={`${styles.statIcon} ${styles.iconPrimary}`}>
                     <Package size={22} />
                   </div>
-                  <div className={styles.statContent}>
-                    <p className={styles.statLabel}>Productos</p>
-                    <p className={styles.statValue}>{metrics.totalProducts}</p>
-                    <div className={styles.statBreakdown}>
-                      <span className={styles.dotSuccess} />
-                      {metrics.activeProducts} activos ·{' '}
-                      <span className={styles.dotWarning} />
-                      {metrics.lowStockProducts} bajos ·{' '}
-                      <span className={styles.dotDanger} />
-                      {metrics.outOfStockProducts} agotados
-                    </div>
+                  <div className={styles.statInfo}>
+                    <span className={styles.statLabel}>Productos</span>
+                    <span className={styles.statValue}>{metrics.totalProducts}</span>
                   </div>
+                </div>
+                {metrics.totalProducts > 0 && (
+                  <div className={styles.statBar}>
+                    <span
+                      className={styles.barSuccess}
+                      style={{ flex: metrics.activeProducts }}
+                    />
+                    <span
+                      className={styles.barWarning}
+                      style={{ flex: metrics.lowStockProducts }}
+                    />
+                    <span
+                      className={styles.barDanger}
+                      style={{ flex: metrics.outOfStockProducts }}
+                    />
+                  </div>
+                )}
+                <div className={styles.statLegend}>
+                  <span className={styles.legendItem}>
+                    <span className={`${styles.dot} ${styles.dotSuccess}`} />
+                    {metrics.activeProducts} activos
+                  </span>
+                  <span className={styles.legendItem}>
+                    <span className={`${styles.dot} ${styles.dotWarning}`} />
+                    {metrics.lowStockProducts} bajos
+                  </span>
+                  <span className={styles.legendItem}>
+                    <span className={`${styles.dot} ${styles.dotDanger}`} />
+                    {metrics.outOfStockProducts} agotados
+                  </span>
                 </div>
               </Card>
 
-              <Card padding="md">
-                <div className={styles.stat}>
-                  <div className={`${styles.iconWrapper} ${styles.success}`}>
+              {/* Facturas */}
+              <Card padding="md" className={styles.statCard}>
+                <div className={styles.statTop}>
+                  <div className={`${styles.statIcon} ${styles.iconSuccess}`}>
                     <Receipt size={22} />
                   </div>
-                  <div className={styles.statContent}>
-                    <p className={styles.statLabel}>Facturas</p>
-                    <p className={styles.statValue}>{metrics.totalInvoices}</p>
-                    <div className={styles.statBreakdown}>
-                      <span className={styles.dotSuccess} />
-                      {metrics.paidInvoices} pagadas ·{' '}
-                      <span className={styles.dotWarning} />
-                      {metrics.pendingInvoices} pendientes ·{' '}
-                      <span className={styles.dotDanger} />
-                      {metrics.overdueInvoices} vencidas
-                    </div>
+                  <div className={styles.statInfo}>
+                    <span className={styles.statLabel}>Facturas</span>
+                    <span className={styles.statValue}>{metrics.totalInvoices}</span>
                   </div>
+                </div>
+                {metrics.totalInvoices > 0 && (
+                  <div className={styles.statBar}>
+                    <span
+                      className={styles.barSuccess}
+                      style={{ flex: metrics.paidInvoices }}
+                    />
+                    <span
+                      className={styles.barWarning}
+                      style={{ flex: metrics.pendingInvoices }}
+                    />
+                    <span
+                      className={styles.barDanger}
+                      style={{ flex: metrics.overdueInvoices }}
+                    />
+                  </div>
+                )}
+                <div className={styles.statLegend}>
+                  <span className={styles.legendItem}>
+                    <span className={`${styles.dot} ${styles.dotSuccess}`} />
+                    {metrics.paidInvoices} pagadas
+                  </span>
+                  <span className={styles.legendItem}>
+                    <span className={`${styles.dot} ${styles.dotWarning}`} />
+                    {metrics.pendingInvoices} pendientes
+                  </span>
+                  <span className={styles.legendItem}>
+                    <span className={`${styles.dot} ${styles.dotDanger}`} />
+                    {metrics.overdueInvoices} vencidas
+                  </span>
                 </div>
               </Card>
 
-              <Card padding="md">
-                <div className={styles.stat}>
-                  <div className={`${styles.iconWrapper} ${styles.info}`}>
+              {/* Ventas cobradas */}
+              <Card padding="md" className={styles.statCard}>
+                <div className={styles.statTop}>
+                  <div className={`${styles.statIcon} ${styles.iconInfo}`}>
                     <TrendingUp size={22} />
                   </div>
-                  <div className={styles.statContent}>
-                    <p className={styles.statLabel}>Ventas cobradas</p>
-                    <p className={styles.statValue}>{formatBs(metrics.totalRevenue)}</p>
-                    <div className={styles.statBreakdown}>
-                      De facturas pagadas
-                    </div>
+                  <div className={styles.statInfo}>
+                    <span className={styles.statLabel}>Ventas cobradas</span>
+                    <span className={`${styles.statValue} ${styles.statValueCurrency}`}>
+                      {formatBs(metrics.totalRevenue)}
+                    </span>
                   </div>
+                </div>
+                {(metrics.totalRevenue > 0 || metrics.totalPending > 0) && (
+                  <div className={styles.statBar}>
+                    <span
+                      className={styles.barSuccess}
+                      style={{ flex: metrics.totalRevenue || 1 }}
+                    />
+                    <span
+                      className={styles.barInfo}
+                      style={{ flex: metrics.totalPending || 1 }}
+                    />
+                  </div>
+                )}
+                <div className={styles.statLegend}>
+                  <span className={styles.legendItem}>
+                    <span className={`${styles.dot} ${styles.dotSuccess}`} />
+                    {metrics.paidInvoices} pagadas
+                  </span>
+                  <span className={styles.legendItem}>
+                    <span className={`${styles.dot} ${styles.dotInfo}`} />
+                    {formatBs(metrics.totalPending)} por cobrar
+                  </span>
                 </div>
               </Card>
 
-              <Card padding="md">
-                <div className={styles.stat}>
-                  <div className={`${styles.iconWrapper} ${styles.warning}`}>
+              {/* Alertas */}
+              <Card padding="md" className={styles.statCard}>
+                <div className={styles.statTop}>
+                  <div className={`${styles.statIcon} ${styles.iconWarning}`}>
                     <AlertTriangle size={22} />
                   </div>
-                  <div className={styles.statContent}>
-                    <p className={styles.statLabel}>Alertas de stock</p>
-                    <p className={styles.statValue}>
+                  <div className={styles.statInfo}>
+                    <span className={styles.statLabel}>Alertas de stock</span>
+                    <span className={styles.statValue}>
                       {metrics.lowStockProducts + metrics.outOfStockProducts}
-                    </p>
-                    <div className={styles.statBreakdown}>
-                      Productos requieren atencion
-                    </div>
+                    </span>
                   </div>
+                </div>
+                {(metrics.lowStockProducts + metrics.outOfStockProducts) > 0 && (
+                  <div className={styles.statBar}>
+                    <span
+                      className={styles.barWarning}
+                      style={{ flex: metrics.lowStockProducts || 1 }}
+                    />
+                    <span
+                      className={styles.barDanger}
+                      style={{ flex: metrics.outOfStockProducts || 1 }}
+                    />
+                  </div>
+                )}
+                <div className={styles.statLegend}>
+                  <span className={styles.legendItem}>
+                    <span className={`${styles.dot} ${styles.dotWarning}`} />
+                    {metrics.lowStockProducts} stock bajo
+                  </span>
+                  <span className={styles.legendItem}>
+                    <span className={`${styles.dot} ${styles.dotDanger}`} />
+                    {metrics.outOfStockProducts} agotados
+                  </span>
                 </div>
               </Card>
             </div>
@@ -244,7 +336,7 @@ export default function Dashboard() {
                       tick={{ fill: 'var(--color-text-muted)', fontSize: 12 }}
                       axisLine={false}
                       tickLine={false}
-                      tickFormatter={(v) => `Bs. ${v}`}
+                      tickFormatter={(v) => 'Bs. ' + v}
                     />
                     <Tooltip
                       contentStyle={{
@@ -278,14 +370,16 @@ export default function Dashboard() {
                       Productos que necesitan reposicion
                     </p>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    rightIcon={<ArrowRight size={14} />}
-                    onClick={() => navigate('/products')}
-                  >
-                    Ver todos
-                  </Button>
+                  {products.filter((p) => p.status !== 'in-stock').length > 3 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      rightIcon={<ArrowRight size={14} />}
+                      onClick={() => navigate('/products')}
+                    >
+                      Ver todos
+                    </Button>
+                  )}
                 </div>
 
                 {lowStockList.length === 0 ? (
@@ -395,5 +489,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
-

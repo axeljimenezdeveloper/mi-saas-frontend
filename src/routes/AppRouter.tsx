@@ -1,4 +1,9 @@
-﻿import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+﻿import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+  Outlet,
+} from 'react-router-dom';
 import { AppLayout } from '../components/layout/AppLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import Login from '../features/auth/pages/Login';
@@ -11,6 +16,7 @@ import BillingNew from '../features/billing/pages/BillingNew';
 import Settings from '../features/settings/pages/Settings';
 import Docs from '../features/docs/pages/Docs';
 import Notifications from '../features/notifications/pages/Notifications';
+import NotFound from '../features/errors/pages/NotFound';
 
 const router = createBrowserRouter([
   {
@@ -28,26 +34,34 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <ProtectedRoute requireConfigured>
+      <ProtectedRoute>
         <AppLayout />
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <Navigate to="/dashboard" replace /> },
-      { path: 'dashboard', element: <Dashboard /> },
-      { path: 'products', element: <ProductsList /> },
-      { path: 'products/new', element: <NewProduct /> },
-      { path: 'products/:id/edit', element: <NewProduct /> },
-      { path: 'billing', element: <Billing /> },
-      { path: 'billing/new', element: <BillingNew /> },
-      { path: 'settings', element: <Settings /> },
-      { path: 'docs', element: <Docs /> },
-      { path: 'notifications', element: <Notifications /> },
+      // Grupo de rutas que REQUIEREN onboarding completado
+      {
+        element: (
+          <ProtectedRoute requireConfigured>
+            <Outlet />
+          </ProtectedRoute>
+        ),
+        children: [
+          { index: true, element: <Navigate to="/dashboard" replace /> },
+          { path: 'dashboard', element: <Dashboard /> },
+          { path: 'products', element: <ProductsList /> },
+          { path: 'products/new', element: <NewProduct /> },
+          { path: 'products/:id/edit', element: <NewProduct /> },
+          { path: 'billing', element: <Billing /> },
+          { path: 'billing/new', element: <BillingNew /> },
+          { path: 'settings', element: <Settings /> },
+          { path: 'docs', element: <Docs /> },
+          { path: 'notifications', element: <Notifications /> },
+        ],
+      },
+      // Catch-all SIN requireConfigured: muestra 404 dentro del AppLayout
+      { path: '*', element: <NotFound /> },
     ],
-  },
-  {
-    path: '*',
-    element: <Navigate to="/login" replace />,
   },
 ]);
 
