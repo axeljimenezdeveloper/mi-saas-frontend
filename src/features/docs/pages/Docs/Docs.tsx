@@ -32,7 +32,7 @@ export default function Docs() {
               <h1 className={styles.title}>Sobre el Proyecto</h1>
             </div>
             <p className={styles.subtitle}>
-              InvenSaaS: plataforma para digitalizar el inventario y la facturacion
+              Vendra: plataforma para digitalizar el inventario y la facturacion
               de las PYMES venezolanas
             </p>
           </div>
@@ -71,10 +71,10 @@ export default function Docs() {
 
         {/* ============ WHAT IS IT ============ */}
         <section className={styles.section}>
-          <SectionTitle icon={<BookOpen size={20} />} title="Que es InvenSaaS" />
+          <SectionTitle icon={<BookOpen size={20} />} title="Que es Vendra" />
           <Card padding="md">
             <p className={styles.paragraph}>
-              InvenSaaS es una plataforma en la nube (Software as a Service) disenada
+              Vendra es una plataforma en la nube (Software as a Service) disenada
               para que las pequenas y medianas empresas venezolanas puedan gestionar
               su <strong>inventario</strong> y su <strong>facturacion</strong> desde
               cualquier dispositivo con internet, sin necesidad de instalar programas
@@ -215,7 +215,7 @@ export default function Docs() {
 
         {/* ============ FEATURES IN BUSINESS TERMS ============ */}
         <section className={styles.section}>
-          <SectionTitle icon={<CheckCircle2 size={20} />} title="Que puedes hacer con InvenSaaS" />
+          <SectionTitle icon={<CheckCircle2 size={20} />} title="Que puedes hacer con Vendra" />
           <div className={styles.featuresGrid}>
             <FeatureCard
               title="Inventario"
@@ -422,3 +422,5 @@ function VisionItem({ title, description }: { title: string; description: string
     </div>
   );
 }
+
+

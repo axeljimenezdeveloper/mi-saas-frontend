@@ -46,7 +46,7 @@ describe('Login', () => {
 
   it('renders brand, title and creator', () => {
     renderLogin();
-    expect(screen.getByRole('heading', { name: 'InvenSaaS' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Vendra' })).toBeInTheDocument();
     expect(screen.getByText(/Axel Gabriel Jimenez Malaver/)).toBeInTheDocument();
     expect(screen.getByText(/C\.I\. 27\.870\.662/)).toBeInTheDocument();
   });
@@ -88,7 +88,7 @@ describe('Login', () => {
     const user = userEvent.setup();
     renderLogin();
     await user.click(screen.getByText('Rellenar credenciales de prueba'));
-    expect(screen.getByPlaceholderText('tu@empresa.com')).toHaveValue('admin@invensaas.com');
+    expect(screen.getByPlaceholderText('tu@empresa.com')).toHaveValue('admin@vendra.com');
     expect(screen.getByPlaceholderText('Tu contrasena')).toHaveValue('admin123');
   });
 
@@ -106,7 +106,7 @@ describe('Login', () => {
   it('navigates to /onboarding when not configured', async () => {
     const user = userEvent.setup();
     renderLogin();
-    await user.type(screen.getByPlaceholderText('tu@empresa.com'), 'admin@invensaas.com');
+    await user.type(screen.getByPlaceholderText('tu@empresa.com'), 'admin@vendra.com');
     await user.type(screen.getByPlaceholderText('Tu contrasena'), 'admin123');
     await user.click(screen.getByRole('button', { name: /Iniciar sesion/i }));
 
@@ -122,7 +122,7 @@ describe('Login', () => {
     useCompanyStore.setState({ isConfigured: true });
     const user = userEvent.setup();
     renderLogin();
-    await user.type(screen.getByPlaceholderText('tu@empresa.com'), 'admin@invensaas.com');
+    await user.type(screen.getByPlaceholderText('tu@empresa.com'), 'admin@vendra.com');
     await user.type(screen.getByPlaceholderText('Tu contrasena'), 'admin123');
     await user.click(screen.getByRole('button', { name: /Iniciar sesion/i }));
 
@@ -150,3 +150,5 @@ describe('Login', () => {
     );
   });
 });
+
+

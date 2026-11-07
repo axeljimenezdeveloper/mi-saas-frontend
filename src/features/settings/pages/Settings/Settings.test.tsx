@@ -56,7 +56,7 @@ describe('Settings', () => {
       user: {
         id: '1',
         name: 'Axel Jimenez',
-        email: 'admin@invensaas.com',
+        email: 'admin@vendra.com',
         role: 'admin',
       },
       isLoading: false,
@@ -98,7 +98,7 @@ describe('Settings', () => {
   it('renders account info from auth store', () => {
     renderSettings();
     expect(screen.getByText('Axel Jimenez')).toBeInTheDocument();
-    expect(screen.getByText('admin@invensaas.com')).toBeInTheDocument();
+    expect(screen.getByText('admin@vendra.com')).toBeInTheDocument();
   });
 
   it('disables save button when nothing changed', () => {
@@ -189,3 +189,4 @@ describe('Settings', () => {
     expect(useAuthStore.getState().user).toBeNull();
   });
 });
+

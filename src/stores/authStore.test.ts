@@ -28,11 +28,11 @@ describe('authStore', () => {
   it('login succeeds with valid credentials', async () => {
     const success = await useAuthStore
       .getState()
-      .login('admin@invensaas.com', 'admin123');
+      .login('admin@vendra.com', 'admin123');
     expect(success).toBe(true);
     const state = useAuthStore.getState();
     expect(state.user).not.toBeNull();
-    expect(state.user?.email).toBe('admin@invensaas.com');
+    expect(state.user?.email).toBe('admin@vendra.com');
     expect(state.isLoading).toBe(false);
     expect(state.error).toBeNull();
   });
@@ -40,7 +40,7 @@ describe('authStore', () => {
   it('login sets loading to true during the request', async () => {
     const promise = useAuthStore
       .getState()
-      .login('admin@invensaas.com', 'admin123');
+      .login('admin@vendra.com', 'admin123');
     // Justo despues de llamar, debe estar en loading
     expect(useAuthStore.getState().isLoading).toBe(true);
     await promise;
@@ -58,7 +58,7 @@ describe('authStore', () => {
   });
 
   it('logout clears the user and error', async () => {
-    await useAuthStore.getState().login('admin@invensaas.com', 'admin123');
+    await useAuthStore.getState().login('admin@vendra.com', 'admin123');
     expect(useAuthStore.getState().user).not.toBeNull();
 
     useAuthStore.getState().logout();
@@ -76,15 +76,16 @@ describe('authStore', () => {
   });
 
   it('persists user to localStorage (not isLoading/error)', async () => {
-    await useAuthStore.getState().login('admin@invensaas.com', 'admin123');
+    await useAuthStore.getState().login('admin@vendra.com', 'admin123');
 
     const raw = localStorage.getItem('mi-saas-auth-user');
     expect(raw).not.toBeNull();
 
     const parsed = JSON.parse(raw as string);
     expect(parsed.state.user).not.toBeNull();
-    expect(parsed.state.user.email).toBe('admin@invensaas.com');
+    expect(parsed.state.user.email).toBe('admin@vendra.com');
     expect(parsed.state.isLoading).toBeUndefined();
     expect(parsed.state.error).toBeUndefined();
   });
 });
+

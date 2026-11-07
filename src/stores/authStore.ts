@@ -27,14 +27,14 @@ const STORAGE_KEY = 'mi-saas-auth-user';
 
 /** Credenciales de prueba (en un SaaS real vendrian del backend). */
 const MOCK_CREDENTIALS = {
-  email: 'admin@invensaas.com',
+  email: 'admin@vendra.com',
   password: 'admin123',
 };
 
 const MOCK_USER: User = {
   id: '1',
   name: 'Axel Jimenez',
-  email: 'admin@invensaas.com',
+  email: 'admin@vendra.com',
   role: 'admin',
 };
 
@@ -81,3 +81,4 @@ export const useAuthStore = create<AuthStore>()(
 /** Selector: true si hay sesion activa. */
 export const selectIsAuthenticated = (state: AuthStore): boolean =>
   state.user !== null;
+

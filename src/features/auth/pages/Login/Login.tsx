@@ -54,7 +54,7 @@ export default function Login() {
     setIsDemoLoading(true);
     try {
       seedDemoData();
-      const success = await login('admin@invensaas.com', 'admin123');
+      const success = await login('admin@vendra.com', 'admin123');
       if (success) {
         toast.success(
           'Modo demo activado',
@@ -69,7 +69,7 @@ export default function Login() {
   };
 
   const fillDemoCredentials = () => {
-    setValue('email', 'admin@invensaas.com', { shouldValidate: false });
+    setValue('email', 'admin@vendra.com', { shouldValidate: false });
     setValue('password', 'admin123', { shouldValidate: false });
     clearError();
   };
@@ -90,7 +90,7 @@ export default function Login() {
           <div className={styles.logo}>
             <Package size={28} />
           </div>
-          <h1 className={styles.title}>InvenSaaS</h1>
+          <h1 className={styles.title}>Vendra</h1>
           <p className={styles.subtitle}>
             Gestiona el inventario y la facturacion de tu negocio
           </p>
@@ -183,4 +183,7 @@ export default function Login() {
     </div>
   );
 }
+
+
+
 

@@ -21,7 +21,7 @@ import { Button } from '../../../../components/common/actions/Button';
 import { Card } from '../../../../components/common/data-display/Card';
 import { EmptyState } from '../../../../components/feedback/states/EmptyState';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
-import { useProductsStore, useInvoicesStore } from '../../../../stores';
+import { useProductsStore, useInvoicesStore, useCompanyStore } from '../../../../stores';
 import {
   invoiceSchema,
   type InvoiceFormData,
@@ -29,7 +29,6 @@ import {
 } from '../../../../schemas';
 import styles from './BillingNew.module.css';
 
-const IVA_RATE = 0.16;
 
 const formatBs = (amount: number): string =>
   new Intl.NumberFormat('es-VE', {
@@ -44,6 +43,8 @@ export default function BillingNew() {
 
   const products = useProductsStore((s) => s.products);
   const addInvoice = useInvoicesStore((s) => s.addInvoice);
+  const defaultIva = useCompanyStore((s) => s.preferences.defaultIva);
+  const ivaRate = Number(defaultIva) / 100;
   const decrementStock = useProductsStore((s) => s.decrementStock);
 
   const [items, setItems] = useState<LineItemData[]>([]);
@@ -79,7 +80,7 @@ export default function BillingNew() {
       (acc, item) => acc + item.price * item.quantity,
       0
     );
-    const iva = subtotal * IVA_RATE;
+    const iva = subtotal * ivaRate;
     return { subtotal, iva, total: subtotal + iva };
   }, [items]);
 
@@ -427,6 +428,11 @@ export default function BillingNew() {
     </div>
   );
 }
+
+
+
+
+
 
 
 

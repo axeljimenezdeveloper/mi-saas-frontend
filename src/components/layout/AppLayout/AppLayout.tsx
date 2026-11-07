@@ -16,7 +16,12 @@ import { Header } from '../Header';
 import { MainLayout } from '../MainLayout';
 import { NotificationPanel } from '../../feedback/notifications/NotificationPanel';
 import { useToast } from '../../feedback/alerts/Toast';
-import { useThemeStore, useSidebarStore, useAuthStore } from '../../../stores';
+import {
+  useThemeStore,
+  useSidebarStore,
+  useAuthStore,
+  useCompanyStore,
+} from '../../../stores';
 import styles from './AppLayout.module.css';
 
 const NAV_ITEMS: SidebarItem[] = [
@@ -40,6 +45,7 @@ export function AppLayout() {
 
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
+  const companyName = useCompanyStore((s) => s.company.name);
 
   const handleLogout = () => {
     logout();
@@ -80,16 +86,15 @@ export function AppLayout() {
           showMenuButton={isMobile}
           onMenuClick={onMenuClick}
           brand={
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
-            >
-              <Package size={20} />
-              InvenSaaS
-            </span>
+            <div className={styles.brand}>
+              <Package size={20} className={styles.brandIcon} />
+              <div className={styles.brandText}>
+                <span className={styles.brandName}>Vendra</span>
+                {companyName && (
+                  <span className={styles.brandCompany}>{companyName}</span>
+                )}
+              </div>
+            </div>
           }
           actions={
             <>
@@ -128,4 +133,3 @@ export function AppLayout() {
     </MainLayout>
   );
 }
-

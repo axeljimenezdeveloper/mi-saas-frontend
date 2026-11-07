@@ -5,8 +5,8 @@ import { Header } from './Header';
 
 describe('Header', () => {
   it('renders brand when provided', () => {
-    render(<Header brand={<span>InvenSaaS</span>} />);
-    expect(screen.getByText('InvenSaaS')).toBeInTheDocument();
+    render(<Header brand={<span>Vendra</span>} />);
+    expect(screen.getByText('Vendra')).toBeInTheDocument();
   });
 
   it('does not render brand when not provided', () => {
@@ -77,3 +77,4 @@ describe('Header', () => {
     expect(header.className).toMatch(/custom-header/);
   });
 });
+

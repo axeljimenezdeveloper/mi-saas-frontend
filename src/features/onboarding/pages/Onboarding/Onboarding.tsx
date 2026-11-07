@@ -121,7 +121,7 @@ export default function Onboarding() {
     });
     completeOnboarding();
     toast.success(
-      '¡Bienvenido a InvenSaaS!',
+      '¡Bienvenido a Vendra!',
       `${data.name.trim()} esta listo para comenzar`,
       { category: 'system' }
     );
@@ -312,5 +312,7 @@ export default function Onboarding() {
     </div>
   );
 }
+
+
 
 
