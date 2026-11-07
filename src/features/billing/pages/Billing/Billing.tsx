@@ -10,6 +10,8 @@ import {
   CheckCircle2,
   Clock,
   AlertCircle,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react';
 import { Table, type TableColumn } from '../../../../components/common/data-display/Table';
 import { Badge } from '../../../../components/common/data-display/Badge';
@@ -18,6 +20,7 @@ import { Input } from '../../../../components/common/inputs/Input';
 import { Select } from '../../../../components/common/inputs/Select';
 import { Skeleton } from '../../../../components/feedback/loading/Skeleton';
 import { EmptyState } from '../../../../components/feedback/states/EmptyState';
+import { Pagination } from '../../../../components/common/navigation/Pagination';
 import { useInvoicesStore, type Invoice, type InvoiceStatus } from '../../../../stores';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import styles from './Billing.module.css';
@@ -40,6 +43,11 @@ const STATUS_OPTIONS = [
   { value: 'pending', label: 'Pendientes' },
   { value: 'overdue', label: 'Vencidas' },
 ];
+
+const ITEMS_PER_PAGE = 10;
+
+type SortField = 'date' | 'total' | 'client' | null;
+type SortDirection = 'asc' | 'desc';
 
 const formatBs = (amount: number): string =>
   new Intl.NumberFormat('es-VE', {
@@ -69,13 +77,19 @@ export default function Billing() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
   const [menuPosition, setMenuPosition] = useState<MenuPosition>({ top: 0, right: 0 });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortField, setSortField] = useState<SortField>('date');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   useEffect(() => {
     const t = setTimeout(() => setIsLoading(false), 600);
     return () => clearTimeout(t);
   }, []);
 
-  // Cierra el menu al hacer scroll o resize (para que no quede flotando mal posicionado)
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, statusFilter]);
+
   useEffect(() => {
     if (openMenuId === null) return;
     const close = () => setOpenMenuId(null);
@@ -130,6 +144,15 @@ export default function Billing() {
     }
   };
 
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection(field === 'date' || field === 'total' ? 'desc' : 'asc');
+    }
+  };
+
   const filtered = useMemo(() => {
     return invoices.filter((inv) => {
       const matchesSearch =
@@ -141,6 +164,36 @@ export default function Billing() {
       return matchesSearch && matchesStatus;
     });
   }, [invoices, search, statusFilter]);
+
+  const sorted = useMemo(() => {
+    if (!sortField) return filtered;
+    return [...filtered].sort((a, b) => {
+      let cmp = 0;
+      if (sortField === 'date') {
+        cmp = a.date.localeCompare(b.date);
+      } else if (sortField === 'total') {
+        cmp = a.total - b.total;
+      } else if (sortField === 'client') {
+        cmp = a.client.localeCompare(b.client);
+      }
+      return sortDirection === 'asc' ? cmp : -cmp;
+    });
+  }, [filtered, sortField, sortDirection]);
+
+  const totalPages = Math.ceil(sorted.length / ITEMS_PER_PAGE);
+  const paginated = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return sorted.slice(start, start + ITEMS_PER_PAGE);
+  }, [sorted, currentPage]);
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) return null;
+    return sortDirection === 'asc' ? (
+      <ArrowUp size={12} />
+    ) : (
+      <ArrowDown size={12} />
+    );
+  };
 
   const columns: TableColumn<Invoice>[] = [
     {
@@ -253,12 +306,21 @@ export default function Billing() {
     }
 
     return (
-      <Table
-        columns={columns}
-        data={filtered}
-        getRowKey={(inv) => inv.id}
-        emptyMessage="No hay facturas"
-      />
+      <>
+        <Table
+          columns={columns}
+          data={paginated}
+          getRowKey={(inv) => inv.id}
+          emptyMessage="No hay facturas"
+        />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          totalItems={sorted.length}
+          itemsPerPage={ITEMS_PER_PAGE}
+        />
+      </>
     );
   };
 
@@ -346,6 +408,46 @@ export default function Billing() {
           </Button>
         </div>
 
+        <div className={styles.sortBar}>
+          <span className={styles.sortLabel}>Ordenar por:</span>
+          <button
+            type="button"
+            className={[
+              styles.sortButton,
+              sortField === 'date' && styles.sortButtonActive,
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            onClick={() => handleSort('date')}
+          >
+            Fecha {getSortIcon('date')}
+          </button>
+          <button
+            type="button"
+            className={[
+              styles.sortButton,
+              sortField === 'total' && styles.sortButtonActive,
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            onClick={() => handleSort('total')}
+          >
+            Total {getSortIcon('total')}
+          </button>
+          <button
+            type="button"
+            className={[
+              styles.sortButton,
+              sortField === 'client' && styles.sortButtonActive,
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            onClick={() => handleSort('client')}
+          >
+            Cliente {getSortIcon('client')}
+          </button>
+        </div>
+
         {renderContent()}
       </div>
 
@@ -353,8 +455,3 @@ export default function Billing() {
     </div>
   );
 }
-
-
-
-
-
