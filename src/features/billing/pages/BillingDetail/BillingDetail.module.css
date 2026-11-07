@@ -1,0 +1,460 @@
+﻿/* src/features/billing/pages/BillingDetail/BillingDetail.module.css */
+
+.page {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-surface);
+}
+
+/* ============ Header ============ */
+.pageHeader {
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-6) var(--space-6) var(--space-5);
+  flex-shrink: 0;
+}
+
+.headerContent {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  flex: 1;
+}
+
+.backButton {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+.backButton:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+}
+
+.backButton:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.titleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  margin: 0;
+  line-height: var(--leading-tight);
+  font-family: var(--font-mono);
+}
+
+.subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+/* ============ Content ============ */
+.content {
+  flex: 1;
+  padding: var(--space-6);
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ============ Main grid (Emisor+Cliente | PDF) ============ */
+.mainGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  align-items: stretch;
+}
+
+.infoColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-height: 0;
+  min-width: 0;
+}
+
+.infoColumn > * {
+  flex: 0 0 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+.pdfColumn {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ============ Section header ============ */
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.sectionIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.sectionTitle {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  margin: 0;
+}
+
+/* ============ Info list (dl/dt/dd) ============ */
+.infoList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.infoRow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.infoLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.infoValue {
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  margin: 0;
+  line-height: var(--leading-normal);
+  overflow-wrap: break-word;
+}
+
+/* ============ PDF (columna derecha) ============ */
+.pdfWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
+  min-height: 0;
+}
+
+.pdfFrame {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-subtle);
+}
+
+.pdfActions {
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.pdfPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-6);
+  background-color: var(--color-bg-subtle);
+  border: 2px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.pdfPlaceholderIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+  margin-bottom: var(--space-2);
+  flex-shrink: 0;
+}
+
+.pdfPlaceholderTitle {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.pdfPlaceholderText {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: var(--leading-relaxed);
+  max-width: 320px;
+  margin: 0;
+}
+
+.pdfPlaceholderBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  margin-top: var(--space-2);
+  background-color: var(--color-bg-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ============ Items table ============ */
+.itemsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+.itemsHeader .sectionHeader {
+  margin-bottom: 0;
+}
+
+.itemsCount {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-weight: var(--weight-medium);
+}
+
+.itemsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.itemsTable th {
+  padding: var(--space-2) var(--space-5);
+  text-align: left;
+  background-color: var(--color-bg-subtle);
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
+
+.itemsTable td {
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.itemsTable tr:last-child td {
+  border-bottom: none;
+}
+
+.alignRight {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.alignCenter {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.emptyItems {
+  padding: var(--space-8) var(--space-5);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.emptyItems p {
+  margin: 0;
+}
+
+/* ============ Totales ============ */
+.totalsWrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.totalsBox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 280px;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  font-size: var(--text-sm);
+}
+
+.totalLabel {
+  color: var(--color-text-muted);
+}
+
+.totalValue {
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--weight-medium);
+}
+
+.totalFinal {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+
+.totalFinal span:last-child {
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============ Empty wrapper (factura no encontrada) ============ */
+.emptyWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-4);
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 768px) {
+  .pageHeader {
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .content {
+    padding: var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .headerContent {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .headerActions {
+    justify-content: flex-start;
+  }
+
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .infoColumn > * {
+    flex: 0 0 auto;
+  }
+
+  .pdfPlaceholder {
+    padding: var(--space-8) var(--space-4);
+    min-height: 240px;
+  }
+
+  .totalsWrapper {
+    justify-content: stretch;
+  }
+
+  .totalsBox {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .itemsTable th,
+  .itemsTable td {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .itemsTable th:nth-child(2),
+  .itemsTable td:nth-child(2),
+  .itemsTable th:nth-child(3),
+  .itemsTable td:nth-child(3) {
+    display: none;
+  }
+}

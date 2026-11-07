@@ -12,6 +12,7 @@ import {
   AlertCircle,
   ArrowUp,
   ArrowDown,
+  Eye,
 } from 'lucide-react';
 import { Table, type TableColumn } from '../../../../components/common/data-display/Table';
 import { Badge } from '../../../../components/common/data-display/Badge';
@@ -341,6 +342,17 @@ export default function Billing() {
             style={{ top: menuPosition.top, right: menuPosition.right }}
             role="menu"
           >
+            <button
+              type="button"
+              className={styles.menuItem}
+              onClick={() => {
+                setOpenMenuId(null);
+                navigate('/billing/' + activeInvoice.id);
+              }}
+            >
+              <Eye size={14} />
+              Ver detalle
+            </button>
             {activeInvoice.status !== 'paid' && (
               <button
                 type="button"
@@ -455,3 +467,4 @@ export default function Billing() {
     </div>
   );
 }
+

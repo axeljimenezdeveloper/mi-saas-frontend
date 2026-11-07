@@ -17,6 +17,8 @@ export interface Invoice {
   total: number;
   status: InvoiceStatus;
   items: InvoiceLine[];
+  /** URL del PDF generado por el backend (opcional hasta que exista backend). */
+  pdfUrl?: string;
 }
 
 export interface InvoicesStore {

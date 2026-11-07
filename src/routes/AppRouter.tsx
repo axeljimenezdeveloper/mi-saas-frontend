@@ -13,6 +13,7 @@ import ProductsList from '../features/inventory/pages/ProductsList';
 import NewProduct from '../features/inventory/pages/NewProduct';
 import Billing from '../features/billing/pages/Billing';
 import BillingNew from '../features/billing/pages/BillingNew';
+import BillingDetail from '../features/billing/pages/BillingDetail';
 import Settings from '../features/settings/pages/Settings';
 import Docs from '../features/docs/pages/Docs';
 import Notifications from '../features/notifications/pages/Notifications';
@@ -54,6 +55,7 @@ const router = createBrowserRouter([
           { path: 'products/:id/edit', element: <NewProduct /> },
           { path: 'billing', element: <Billing /> },
           { path: 'billing/new', element: <BillingNew /> },
+          { path: 'billing/:id', element: <BillingDetail /> },
           { path: 'settings', element: <Settings /> },
           { path: 'docs', element: <Docs /> },
           { path: 'notifications', element: <Notifications /> },
@@ -68,3 +70,4 @@ const router = createBrowserRouter([
 export function AppRouter() {
   return <RouterProvider router={router} />;
 }
+
