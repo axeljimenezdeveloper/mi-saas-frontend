@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.9.1](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.9.0...v0.9.1) (2026-11-07)
+
+### Features
+
+* rebrand to Vendra with company name in header and dynamic iva ([d989c0e](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/d989c0e99eae62560f6ccbe9ffa9e9c4012c11c7))
+
 ## [0.9.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.8.0...v0.9.0) (2026-11-07)
 
 ### Features
