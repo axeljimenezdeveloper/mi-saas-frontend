@@ -22,6 +22,7 @@ import { Card } from '../../../../components/common/data-display/Card';
 import { Badge } from '../../../../components/common/data-display/Badge';
 import { Button } from '../../../../components/common/actions/Button';
 import { EmptyState } from '../../../../components/feedback/states/EmptyState';
+import { Alert } from '../../../../components/feedback/alerts/Alert';
 import {
   useProductsStore,
   useInvoicesStore,
@@ -143,6 +144,10 @@ export default function Dashboard() {
           </div>
         ) : (
           <>
+              <Alert variant="info" title="Modo demostracion">
+                Los datos viven en memoria y se reinician al recargar la pagina.
+                Proximamente: persistencia en la nube.
+              </Alert>
             {/* ============ STATS ============ */}
             <div className={styles.statsGrid}>
               {/* Productos */}
