@@ -112,7 +112,7 @@ describe('Login', () => {
 
     await waitFor(
       () => {
-        expect(mockNavigate).toHaveBeenCalledWith('/onboarding');
+        expect(mockNavigate).toHaveBeenCalledWith('/onboarding', { replace: true });
       },
       { timeout: 2000 }
     );
@@ -128,7 +128,7 @@ describe('Login', () => {
 
     await waitFor(
       () => {
-        expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+        expect(mockNavigate).toHaveBeenCalledWith('/dashboard', { replace: true });
       },
       { timeout: 2000 }
     );
@@ -144,12 +144,13 @@ describe('Login', () => {
         expect(useCompanyStore.getState().isConfigured).toBe(true);
         expect(useProductsStore.getState().products.length).toBeGreaterThan(0);
         expect(useInvoicesStore.getState().invoices.length).toBeGreaterThan(0);
-        expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+        expect(mockNavigate).toHaveBeenCalledWith('/dashboard', { replace: true });
       },
       { timeout: 3000 }
     );
   });
 });
+
 
 
 
