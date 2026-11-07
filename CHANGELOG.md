@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.9.1...v1.0.0) (2026-11-07)
+
+### Features
+
+* add 404 page with sidebar, no scroll, and dynamic CTA based on onboarding status ([4f28c69](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/4f28c694b11c1e5deeb417ac989a3f2d80b9045d))
+* add demo mode warning banner in dashboard ([609b8c1](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/609b8c1d7fce6f91d8f08b1557d7af2ee56bfa5b))
+* add global error boundary with fallback UI ([02fdfb0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/02fdfb006c8fe988028dac9f202325bf3025fdc2))
+* add invoice detail page with pdf preview placeholder ([e49dff1](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/e49dff1576628d5c836855b05f6027e48d26fdc8))
+* add remember me checkbox and auto-redirect on login ([4f9711f](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/4f9711fb244927d3a9bba9376efac4082e2505c4))
+
 ## [0.9.1](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.9.0...v0.9.1) (2026-11-07)
 
 ### Features
