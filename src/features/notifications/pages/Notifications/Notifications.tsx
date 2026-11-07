@@ -1,4 +1,4 @@
-﻿import { useState, useMemo } from 'react';
+﻿import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Bell,
@@ -22,6 +22,7 @@ import { Select } from '../../../../components/common/inputs/Select';
 import { Badge } from '../../../../components/common/data-display/Badge';
 import { EmptyState } from '../../../../components/feedback/states/EmptyState';
 import { ConfirmDialog } from '../../../../components/common/overlay/ConfirmDialog';
+import { Pagination } from '../../../../components/common/navigation/Pagination';
 import {
   useNotificationsStore,
   useNotificationsActions,
@@ -34,6 +35,8 @@ import type {
 import styles from './Notifications.module.css';
 
 type StatusFilter = 'all' | 'unread' | 'read';
+
+const ITEMS_PER_PAGE = 20;
 
 const VARIANT_ICONS: Record<NotificationVariant, React.ReactNode> = {
   success: <CheckCircle2 size={18} />,
@@ -88,6 +91,12 @@ export default function Notifications() {
   const [notificationToDelete, setNotificationToDelete] =
     useState<AppNotification | null>(null);
   const [isClearAllOpen, setIsClearAllOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter, categoryFilter]);
 
   const counts = useMemo(() => {
     return {
@@ -109,6 +118,12 @@ export default function Notifications() {
     });
   }, [notifications, statusFilter, categoryFilter]);
 
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const paginated = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filtered.slice(start, start + ITEMS_PER_PAGE);
+  }, [filtered, currentPage]);
+
   const handleNotificationClick = (n: AppNotification) => {
     markAsRead(n.id);
     if (n.actionUrl) {
@@ -120,11 +135,15 @@ export default function Notifications() {
     if (!notificationToDelete) return;
     removeNotification(notificationToDelete.id);
     setNotificationToDelete(null);
+    if (paginated.length === 1 && currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   const handleConfirmClearAll = () => {
     clearAll();
     setIsClearAllOpen(false);
+    setCurrentPage(1);
   };
 
   const isFilteredEmpty = filtered.length === 0 && notifications.length > 0;
@@ -229,16 +248,25 @@ export default function Notifications() {
             />
           </div>
         ) : (
-          <ul className={styles.list}>
-            {filtered.map((n) => (
-              <NotificationRow
-                key={n.id}
-                notification={n}
-                onClick={() => handleNotificationClick(n)}
-                onDelete={() => setNotificationToDelete(n)}
-              />
-            ))}
-          </ul>
+          <>
+            <ul className={styles.list}>
+              {paginated.map((n) => (
+                <NotificationRow
+                  key={n.id}
+                  notification={n}
+                  onClick={() => handleNotificationClick(n)}
+                  onDelete={() => setNotificationToDelete(n)}
+                />
+              ))}
+            </ul>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              totalItems={filtered.length}
+              itemsPerPage={ITEMS_PER_PAGE}
+            />
+          </>
         )}
       </div>
 
@@ -345,4 +373,3 @@ function NotificationRow({
     </li>
   );
 }
-
