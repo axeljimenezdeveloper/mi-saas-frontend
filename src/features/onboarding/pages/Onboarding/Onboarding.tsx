@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,7 +23,7 @@ import { Button } from '../../../../components/common/actions/Button';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { useThemeStore, useCompanyStore } from '../../../../stores';
 import { onboardingSchema, type OnboardingFormData } from '../../../../schemas';
-import { DEMO_COMPANY, DEMO_PREFERENCES } from '../../../demo/demoData';
+import { USE_BACKEND } from '../../../../config/backend';
 import styles from './Onboarding.module.css';
 
 const CURRENCY_OPTIONS = [
@@ -57,15 +57,6 @@ const DEFAULT_VALUES: OnboardingFormData = {
   businessType: 'retail',
 };
 
-const DEMO_VALUES: OnboardingFormData = {
-  name: DEMO_COMPANY.name,
-  rif: DEMO_COMPANY.rif,
-  address: DEMO_COMPANY.address,
-  currency: DEMO_PREFERENCES.currency,
-  defaultIva: DEMO_PREFERENCES.defaultIva,
-  businessType: DEMO_PREFERENCES.businessType,
-};
-
 export default function Onboarding() {
   const navigate = useNavigate();
   const toast = useToast();
@@ -76,30 +67,23 @@ export default function Onboarding() {
   const setCompany = useCompanyStore((s) => s.setCompany);
   const setPreferences = useCompanyStore((s) => s.setPreferences);
   const completeOnboarding = useCompanyStore((s) => s.completeOnboarding);
+  const submitOnboarding = useCompanyStore((s) => s.submitOnboarding);
+  const clearError = useCompanyStore((s) => s.clearError);
 
   const [step, setStep] = useState<1 | 2>(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
     control,
     handleSubmit,
     trigger,
-    reset,
     formState: { errors, isValid },
   } = useForm<OnboardingFormData>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: DEFAULT_VALUES,
     mode: 'onChange',
   });
-
-  const handleFillDemo = () => {
-    reset(DEMO_VALUES);
-    toast.info(
-      'Datos de ejemplo cargados',
-      'Puedes editarlos antes de finalizar',
-      { category: 'system' }
-    );
-  };
 
   const handleNext = async () => {
     const ok = await trigger(['name', 'rif', 'address']);
@@ -108,21 +92,43 @@ export default function Onboarding() {
 
   const handleBack = () => setStep(1);
 
-  const onSubmit = (data: OnboardingFormData) => {
-    setCompany({
+  const onSubmit = async (data: OnboardingFormData) => {
+    const companyPayload = {
       name: data.name.trim(),
       rif: data.rif.trim(),
       address: data.address.trim(),
-    });
-    setPreferences({
+    };
+    const preferencesPayload = {
       currency: data.currency,
       defaultIva: data.defaultIva,
       businessType: data.businessType,
-    });
-    completeOnboarding();
+    };
+
+    if (USE_BACKEND) {
+      setIsSubmitting(true);
+      clearError();
+      const ok = await submitOnboarding({
+        ...companyPayload,
+        ...preferencesPayload,
+      });
+      setIsSubmitting(false);
+      if (!ok) {
+        const errMsg =
+          useCompanyStore.getState().error ?? 'Error desconocido';
+        toast.error('No se pudo guardar la empresa', errMsg, {
+          category: 'system',
+        });
+        return;
+      }
+    } else {
+      setCompany(companyPayload);
+      setPreferences(preferencesPayload);
+      completeOnboarding();
+    }
+
     toast.success(
       '¡Bienvenido a Vendra!',
-      `${data.name.trim()} esta listo para comenzar`,
+      `${companyPayload.name} esta listo para comenzar`,
       { category: 'system' }
     );
     navigate('/dashboard');
@@ -145,16 +151,8 @@ export default function Onboarding() {
           <p className={styles.subtitle}>
             Cuentanos sobre tu negocio para personalizar tu experiencia
           </p>
-          <button
-            type="button"
-            className={styles.demoLink}
-            onClick={handleFillDemo}
-          >
-            Usar datos de ejemplo
-          </button>
         </header>
 
-        {/* Barra de progreso */}
         <div className={styles.progress}>
           <div className={[styles.step, step >= 1 && styles.active].filter(Boolean).join(' ')}>
             <div className={styles.stepCircle}>
@@ -289,6 +287,7 @@ export default function Onboarding() {
                   variant="outline"
                   leftIcon={<ArrowLeft size={14} />}
                   onClick={handleBack}
+                  disabled={isSubmitting}
                 >
                   Atras
                 </Button>
@@ -296,7 +295,8 @@ export default function Onboarding() {
                   type="submit"
                   variant="primary"
                   leftIcon={<Check size={14} />}
-                  disabled={!isValid}
+                  disabled={!isValid || isSubmitting}
+                  isLoading={isSubmitting}
                 >
                   Finalizar configuracion
                 </Button>
@@ -312,7 +312,3 @@ export default function Onboarding() {
     </div>
   );
 }
-
-
-
-
