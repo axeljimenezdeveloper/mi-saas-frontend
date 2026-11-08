@@ -1,7 +1,12 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
 
+// productId acepta number (mock) o string (cuid del backend). Se alinea con
+// Product.id: number | string del productsStore.
 export const lineItemSchema = z.object({
-  productId: z.number(),
+  productId: z.union([
+    z.number(),
+    z.string().min(1, { error: 'El productId es obligatorio' }),
+  ]),
   productName: z.string(),
   price: z.number().positive(),
   quantity: z.number().int().positive(),

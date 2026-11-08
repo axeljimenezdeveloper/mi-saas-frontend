@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -76,7 +76,7 @@ export default function Billing() {
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const [openMenuId, setOpenMenuId] = useState<number | string | null>(null);
   const [menuPosition, setMenuPosition] = useState<MenuPosition>({ top: 0, right: 0 });
   const [currentPage, setCurrentPage] = useState(1);
   const [sortField, setSortField] = useState<SortField>('date');
@@ -103,7 +103,7 @@ export default function Billing() {
   }, [openMenuId]);
 
   const handleOpenMenu = (
-    invoiceId: number,
+    invoiceId: number | string,
     e: React.MouseEvent<HTMLButtonElement>
   ) => {
     if (openMenuId === invoiceId) {
@@ -118,7 +118,7 @@ export default function Billing() {
     setOpenMenuId(invoiceId);
   };
 
-  const handleStatusChange = (invoiceId: number, status: InvoiceStatus) => {
+  const handleStatusChange = (invoiceId: number | string, status: InvoiceStatus) => {
     const invoice = invoices.find((i) => i.id === invoiceId);
     updateStatus(invoiceId, status);
     setOpenMenuId(null);
@@ -139,7 +139,7 @@ export default function Billing() {
 
       toast[toastVariant](
         'Factura ' + invoice.number + ' marcada como ' + statusLabel,
-        'Cliente: ' + invoice.client + ' · Total: ' + formatBs(invoice.total),
+        'Cliente: ' + invoice.client + ' Â· Total: ' + formatBs(invoice.total),
         { category: 'billing', actionUrl: '/billing' }
       );
     }
