@@ -1,4 +1,5 @@
-﻿import {
+import { useEffect } from 'react';
+import {
   LayoutDashboard,
   Package,
   Receipt,
@@ -21,7 +22,10 @@ import {
   useSidebarStore,
   useAuthStore,
   useCompanyStore,
+  useProductsStore,
+  useInvoicesStore,
 } from '../../../stores';
+import { USE_BACKEND } from '../../../config/backend';
 import styles from './AppLayout.module.css';
 
 const NAV_ITEMS: SidebarItem[] = [
@@ -46,6 +50,16 @@ export function AppLayout() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const companyName = useCompanyStore((s) => s.company.name);
+
+  // Backend mode: fetch inicial de productos + empresa + facturas.
+  // Se ejecuta una sola vez al montar cualquier ruta protegida.
+  // En tests (USE_BACKEND=false) el efecto sale inmediatamente.
+  useEffect(() => {
+    if (!USE_BACKEND) return;
+    void useProductsStore.getState().fetchProducts();
+    void useCompanyStore.getState().fetchCompany();
+    void useInvoicesStore.getState().fetchInvoices();
+  }, []);
 
   const handleLogout = () => {
     logout();

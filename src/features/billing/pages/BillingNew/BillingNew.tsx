@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -152,7 +152,7 @@ export default function BillingNew() {
     setQuantity('1');
   };
 
-  const handleRemoveItem = (productId: number) => {
+  const handleRemoveItem = (productId: number | string) => {
     syncItemsToForm(items.filter((i) => i.productId !== productId));
   };
 
