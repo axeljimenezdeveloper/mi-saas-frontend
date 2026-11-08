@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.0.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v1.0.0...v2.0.0) (2026-11-08)
+
+### Features
+
+* add backend integration layer with feature flag ([6b140e8](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/6b140e8175d3b9821b0a488da8fbb8ba486488fb))
+* add billing backend integration ([7f81d9a](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/7f81d9a2dce4274ed0e3f975b6d70ed1028e78fd))
+* add inventory backend integration ([454f620](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/454f620b31d7417f9cbc570284d6d7c978c2c4fc))
+* add invoice pdf download in billing detail ([c4bf051](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/c4bf051cb5e616c274a89f043109ac5d18046a55))
+
 ## [1.0.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v0.9.1...v1.0.0) (2026-11-07)
 
 ### Features
