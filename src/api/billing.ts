@@ -7,8 +7,10 @@
 //   - date: ISO completo -> YYYY-MM-DD
 //   - productId: cuid string -> number | string (frontend)
 //   - productName: se resuelve con lookup en products[] (backend no lo guarda)
+//   - pdfUrl: relativo -> absoluto (para iframe cross-origin en dev)
 
 import { axiosClient } from './axiosClient';
+import { API_BASE_URL } from '../config/backend';
 import type { Invoice, InvoiceStatus } from '../stores/invoicesStore';
 import type { Product } from '../stores/productsStore';
 
@@ -63,6 +65,18 @@ function toNumber(v: number | string): number {
   return typeof v === 'number' ? v : Number(v);
 }
 
+/**
+ * Convierte una URL de pdfUrl a absoluta.
+ * El backend devuelve rutas relativas tipo /uploads/invoices/FAC-YYYY-NNNN.pdf
+ * y el frontend corre en otro puerto (Vite), por lo que necesitamos el
+ * origen completo para el <iframe>. Si ya es absoluta, la devuelve igual.
+ */
+function toAbsoluteUrl(url: string): string {
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  if (url.startsWith('/')) return `${API_BASE_URL}${url}`;
+  return url;
+}
+
 function toFrontendInvoice(inv: BackendInvoice, products: Product[]): Invoice {
   return {
     id: inv.id,
@@ -80,7 +94,7 @@ function toFrontendInvoice(inv: BackendInvoice, products: Product[]): Invoice {
         quantity: it.quantity,
       };
     }),
-    pdfUrl: inv.pdfUrl ?? undefined,
+    pdfUrl: inv.pdfUrl ? toAbsoluteUrl(inv.pdfUrl) : undefined,
   };
 }
 
@@ -92,7 +106,16 @@ export async function listInvoicesRequest(products: Product[]): Promise<Invoice[
 }
 
 export async function createInvoiceRequest(
-  data: { client: string; items: Array<{ productId: number | string; productName: string; price: number; quantity: number }>; total: number },
+  data: {
+    client: string;
+    items: Array<{
+      productId: number | string;
+      productName: string;
+      price: number;
+      quantity: number;
+    }>;
+    total: number;
+  },
   products: Product[],
 ): Promise<Invoice> {
   const body = {

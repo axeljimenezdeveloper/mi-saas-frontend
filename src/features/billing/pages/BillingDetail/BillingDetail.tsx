@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -11,6 +11,7 @@ import {
   AlertCircle,
   Package,
   Trash2,
+  Download,
 } from 'lucide-react';
 import { Card } from '../../../../components/common/data-display/Card';
 import { Badge } from '../../../../components/common/data-display/Badge';
@@ -20,6 +21,8 @@ import { ConfirmDialog } from '../../../../components/common/overlay/ConfirmDial
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { useInvoicesStore, useCompanyStore } from '../../../../stores';
 import type { InvoiceStatus } from '../../../../stores/invoicesStore';
+import { USE_BACKEND } from '../../../../config/backend';
+import { downloadInvoicePdfRequest } from '../../../../api/billing';
 import styles from './BillingDetail.module.css';
 
 const STATUS_LABELS: Record<InvoiceStatus, string> = {
@@ -67,6 +70,7 @@ export default function BillingDetail() {
   );
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const totals = useMemo(() => {
     if (!invoice) return { subtotal: 0, iva: 0 };
@@ -113,6 +117,38 @@ export default function BillingDetail() {
       { category: 'billing' }
     );
     navigate('/billing');
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!invoice) return;
+    setIsGeneratingPdf(true);
+    try {
+      const blob = await downloadInvoicePdfRequest(invoice.id);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${invoice.number}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      // El endpoint ya persistio pdfUrl en la DB. Refrescamos para que el
+      // iframe preview aparezca en el proximo render.
+      await useInvoicesStore.getState().fetchInvoices();
+
+      toast.success(
+        'PDF descargado',
+        'La factura ' + invoice.number + ' se descargo correctamente'
+      );
+    } catch {
+      toast.error(
+        'Error al generar PDF',
+        'No se pudo generar el PDF de la factura'
+      );
+    } finally {
+      setIsGeneratingPdf(false);
+    }
   };
 
   if (!invoice) {
@@ -279,12 +315,32 @@ export default function BillingDetail() {
                   <Button
                     variant="primary"
                     size="sm"
-                    leftIcon={<FileText size={14} />}
-                    onClick={() => window.open(invoice.pdfUrl, '_blank')}
+                    leftIcon={<Download size={14} />}
+                    onClick={handleDownloadPdf}
+                    isLoading={isGeneratingPdf}
                   >
                     Descargar PDF
                   </Button>
                 </div>
+              </div>
+            ) : USE_BACKEND ? (
+              <div className={styles.pdfPlaceholder}>
+                <div className={styles.pdfPlaceholderIcon}>
+                  <FileText size={32} />
+                </div>
+                <h3 className={styles.pdfPlaceholderTitle}>Factura PDF</h3>
+                <p className={styles.pdfPlaceholderText}>
+                  Genera el PDF de esta factura para descargarla o imprimirla.
+                </p>
+                <Button
+                  variant="primary"
+                  size="md"
+                  leftIcon={<Download size={14} />}
+                  onClick={handleDownloadPdf}
+                  isLoading={isGeneratingPdf}
+                >
+                  Generar y descargar PDF
+                </Button>
               </div>
             ) : (
               <div className={styles.pdfPlaceholder}>
