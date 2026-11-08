@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
@@ -57,14 +57,14 @@ describe('Login', () => {
     expect(screen.getByPlaceholderText('Tu contrasena')).toBeInTheDocument();
   });
 
-  it('renders demo credentials link', () => {
+  it('renders create test account button with hint', () => {
     renderLogin();
-    expect(screen.getByText('Rellenar credenciales de prueba')).toBeInTheDocument();
-  });
-
-  it('renders demo data link', () => {
-    renderLogin();
-    expect(screen.getByText('Probar con datos de ejemplo')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Crear cuenta de prueba/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Se creara una cuenta demo automaticamente/i)
+    ).toBeInTheDocument();
   });
 
   it('shows validation errors when submitting empty form', async () => {
@@ -82,14 +82,6 @@ describe('Login', () => {
     await user.type(screen.getByPlaceholderText('Tu contrasena'), 'admin123');
     await user.click(screen.getByRole('button', { name: /Iniciar sesion/i }));
     expect(screen.getByText('Ingresa un correo válido')).toBeInTheDocument();
-  });
-
-  it('fills demo credentials when link is clicked', async () => {
-    const user = userEvent.setup();
-    renderLogin();
-    await user.click(screen.getByText('Rellenar credenciales de prueba'));
-    expect(screen.getByPlaceholderText('tu@empresa.com')).toHaveValue('admin@vendra.com');
-    expect(screen.getByPlaceholderText('Tu contrasena')).toHaveValue('admin123');
   });
 
   it('toggles password visibility', async () => {
@@ -134,23 +126,27 @@ describe('Login', () => {
     );
   });
 
-  it('demo data button loads demo data and navigates to dashboard', async () => {
+  it('creates test account and navigates to /onboarding', async () => {
     const user = userEvent.setup();
     renderLogin();
-    await user.click(screen.getByText('Probar con datos de ejemplo'));
+    const createBtn = screen.getByRole('button', {
+      name: /Crear cuenta de prueba/i,
+    });
+    await user.click(createBtn);
 
     await waitFor(
       () => {
-        expect(useCompanyStore.getState().isConfigured).toBe(true);
-        expect(useProductsStore.getState().products.length).toBeGreaterThan(0);
-        expect(useInvoicesStore.getState().invoices.length).toBeGreaterThan(0);
-        expect(mockNavigate).toHaveBeenCalledWith('/dashboard', { replace: true });
+        expect(mockNavigate).toHaveBeenCalledWith('/onboarding', {
+          replace: true,
+        });
       },
       { timeout: 3000 }
     );
+
+    // El store debe tener un user creado (mock mode)
+    expect(useAuthStore.getState().user).not.toBeNull();
+    expect(useAuthStore.getState().user?.name).toBe('Profesor Demo');
+    // El email debe tener el prefijo demo_
+    expect(useAuthStore.getState().user?.email).toMatch(/^demo_.*@vendra\.local$/);
   });
 });
-
-
-
-

@@ -1,4 +1,4 @@
-﻿/* src/features/auth/pages/Login/Login.module.css */
+/* src/features/auth/pages/Login/Login.module.css */
 
 .page {
   min-height: 100vh;
@@ -127,40 +127,36 @@
   padding: 0;
 }
 
-/* ============ Link demo (sutil, consistente con Onboarding) ============ */
-.demoLink {
-  align-self: center;
-  padding: 0;
-  margin-top: var(--space-2);
-  background: transparent;
-  border: none;
-  color: var(--color-text-muted);
-  font-family: var(--font-sans);
+/* ============ Divider ============ */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-1) 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: var(--color-border);
+}
+
+.dividerText {
   font-size: var(--text-xs);
-  font-weight: var(--weight-medium);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--color-border-strong);
-  cursor: pointer;
-  transition:
-    color var(--duration-fast) var(--ease-out),
-    text-decoration-color var(--duration-fast) var(--ease-out);
+  color: var(--color-text-muted);
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
 }
 
-.demoLink:hover:not(:disabled) {
-  color: var(--color-primary);
-  text-decoration-color: var(--color-primary);
-}
-
-.demoLink:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-.demoLink:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
+/* ============ Create test hint ============ */
+.createTestHint {
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+  text-align: center;
+  margin: 0;
+  line-height: var(--leading-normal);
 }
 
 /* ============ Footer links ============ */
