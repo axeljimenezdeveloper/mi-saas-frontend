@@ -1,23 +1,26 @@
-﻿import { create } from 'zustand';
+// src/stores/invoicesStore.ts
+// Solo cambian los tipos (id y productId aceptan number | string).
+// La logica es identica; en 7.C se migrara el CRUD a la API.
+
+import { create } from 'zustand';
 
 export type InvoiceStatus = 'paid' | 'pending' | 'overdue';
 
 export interface InvoiceLine {
-  productId: number;
+  productId: number | string;
   productName: string;
   price: number;
   quantity: number;
 }
 
 export interface Invoice {
-  id: number;
+  id: number | string;
   number: string;
   client: string;
   date: string;
   total: number;
   status: InvoiceStatus;
   items: InvoiceLine[];
-  /** URL del PDF generado por el backend (opcional hasta que exista backend). */
   pdfUrl?: string;
 }
 
@@ -28,8 +31,8 @@ export interface InvoicesStore {
     items: InvoiceLine[];
     total: number;
   }) => Invoice;
-  removeInvoice: (id: number) => void;
-  updateStatus: (id: number, status: InvoiceStatus) => void;
+  removeInvoice: (id: number | string) => void;
+  updateStatus: (id: number | string, status: InvoiceStatus) => void;
   clearAll: () => void;
 }
 
@@ -75,7 +78,7 @@ export const useInvoicesStore = create<InvoicesStore>((set) => ({
   updateStatus: (id, status) =>
     set((state) => ({
       invoices: state.invoices.map((i) =>
-        i.id === id ? { ...i, status } : i
+        i.id === id ? { ...i, status } : i,
       ),
     })),
 

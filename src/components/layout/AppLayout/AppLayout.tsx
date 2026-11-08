@@ -1,4 +1,5 @@
-﻿import {
+import { useEffect } from 'react';
+import {
   LayoutDashboard,
   Package,
   Receipt,
@@ -21,7 +22,9 @@ import {
   useSidebarStore,
   useAuthStore,
   useCompanyStore,
+  useProductsStore,
 } from '../../../stores';
+import { USE_BACKEND } from '../../../config/backend';
 import styles from './AppLayout.module.css';
 
 const NAV_ITEMS: SidebarItem[] = [
@@ -46,6 +49,12 @@ export function AppLayout() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const companyName = useCompanyStore((s) => s.company.name);
+
+  useEffect(() => {
+    if (!USE_BACKEND) return;
+    void useProductsStore.getState().fetchProducts();
+    void useCompanyStore.getState().fetchCompany();
+  }, []);
 
   const handleLogout = () => {
     logout();
