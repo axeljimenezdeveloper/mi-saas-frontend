@@ -62,6 +62,24 @@ export async function loginRequest(
   return toFrontendUser(user);
 }
 
+/**
+ * Registra un user nuevo y devuelve el user + guarda el token (auto-login).
+ * Usado por el boton "Crear cuenta de prueba" del Login.
+ */
+export async function registerRequest(
+  email: string,
+  password: string,
+  name: string,
+): Promise<FrontendUser> {
+  const res = await axiosClient.post<ApiResponse<BackendAuthResponse>>(
+    '/api/auth/register',
+    { email, password, name },
+  );
+  const { token, user } = res.data.data;
+  setStoredToken(token);
+  return toFrontendUser(user);
+}
+
 export async function meRequest(): Promise<FrontendUser> {
   const res = await axiosClient.get<ApiResponse<BackendUser>>('/api/auth/me');
   return toFrontendUser(res.data.data);

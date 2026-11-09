@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,7 +8,6 @@ import {
   LogOut,
   Mail,
   Shield,
-  RefreshCw,
   MapPin,
   DollarSign,
   Percent,
@@ -24,7 +23,6 @@ import { Badge } from '../../../../components/common/data-display/Badge';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { useAuthStore, useCompanyStore } from '../../../../stores';
 import { settingsSchema, type SettingsFormData } from '../../../../schemas';
-import { clearAllData } from '../../../demo/demoData';
 import styles from './Settings.module.css';
 
 const CURRENCY_OPTIONS = [
@@ -68,7 +66,6 @@ export default function Settings() {
     mode: 'onChange',
   });
 
-  // Sincroniza el form cuando el store cambia (ej. despues del onboarding)
   useEffect(() => {
     reset({
       companyName: company.name,
@@ -97,21 +94,6 @@ export default function Settings() {
     logout();
     toast.success('Sesion cerrada', 'Hasta pronto', { category: 'auth' });
     navigate('/login');
-  };
-
-  const handleReset = () => {
-    const confirmed = window.confirm(
-      '¿Estas seguro? Esto eliminara TODOS los productos, facturas y datos de la empresa. Volveras al onboarding.'
-    );
-    if (!confirmed) return;
-
-    clearAllData();
-    toast.success(
-      'Datos restablecidos',
-      'Seras redirigido al onboarding',
-      { category: 'system' }
-    );
-    navigate('/onboarding');
   };
 
   return (
@@ -246,31 +228,6 @@ export default function Settings() {
             </Card>
           </FormGroup>
 
-          <FormGroup
-            title="Zona de peligro"
-            description="Acciones irreversibles sobre tus datos"
-            layout="stack"
-          >
-            <Card padding="md">
-              <div className={styles.dangerCard}>
-                <div>
-                  <p className={styles.dangerTitle}>Restablecer todos los datos</p>
-                  <p className={styles.dangerDescription}>
-                    Elimina productos, facturas y configuracion. Volveras al onboarding.
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  variant="danger"
-                  leftIcon={<RefreshCw size={14} />}
-                  onClick={handleReset}
-                >
-                  Restablecer
-                </Button>
-              </div>
-            </Card>
-          </FormGroup>
-
           <div className={styles.footer}>
             <Button
               type="submit"
@@ -287,7 +244,3 @@ export default function Settings() {
     </div>
   );
 }
-
-
-
-

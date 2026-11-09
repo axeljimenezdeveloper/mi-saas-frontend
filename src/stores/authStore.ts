@@ -5,7 +5,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { USE_BACKEND } from '../config/backend';
-import { loginRequest, logoutRequest } from '../api/auth';
+import { loginRequest, logoutRequest, registerRequest } from '../api/auth';
 import { setUnauthorizedHandler } from '../api/axiosClient';
 
 export interface User {
@@ -26,6 +26,11 @@ export interface AuthStore {
     password: string,
     rememberMe?: boolean
   ) => Promise<boolean>;
+  /**
+   * Crea un user nuevo y hace auto-login.
+   * Usado por el boton "Crear cuenta de prueba" del Login.
+   */
+  register: (email: string, password: string, name: string) => Promise<boolean>;
   logout: () => void;
   clearError: () => void;
 }
@@ -112,6 +117,42 @@ export const useAuthStore = create<AuthStore>()(
           isLoading: false,
         });
         return false;
+      },
+
+      register: async (
+        email: string,
+        password: string,
+        name: string
+      ): Promise<boolean> => {
+        set({ isLoading: true, error: null });
+
+        // ─── Modo backend ────────────────────────────
+        if (USE_BACKEND) {
+          try {
+            const user = await registerRequest(email, password, name);
+            set({ user, isLoading: false });
+            return true;
+          } catch (err) {
+            const code = extractErrorCode(err);
+            const message =
+              code === 'EMAIL_TAKEN'
+                ? 'Ese correo ya esta registrado. Intenta iniciar sesion.'
+                : extractErrorMessage(err, 'No se pudo crear la cuenta');
+            set({ error: message, isLoading: false });
+            return false;
+          }
+        }
+
+        // ─── Modo mock (tests, demo sin backend) ─────
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        const mockUser: User = {
+          id: `mock-${Date.now()}`,
+          name,
+          email,
+          role: 'admin',
+        };
+        set({ user: mockUser, isLoading: false });
+        return true;
       },
 
       logout: () => {

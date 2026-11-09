@@ -1,8 +1,18 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Package, Mail, Lock, Eye, EyeOff, Sun, Moon, LogIn } from 'lucide-react';
+import {
+  Package,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Sun,
+  Moon,
+  LogIn,
+  UserPlus,
+} from 'lucide-react';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { FormField } from '../../../../components/forms/FormField';
 import { Input } from '../../../../components/common/inputs/Input';
@@ -11,7 +21,6 @@ import { Button } from '../../../../components/common/actions/Button';
 import { Alert } from '../../../../components/feedback/alerts/Alert';
 import { useThemeStore, useAuthStore, useCompanyStore } from '../../../../stores';
 import { loginSchema, type LoginFormData } from '../../../../schemas';
-import { seedDemoData } from '../../../demo/demoData';
 import styles from './Login.module.css';
 
 export default function Login() {
@@ -22,6 +31,7 @@ export default function Login() {
   const toggleTheme = useThemeStore((s) => s.toggleTheme);
 
   const login = useAuthStore((s) => s.login);
+  const register = useAuthStore((s) => s.register);
   const isLoading = useAuthStore((s) => s.isLoading);
   const error = useAuthStore((s) => s.error);
   const clearError = useAuthStore((s) => s.clearError);
@@ -29,9 +39,7 @@ export default function Login() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
-  const [isDemoLoading, setIsDemoLoading] = useState(false);
 
-  // Auto-redirect: si ya hay sesion, ir a dashboard u onboarding
   useEffect(() => {
     if (isAuthenticated) {
       const isConfigured = useCompanyStore.getState().isConfigured;
@@ -40,9 +48,8 @@ export default function Login() {
   }, [isAuthenticated, navigate]);
 
   const {
-    register,
+    register: registerField,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -60,28 +67,23 @@ export default function Login() {
     }
   };
 
-  const handleDemoLogin = async () => {
+  const handleCreateTestAccount = async () => {
     clearError();
-    setIsDemoLoading(true);
-    try {
-      seedDemoData();
-      const success = await login('admin@vendra.com', 'admin123', rememberMe);
-      if (success) {
-        toast.success(
-          'Modo demo activado',
-          'Se cargaron productos, facturas y empresa de ejemplo',
-          { category: 'system' }
-        );
-      }
-    } finally {
-      setIsDemoLoading(false);
-    }
-  };
+    const ts = Date.now();
+    const rand = Math.random().toString(36).slice(2, 6);
+    const email = `demo_${ts}_${rand}@vendra.local`;
+    const password = 'secret123';
+    const name = 'Profesor Demo';
 
-  const fillDemoCredentials = () => {
-    setValue('email', 'admin@vendra.com', { shouldValidate: false });
-    setValue('password', 'admin123', { shouldValidate: false });
-    clearError();
+    const success = await register(email, password, name);
+    if (success) {
+      toast.success(
+        'Cuenta de prueba creada',
+        `Email: ${email} · Password: ${password}. Anotalos por si necesitas volver a entrar.`,
+        { category: 'auth' },
+      );
+      // El useEffect de isAuthenticated redirige automaticamente.
+    }
   };
 
   return (
@@ -104,13 +106,6 @@ export default function Login() {
           <p className={styles.subtitle}>
             Gestiona el inventario y la facturacion de tu negocio
           </p>
-          <button
-            type="button"
-            className={styles.demoLink}
-            onClick={fillDemoCredentials}
-          >
-            Rellenar credenciales de prueba
-          </button>
         </header>
 
         <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -129,7 +124,7 @@ export default function Login() {
               error={errors.email?.message}
               autoComplete="email"
               autoFocus
-              {...register('email')}
+              {...registerField('email')}
             />
           </FormField>
 
@@ -151,7 +146,7 @@ export default function Login() {
               }
               error={errors.password?.message}
               autoComplete="current-password"
-              {...register('password')}
+              {...registerField('password')}
             />
           </FormField>
 
@@ -176,16 +171,24 @@ export default function Login() {
           </Button>
         </form>
 
-        <div className={styles.footerLinks}>
-          <button
-            type="button"
-            className={styles.demoLink}
-            onClick={handleDemoLogin}
-            disabled={isDemoLoading || isLoading}
-          >
-            {isDemoLoading ? 'Cargando demo...' : 'Probar con datos de ejemplo'}
-          </button>
+        <div className={styles.divider}>
+          <span className={styles.dividerText}>o</span>
         </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          fullWidth
+          size="lg"
+          leftIcon={<UserPlus size={16} />}
+          onClick={handleCreateTestAccount}
+          isLoading={isLoading}
+        >
+          Crear cuenta de prueba
+        </Button>
+        <p className={styles.createTestHint}>
+          Se creara una cuenta demo automaticamente
+        </p>
 
         <footer className={styles.creator}>
           <p className={styles.creatorName}>

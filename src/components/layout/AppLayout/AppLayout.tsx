@@ -24,6 +24,7 @@ import {
   useCompanyStore,
   useProductsStore,
   useInvoicesStore,
+  useNotificationsStore,
 } from '../../../stores';
 import { USE_BACKEND } from '../../../config/backend';
 import styles from './AppLayout.module.css';
@@ -35,6 +36,13 @@ const NAV_ITEMS: SidebarItem[] = [
   { label: 'Configuracion', icon: <Settings size={18} />, href: '/settings' },
   { label: 'Documentacion', icon: <BookOpen size={18} />, href: '/docs' },
 ];
+
+/**
+ * Intervalo de polling para refrescar notificaciones.
+ * 15s es un balance entre UX de demo y carga del backend.
+ * Deuda: si se necesita real-time, migrar a WebSockets/SSE.
+ */
+const NOTIFICATIONS_POLL_MS = 15_000;
 
 export function AppLayout() {
   const location = useLocation();
@@ -51,14 +59,22 @@ export function AppLayout() {
   const logout = useAuthStore((s) => s.logout);
   const companyName = useCompanyStore((s) => s.company.name);
 
-  // Backend mode: fetch inicial de productos + empresa + facturas.
-  // Se ejecuta una sola vez al montar cualquier ruta protegida.
-  // En tests (USE_BACKEND=false) el efecto sale inmediatamente.
+  // Bootstrap inicial + polling de notificaciones (solo backend mode).
   useEffect(() => {
     if (!USE_BACKEND) return;
+
+    // Fetch inicial (paralelo)
     void useProductsStore.getState().fetchProducts();
     void useCompanyStore.getState().fetchCompany();
     void useInvoicesStore.getState().fetchInvoices();
+    void useNotificationsStore.getState().fetchNotifications();
+
+    // Polling: refresca notificaciones para que el bell refleje acciones recientes
+    const interval = setInterval(() => {
+      void useNotificationsStore.getState().fetchNotifications();
+    }, NOTIFICATIONS_POLL_MS);
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleLogout = () => {
