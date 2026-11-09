@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.1.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v2.0.0...v2.1.0) (2026-11-09)
+
+### Features
+
+* add create test account button with auto-login ([36f42a9](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/36f42a9920d4a48803496099f19cff021347ba5a))
+* integrate notifications with backend in frontend ([65edc95](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/65edc9582c27d5df1e721f5415086f10ed3db8ff))
+
 ## [2.0.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v1.0.0...v2.0.0) (2026-11-08)
 
 ### Features
