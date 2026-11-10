@@ -21,6 +21,7 @@ import { Button } from '../../../../components/common/actions/Button';
 import { Alert } from '../../../../components/feedback/alerts/Alert';
 import { useThemeStore, useAuthStore, useCompanyStore } from '../../../../stores';
 import { loginSchema, type LoginFormData } from '../../../../schemas';
+import { USE_BACKEND } from '../../../../config/backend';
 import styles from './Login.module.css';
 
 export default function Login() {
@@ -36,16 +37,26 @@ export default function Login() {
   const error = useAuthStore((s) => s.error);
   const clearError = useAuthStore((s) => s.clearError);
   const isAuthenticated = useAuthStore((s) => s.user !== null);
+  const fetchCompany = useCompanyStore((s) => s.fetchCompany);
 
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (!isAuthenticated) return;
+
+    // En backend mode, refrescamos company ANTES de decidir la ruta.
+    // Sin esto, un usuario con empresa existente pero localStorage vacio
+    // caia en /onboarding por el valor default (isConfigured: false).
+    const decideRoute = async () => {
+      if (USE_BACKEND) {
+        await fetchCompany();
+      }
       const isConfigured = useCompanyStore.getState().isConfigured;
       navigate(isConfigured ? '/dashboard' : '/onboarding', { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
+    };
+    void decideRoute();
+  }, [isAuthenticated, navigate, fetchCompany]);
 
   const {
     register: registerField,
