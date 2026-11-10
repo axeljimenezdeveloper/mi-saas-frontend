@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Plus,
@@ -9,6 +9,7 @@ import {
   ArrowUp,
   ArrowDown,
   ArrowUpDown,
+  PackagePlus,
 } from 'lucide-react';
 import { Table, type TableColumn } from '../../../../components/common/data-display/Table';
 import { Badge } from '../../../../components/common/data-display/Badge';
@@ -20,7 +21,13 @@ import { EmptyState } from '../../../../components/feedback/states/EmptyState';
 import { ConfirmDialog } from '../../../../components/common/overlay/ConfirmDialog';
 import { Pagination } from '../../../../components/common/navigation/Pagination';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
-import { useProductsStore, type Product, type StockStatus } from '../../../../stores';
+import {
+  useProductsStore,
+  useCompanyStore,
+  type Product,
+  type StockStatus,
+} from '../../../../stores';
+import { generateSampleProducts } from '../../../demo/sampleProducts';
 import styles from './ProductsList.module.css';
 
 const STATUS_LABELS: Record<StockStatus, string> = {
@@ -60,8 +67,11 @@ export default function ProductsList() {
 
   const products = useProductsStore((s) => s.products);
   const removeProduct = useProductsStore((s) => s.removeProduct);
+  const addProduct = useProductsStore((s) => s.addProduct);
+  const currency = useCompanyStore((s) => s.preferences.currency);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
@@ -146,6 +156,18 @@ export default function ProductsList() {
     if (paginated.length === 1 && currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
+  };
+
+  const handleGenerateSamples = () => {
+    setIsGenerating(true);
+    const samples = generateSampleProducts(currency);
+    samples.forEach((product) => addProduct(product));
+    toast.success(
+      '16 productos de ejemplo creados',
+      'Explora la tabla, filtra por estado y crea facturas',
+      { category: 'inventory' }
+    );
+    setIsGenerating(false);
   };
 
   const columns: TableColumn<Product>[] = [
@@ -258,15 +280,34 @@ export default function ProductsList() {
         <div className={styles.emptyWrapper}>
           <EmptyState
             title="No hay productos registrados"
-            description="Comienza agregando tu primer producto al inventario para poder facturarlo."
+            description="Comienza agregando tu primer producto o genera una muestra de 16 productos para explorar la interfaz."
             icon={<Package size={32} />}
             action={
-              <Button
-                leftIcon={<Plus size={14} />}
-                onClick={() => navigate('/products/new')}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 'var(--space-3)',
+                  alignItems: 'stretch', width: '100%', maxWidth: '260px',
+                }}
               >
-                Crear primer producto
-              </Button>
+                <Button
+                  leftIcon={<Plus size={14} />}
+                    fullWidth
+                  onClick={() => navigate('/products/new')}
+                >
+                  Crear primer producto
+                </Button>
+                <Button
+                  variant="outline"
+                  leftIcon={<PackagePlus size={14} />}
+                    fullWidth
+                  onClick={handleGenerateSamples}
+                  isLoading={isGenerating}
+                >
+                  Generar productos
+                </Button>
+              </div>
             }
           />
         </div>

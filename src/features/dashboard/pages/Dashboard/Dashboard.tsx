@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Package,
@@ -8,6 +8,7 @@ import {
   ArrowRight,
   Plus,
   ShoppingCart,
+  PackagePlus,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -22,11 +23,13 @@ import { Card } from '../../../../components/common/data-display/Card';
 import { Badge } from '../../../../components/common/data-display/Badge';
 import { Button } from '../../../../components/common/actions/Button';
 import { EmptyState } from '../../../../components/feedback/states/EmptyState';
+import { useToast } from '../../../../components/feedback/alerts/Toast';
 import {
   useProductsStore,
   useInvoicesStore,
   useCompanyStore,
 } from '../../../../stores';
+import { generateSampleProducts } from '../../../../features/demo/sampleProducts';
 import styles from './Dashboard.module.css';
 
 const formatBs = (amount: number): string =>
@@ -43,9 +46,14 @@ const formatDate = (iso: string): string => {
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const toast = useToast();
   const companyName = useCompanyStore((s) => s.company.name);
+  const currency = useCompanyStore((s) => s.preferences.currency);
   const products = useProductsStore((s) => s.products);
+  const addProduct = useProductsStore((s) => s.addProduct);
   const invoices = useInvoicesStore((s) => s.invoices);
+
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const metrics = useMemo(() => {
     const activeProducts = products.filter((p) => p.status === 'in-stock').length;
@@ -111,6 +119,18 @@ export default function Dashboard() {
     ? 'Hola, ' + companyName
     : 'Resumen general de tu negocio';
 
+  const handleGenerateSamples = () => {
+    setIsGenerating(true);
+    const samples = generateSampleProducts(currency);
+    samples.forEach((product) => addProduct(product));
+    toast.success(
+      '16 productos de ejemplo creados',
+      'Explora el inventario, crea facturas y prueba las notificaciones',
+      { category: 'inventory' }
+    );
+    setIsGenerating(false);
+  };
+
   return (
     <div className={styles.page}>
       <header className={styles.pageHeader}>
@@ -129,15 +149,34 @@ export default function Dashboard() {
           <div className={styles.emptyWrapper}>
             <EmptyState
               title="Tu negocio esta vacio"
-              description="Comienza agregando tu primer producto para empezar a ver metricas, graficos y actividad."
+              description="Comienza agregando tu primer producto o genera una muestra de 16 productos para explorar la interfaz."
               icon={<Package size={32} />}
               action={
-                <Button
-                  leftIcon={<Plus size={14} />}
-                  onClick={() => navigate('/products/new')}
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 'var(--space-3)',
+                    alignItems: 'stretch', width: '100%', maxWidth: '260px',
+                  }}
                 >
-                  Crear primer producto
-                </Button>
+                  <Button
+                    leftIcon={<Plus size={14} />}
+                    fullWidth
+                    onClick={() => navigate('/products/new')}
+                  >
+                    Crear primer producto
+                  </Button>
+                  <Button
+                    variant="outline"
+                    leftIcon={<PackagePlus size={14} />}
+                    fullWidth
+                    onClick={handleGenerateSamples}
+                    isLoading={isGenerating}
+                  >
+                    Generar productos
+                  </Button>
+                </div>
               }
             />
           </div>
@@ -455,7 +494,7 @@ export default function Dashboard() {
                           <div className={styles.listItemContent}>
                             <span className={styles.listItemTitle}>{inv.number}</span>
                             <span className={styles.listItemSubtitle}>
-                              {inv.client} Â· {formatDate(inv.date)}
+                              {inv.client} - {formatDate(inv.date)}
                             </span>
                           </div>
                         </div>

@@ -1,8 +1,7 @@
-﻿import {
+import {
   BookOpen,
   Target,
   Lightbulb,
-  Users,
   TrendingUp,
   CheckCircle2,
   Package,
@@ -16,6 +15,7 @@
   AlertTriangle,
   Layers,
   ArrowRight,
+  Bell,
 } from 'lucide-react';
 import { Card } from '../../../../components/common/data-display/Card';
 import { Badge } from '../../../../components/common/data-display/Badge';
@@ -50,10 +50,10 @@ export default function Docs() {
             <div className={styles.creatorInfo}>
               <h2 className={styles.creatorName}>Axel Gabriel Jimenez Malaver</h2>
               <p className={styles.creatorMeta}>
-                C.I. 27.870.662 · Ingenieria de Sistemas · Universidad Nacional Abierta
+                C.I. 27.870.662 Â· Ingenieria de Sistemas Â· Universidad Nacional Abierta
               </p>
               <p className={styles.creatorMeta}>
-                Evaluacion de Proyectos (225) · Lapso 2026-2
+                Evaluacion de Proyectos (225) Â· Lapso 2026-2
               </p>
             </div>
             <a
@@ -161,7 +161,7 @@ export default function Docs() {
             <FlowStep
               number={2}
               title="Carga tus productos"
-              description="Agregas los productos que vendes con su precio, stock inicial y hasta fotos."
+              description="Agregas los productos que vendes con su precio, stock inicial y hasta fotos. O generas una muestra de 16 productos para explorar."
             />
             <FlowStep
               number={3}
@@ -171,7 +171,7 @@ export default function Docs() {
             <FlowStep
               number={4}
               title="Controla tu negocio"
-              description="Ves en un panel cuanto vendiste, que productos estan bajos de stock, y tus facturas pendientes."
+              description="Ves en un panel cuanto vendiste, que productos estan bajos de stock, y recibes notificaciones cuando ocurre algo importante."
             />
           </div>
         </section>
@@ -196,6 +196,11 @@ export default function Docs() {
               description="Cada vez que facturas, el inventario se actualiza solo. Adios a los cuadernos desactualizados."
             />
             <BenefitCard
+              icon={<Bell size={22} />}
+              title="Notificaciones persistentes"
+              description="Te enteras cuando una factura se paga, cuando un producto se agota, o cuando alguien completa el onboarding."
+            />
+            <BenefitCard
               icon={<TrendingUp size={22} />}
               title="Decisiones con datos"
               description="Ves que productos son mas rentables, cuanto vendiste en la semana, y cuanto dinero tienes cobrado."
@@ -203,12 +208,7 @@ export default function Docs() {
             <BenefitCard
               icon={<Shield size={22} />}
               title="Datos seguros en la nube"
-              description="Toda la informacion se guarda cifrada. No hay riesgo de perderla si se danara tu computadora."
-            />
-            <BenefitCard
-              icon={<Users size={22} />}
-              title="Accesible desde cualquier lugar"
-              description="Funciona en computadora, tablet y celular. Puedes revisar tu negocio desde donde estes."
+              description="Toda la informacion se guarda cifrada en PostgreSQL. No hay riesgo de perderla si se danara tu computadora."
             />
           </div>
         </section>
@@ -230,9 +230,10 @@ export default function Docs() {
               title="Facturacion"
               items={[
                 'Crear facturas en segundos',
-                'Calcular IVA (16%) automaticamente',
+                'Calcular IVA automaticamente (16%)',
                 'Descontar stock al vender',
                 'Marcar facturas como pagadas o pendientes',
+                'Descargar la factura en PDF con formato profesional',
               ]}
             />
             <FeatureCard
@@ -242,6 +243,7 @@ export default function Docs() {
                 'Conocer tus productos mas vendidos',
                 'Revisar cuanto dinero tienes cobrado',
                 'Alertas de stock bajo en tiempo real',
+                'Notificaciones persistentes: se mantienen al recargar la pagina',
               ]}
             />
             <FeatureCard
@@ -261,43 +263,58 @@ export default function Docs() {
           <SectionTitle icon={<Sparkles size={20} />} title="Como probar el sistema" />
           <Card padding="md">
             <p className={styles.paragraph}>
-              El sistema viene con datos de ejemplo ya cargados para que puedas
-              explorar todas las funcionalidades sin tener que crear todo desde cero.
+              Sigue estos pasos para explorar todas las funcionalidades desde cero.
+              No necesitas configurar nada manualmente: hay botones de ayuda en cada
+              pantalla para acelerar el proceso.
             </p>
             <ol className={styles.demoSteps}>
               <li>
                 <span className={styles.stepNumber}>1</span>
                 <div>
-                  <strong>Inicia sesion</strong>
-                  <p>En la pantalla de login, haz click en "Probar con datos de ejemplo" para acceder directamente.</p>
+                  <strong>Crea tu cuenta de prueba</strong>
+                  <p>En la pantalla de login, haz click en "Crear cuenta de prueba". Se crea un usuario demo y entras automaticamente.</p>
                 </div>
               </li>
               <li>
                 <span className={styles.stepNumber}>2</span>
                 <div>
-                  <strong>Explora el panel principal</strong>
-                  <p>Veras cuantos productos tienes, cuantas facturas y un grafico con tus ventas de la semana.</p>
+                  <strong>Configura tu empresa</strong>
+                  <p>Completa el wizard de 2 pasos: datos de la empresa (nombre, RIF, direccion) y preferencias (moneda, IVA, tipo de negocio).</p>
                 </div>
               </li>
               <li>
                 <span className={styles.stepNumber}>3</span>
                 <div>
-                  <strong>Revisa el inventario</strong>
-                  <p>En "Inventario" puedes ver todos los productos, editarlos o crear nuevos.</p>
+                  <strong>Genera productos de ejemplo</strong>
+                  <p>En el Dashboard vacio, haz click en "Generar productos". Se cargan 16 productos con imagenes reales y stock variado.</p>
                 </div>
               </li>
               <li>
                 <span className={styles.stepNumber}>4</span>
                 <div>
-                  <strong>Crea una factura</strong>
-                  <p>En "Facturacion" puedes crear una factura nueva. Mira como el stock se descuenta automaticamente.</p>
+                  <strong>Explora el inventario</strong>
+                  <p>En "Inventario" veras la tabla con busqueda, filtros, ordenamiento y paginacion. Los 3 estados visuales se muestran: en stock (verde), stock bajo (amarillo), agotado (rojo).</p>
                 </div>
               </li>
               <li>
                 <span className={styles.stepNumber}>5</span>
                 <div>
-                  <strong>Prueba cambiar el tema</strong>
-                  <p>Con el boton de sol/luna en la esquina superior, cambia entre modo claro y oscuro.</p>
+                  <strong>Crea una factura</strong>
+                  <p>En "Facturacion" crea una factura. El stock se descuenta automaticamente y el IVA se calcula solo.</p>
+                </div>
+              </li>
+              <li>
+                <span className={styles.stepNumber}>6</span>
+                <div>
+                  <strong>Descarga el PDF</strong>
+                  <p>Entra al detalle de la factura y haz click en "Generar y descargar PDF". El PDF se descarga y se previsualiza en la pagina.</p>
+                </div>
+              </li>
+              <li>
+                <span className={styles.stepNumber}>7</span>
+                <div>
+                  <strong>Revisa las notificaciones</strong>
+                  <p>La campana del header muestra las notificaciones: bienvenida, stock bajo, factura creada, factura pagada. Persisten al recargar la pagina (vienen del backend).</p>
                 </div>
               </li>
             </ol>
@@ -311,24 +328,50 @@ export default function Docs() {
             <p className={styles.paragraph}>
               Esta version es el <strong>Producto Minimo Viable (MVP)</strong>: tiene
               las funcionalidades esenciales para que una PYME pueda empezar a operar
-              digitalmente. Los siguientes pasos incluyen:
+              digitalmente.
             </p>
+
+            <h4 className={styles.sectionTitleText} style={{ marginTop: 'var(--space-4)' }}>
+              Completado en v2.1.0
+            </h4>
             <div className={styles.roadmapGrid}>
               <VisionItem
                 title="Backend en la nube"
-                description="Guardar los datos en servidores reales para que persistan entre sesiones y dispositivos."
+                description="Los datos se guardan en PostgreSQL (Neon) y persisten entre sesiones y dispositivos."
               />
               <VisionItem
-                title="Notificaciones inteligentes"
-                description="Avisos automaticos cuando un producto se agota, cuando vence una factura, o cuando hay una venta importante."
+                title="Autenticacion segura"
+                description="JWT + bcrypt para proteger las cuentas de usuario."
+              />
+              <VisionItem
+                title="Notificaciones persistentes"
+                description="Eventos de dominio (factura pagada, stock bajo, etc.) se guardan en el backend y se consultan desde el panel."
               />
               <VisionItem
                 title="Facturas en PDF"
-                description="Generar facturas descargables con formato compatible con los requisitos del SENIAT."
+                description="Cada factura se genera como PDF descargable con formato profesional."
               />
+            </div>
+
+            <h4 className={styles.sectionTitleText} style={{ marginTop: 'var(--space-5)' }}>
+              Proximos pasos
+            </h4>
+            <div className={styles.roadmapGrid}>
               <VisionItem
                 title="Reportes avanzados"
                 description="Estadisticas por periodo: ventas del mes, productos top, margenes de ganancia."
+              />
+              <VisionItem
+                title="Multi-usuario por empresa"
+                description="Roles avanzados (admin, cajero) y permisos por funcionalidad."
+              />
+              <VisionItem
+                title="Tests automatizados del backend"
+                description="Cobertura con Vitest + Supertest para garantizar la estabilidad del servidor."
+              />
+              <VisionItem
+                title="Deploy a produccion"
+                description="Vercel (frontend) + Railway (backend) con dominio propio y HTTPS."
               />
             </div>
           </Card>
@@ -338,7 +381,7 @@ export default function Docs() {
         <footer className={styles.footer}>
           <Shield size={14} />
           <p>
-            Proyecto academico desarrollado por <strong>Axel Gabriel Jimenez Malaver</strong> · UNA 2026-2
+            Proyecto academico desarrollado por <strong>Axel Gabriel Jimenez Malaver</strong> Â· UNA 2026-2
           </p>
         </footer>
       </div>
@@ -422,5 +465,3 @@ function VisionItem({ title, description }: { title: string; description: string
     </div>
   );
 }
-
-
