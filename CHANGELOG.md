@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.2.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v2.1.0...v2.2.0) (2026-11-10)
+
+### Features
+
+* add demo product samples with UI entry points ([104f0a8](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/104f0a8bbc38b61b303ca2c77fe1798d048eb638))
+
 ## [2.1.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v2.0.0...v2.1.0) (2026-11-09)
 
 ### Features
