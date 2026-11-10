@@ -21,7 +21,14 @@ import { Card } from '../../../../components/common/data-display/Card';
 import { Avatar } from '../../../../components/common/data-display/Avatar';
 import { Badge } from '../../../../components/common/data-display/Badge';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
-import { useAuthStore, useCompanyStore } from '../../../../stores';
+import {
+  useAuthStore,
+  useCompanyStore,
+  useProductsStore,
+  useInvoicesStore,
+  useNotificationsStore,
+  useSidebarStore,
+} from '../../../../stores';
 import { settingsSchema, type SettingsFormData } from '../../../../schemas';
 import { USE_BACKEND } from '../../../../config/backend';
 import styles from './Settings.module.css';
@@ -108,6 +115,12 @@ export default function Settings() {
 
   const handleLogout = () => {
     logout();
+    // Reset de stores de dominio para evitar leak entre sesiones.
+    useCompanyStore.getState().reset();
+    useProductsStore.getState().clearAll();
+    useInvoicesStore.getState().clearAll();
+    useNotificationsStore.getState().clearAll();
+    useSidebarStore.getState().closeMobile();
     toast.success('Sesion cerrada', 'Hasta pronto', { category: 'auth' });
     navigate('/login');
   };

@@ -79,6 +79,12 @@ export function AppLayout() {
 
   const handleLogout = () => {
     logout();
+    // Reset de stores de dominio para evitar leak entre sesiones.
+    useCompanyStore.getState().reset();
+    useProductsStore.getState().clearAll();
+    useInvoicesStore.getState().clearAll();
+    useNotificationsStore.getState().clearAll();
+    useSidebarStore.getState().closeMobile();
     toast.success('Sesion cerrada', 'Hasta pronto', { category: 'auth' });
     navigate('/login');
   };
