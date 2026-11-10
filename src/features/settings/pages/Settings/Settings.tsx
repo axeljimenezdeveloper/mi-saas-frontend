@@ -23,6 +23,7 @@ import { Badge } from '../../../../components/common/data-display/Badge';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { useAuthStore, useCompanyStore } from '../../../../stores';
 import { settingsSchema, type SettingsFormData } from '../../../../schemas';
+import { USE_BACKEND } from '../../../../config/backend';
 import styles from './Settings.module.css';
 
 const CURRENCY_OPTIONS = [
@@ -47,6 +48,7 @@ export default function Settings() {
   const preferences = useCompanyStore((s) => s.preferences);
   const setCompany = useCompanyStore((s) => s.setCompany);
   const setPreferences = useCompanyStore((s) => s.setPreferences);
+  const saveCompany = useCompanyStore((s) => s.saveCompany);
 
   const {
     register,
@@ -76,17 +78,31 @@ export default function Settings() {
     });
   }, [company, preferences, reset]);
 
-  const onSubmit = (data: SettingsFormData) => {
-    setCompany({
+  const onSubmit = async (data: SettingsFormData) => {
+    const companyPayload = {
       name: data.companyName.trim(),
       rif: data.rif.trim(),
       address: data.address?.trim() ?? '',
-    });
-    setPreferences({
+    };
+    const preferencesPayload = {
       currency: data.currency,
       defaultIva: data.defaultIva,
       businessType: preferences.businessType,
-    });
+    };
+
+    if (USE_BACKEND) {
+      const ok = await saveCompany({ ...companyPayload, ...preferencesPayload });
+      if (!ok) {
+        const errMsg = useCompanyStore.getState().error ?? 'Error desconocido';
+        toast.error('No se pudieron guardar los cambios', errMsg, { category: 'system' });
+        return;
+      }
+      toast.success('Configuracion guardada', 'Los cambios fueron aplicados', { category: 'system' });
+      return;
+    }
+
+    setCompany(companyPayload);
+    setPreferences(preferencesPayload);
     toast.success('Configuracion guardada', 'Los cambios fueron aplicados', { category: 'system' });
   };
 
