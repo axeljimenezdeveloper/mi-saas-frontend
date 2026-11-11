@@ -473,3 +473,12 @@
     justify-content: center;
   }
 }
+
+/* Subtitulos dentro de secciones (reemplaza inline styles) */
+.subsectionTitle {
+  margin-top: var(--space-4);
+}
+
+.subsectionTitleSpaced {
+  margin-top: var(--space-5);
+}

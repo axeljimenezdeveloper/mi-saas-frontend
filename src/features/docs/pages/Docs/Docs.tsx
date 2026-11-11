@@ -331,7 +331,7 @@ export default function Docs() {
               digitalmente.
             </p>
 
-            <h4 className={styles.sectionTitleText} style={{ marginTop: 'var(--space-4)' }}>
+            <h4 className={styles.subsectionTitle}>
               Completado en v2.1.0
             </h4>
             <div className={styles.roadmapGrid}>
@@ -353,7 +353,7 @@ export default function Docs() {
               />
             </div>
 
-            <h4 className={styles.sectionTitleText} style={{ marginTop: 'var(--space-5)' }}>
+            <h4 className={styles.subsectionTitleSpaced}>
               Proximos pasos
             </h4>
             <div className={styles.roadmapGrid}>

@@ -279,14 +279,7 @@ export default function ProductsList() {
             description="Comienza agregando tu primer producto o genera una muestra de 16 productos para explorar la interfaz."
             icon={<Package size={32} />}
             action={
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 'var(--space-3)',
-                  alignItems: 'stretch', width: '100%', maxWidth: '260px',
-                }}
-              >
+              <div className={styles.emptyActions}>
                 <Button
                   leftIcon={<Plus size={14} />}
                     fullWidth

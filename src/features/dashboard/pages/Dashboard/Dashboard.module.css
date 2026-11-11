@@ -444,3 +444,13 @@
   max-width: 100%;
 }
 
+
+/* Acciones del EmptyState (reemplaza inline styles) */
+.emptyActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: stretch;
+  width: 100%;
+  max-width: 260px;
+}
