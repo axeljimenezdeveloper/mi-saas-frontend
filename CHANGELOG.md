@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.3.3](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v2.3.2...v2.3.3) (2026-11-11)
+
+### Bug Fixes
+
+* show skeleton while store fetches resolve, drop fake timeouts ([bcd2359](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/bcd23593c87f9b19b23ddeb6ac1d6c3b7b1147cc))
+
 ## [2.3.2](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v2.3.1...v2.3.2) (2026-11-11)
 
 ### Bug Fixes
