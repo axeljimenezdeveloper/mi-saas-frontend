@@ -1,4 +1,4 @@
-﻿/* src/features/billing/pages/BillingDetail/BillingDetail.module.css */
+/* src/features/billing/pages/BillingDetail/BillingDetail.module.css */
 
 .page {
   flex: 1 0 auto;
@@ -135,6 +135,14 @@
 .pdfColumn {
   display: flex;
   flex-direction: column;
+  min-height: 0;
+}
+
+/* Fuerza al .body del Card a ser flex column: flex:1 en .pdfWrapper necesita padre flex */
+.pdfColumn > div {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   min-height: 0;
 }
 
