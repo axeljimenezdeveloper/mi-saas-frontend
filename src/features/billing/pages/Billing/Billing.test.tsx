@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
@@ -36,10 +36,11 @@ function renderBilling() {
 describe('Billing', () => {
   beforeEach(() => {
     mockNavigate.mockClear();
-    useInvoicesStore.setState({ invoices: SEED_INVOICES });
+    useInvoicesStore.setState({ invoices: SEED_INVOICES, isLoading: false });
   });
 
   it('shows skeleton loading initially', () => {
+    useInvoicesStore.setState({ isLoading: true });
     const { container } = renderBilling();
     expect(container.querySelector('[class*="skeletonTable"]')).toBeInTheDocument();
   });

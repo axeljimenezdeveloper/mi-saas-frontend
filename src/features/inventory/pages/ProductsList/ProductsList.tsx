@@ -66,11 +66,11 @@ export default function ProductsList() {
   const toast = useToast();
 
   const products = useProductsStore((s) => s.products);
+  const isLoading = useProductsStore((s) => s.isLoading);
   const removeProduct = useProductsStore((s) => s.removeProduct);
   const addProduct = useProductsStore((s) => s.addProduct);
   const currency = useCompanyStore((s) => s.preferences.currency);
 
-  const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -79,10 +79,6 @@ export default function ProductsList() {
   const [sortField, setSortField] = useState<SortField>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
-  useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 600);
-    return () => clearTimeout(t);
-  }, []);
 
   // Reset page when filters change
   useEffect(() => {

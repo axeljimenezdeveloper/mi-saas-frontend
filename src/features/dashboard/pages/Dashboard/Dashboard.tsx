@@ -29,6 +29,7 @@ import {
   useInvoicesStore,
   useCompanyStore,
 } from '../../../../stores';
+import { Skeleton } from '../../../../components/feedback/loading/Skeleton';
 import { generateSampleProducts } from '../../../../features/demo/sampleProducts';
 import styles from './Dashboard.module.css';
 
@@ -52,6 +53,8 @@ export default function Dashboard() {
   const products = useProductsStore((s) => s.products);
   const addProduct = useProductsStore((s) => s.addProduct);
   const invoices = useInvoicesStore((s) => s.invoices);
+  const isProductsLoading = useProductsStore((s) => s.isLoading);
+  const isInvoicesLoading = useInvoicesStore((s) => s.isLoading);
 
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -114,6 +117,7 @@ export default function Dashboard() {
   const recentInvoices = useMemo(() => invoices.slice(0, 3), [invoices]);
 
   const hasData = products.length > 0 || invoices.length > 0;
+  const isInitialLoading = (isProductsLoading || isInvoicesLoading) && !hasData;
 
   const greeting = companyName
     ? 'Hola, ' + companyName
@@ -145,7 +149,16 @@ export default function Dashboard() {
       </header>
 
       <div className={styles.content}>
-        {!hasData ? (
+        {isInitialLoading ? (
+          <>
+            <div className={styles.statsGrid}>
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} variant="rectangular" height="140px" />
+              ))}
+            </div>
+            <Skeleton variant="rectangular" height="320px" />
+          </>
+        ) : !hasData ? (
           <div className={styles.emptyWrapper}>
             <EmptyState
               title="Tu negocio esta vacio"

@@ -70,10 +70,10 @@ interface MenuPosition {
 export default function Billing() {
   const navigate = useNavigate();
   const invoices = useInvoicesStore((s) => s.invoices);
+  const isLoading = useInvoicesStore((s) => s.isLoading);
   const updateStatus = useInvoicesStore((s) => s.updateStatus);
   const toast = useToast();
 
-  const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [openMenuId, setOpenMenuId] = useState<number | string | null>(null);
@@ -82,10 +82,6 @@ export default function Billing() {
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
-  useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 600);
-    return () => clearTimeout(t);
-  }, []);
 
   useEffect(() => {
     setCurrentPage(1);

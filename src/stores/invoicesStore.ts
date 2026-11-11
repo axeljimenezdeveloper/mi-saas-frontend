@@ -66,7 +66,7 @@ function todayISO(): string {
 
 export const useInvoicesStore = create<InvoicesStore>((set, get) => ({
   invoices: [],
-  isLoading: false,
+  isLoading: USE_BACKEND,
   error: null,
 
   addInvoice: ({ client, items, total }) => {

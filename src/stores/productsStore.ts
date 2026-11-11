@@ -46,7 +46,7 @@ let productCounter = 0;
 
 export const useProductsStore = create<ProductsStore>((set, get) => ({
   products: [],
-  isLoading: false,
+  isLoading: USE_BACKEND,
   error: null,
 
   addProduct: (product) => {
