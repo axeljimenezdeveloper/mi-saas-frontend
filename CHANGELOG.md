@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.3.7](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v2.3.6...v2.3.7) (2026-11-11)
+
+### Features
+
+* surface store errors to users via toast watcher ([8b91688](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/8b91688dd2d02d5aa972de2d15dd2825a61faaad))
+
+### Bug Fixes
+
+* refresh products after invoice creation in backend mode ([525b850](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/525b8509b9a5c2ba841211bb435f68cc7e0c365d))
+* respect company currency in all money formatting ([0baccc0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/0baccc0184bdd0354c45d2d2d9260f520938d9bd))
+
 ## [2.3.6](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v2.3.5...v2.3.6) (2026-11-11)
 
 ### Bug Fixes
