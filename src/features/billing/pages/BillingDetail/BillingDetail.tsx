@@ -20,6 +20,7 @@ import { EmptyState } from '../../../../components/feedback/states/EmptyState';
 import { ConfirmDialog } from '../../../../components/common/overlay/ConfirmDialog';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { useInvoicesStore, useCompanyStore } from '../../../../stores';
+import { formatMoney } from '../../../../utils/formatters';
 import type { InvoiceStatus } from '../../../../stores/invoicesStore';
 import { USE_BACKEND } from '../../../../config/backend';
 import { downloadInvoicePdfRequest } from '../../../../api/billing';
@@ -37,12 +38,6 @@ const STATUS_VARIANTS: Record<InvoiceStatus, 'success' | 'warning' | 'danger'> =
   overdue: 'danger',
 };
 
-const formatBs = (amount: number): string =>
-  'Bs. ' +
-  new Intl.NumberFormat('es-VE', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
 
 const formatDate = (iso: string): string => {
   const [y, m, d] = iso.split('-');
@@ -62,6 +57,8 @@ export default function BillingDetail() {
   const companyRif = useCompanyStore((s) => s.company.rif);
   const companyAddress = useCompanyStore((s) => s.company.address);
   const defaultIva = useCompanyStore((s) => s.preferences.defaultIva);
+  const currency = useCompanyStore((s) => s.preferences.currency);
+  const formatBs = (amount: number) => formatMoney(amount, currency);
   const ivaRate = Number(defaultIva) / 100;
 
   const invoice = useMemo(

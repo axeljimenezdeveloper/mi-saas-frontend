@@ -22,7 +22,8 @@ import { Select } from '../../../../components/common/inputs/Select';
 import { Skeleton } from '../../../../components/feedback/loading/Skeleton';
 import { EmptyState } from '../../../../components/feedback/states/EmptyState';
 import { Pagination } from '../../../../components/common/navigation/Pagination';
-import { useInvoicesStore, type Invoice, type InvoiceStatus } from '../../../../stores';
+import { useInvoicesStore, useCompanyStore, type Invoice, type InvoiceStatus } from '../../../../stores';
+import { formatMoney } from '../../../../utils/formatters';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import styles from './Billing.module.css';
 
@@ -50,12 +51,6 @@ const ITEMS_PER_PAGE = 10;
 type SortField = 'date' | 'total' | 'client' | null;
 type SortDirection = 'asc' | 'desc';
 
-const formatBs = (amount: number): string =>
-  new Intl.NumberFormat('es-VE', {
-    style: 'currency',
-    currency: 'VES',
-    minimumFractionDigits: 2,
-  }).format(amount);
 
 const formatDate = (iso: string): string => {
   const [y, m, d] = iso.split('-');
@@ -70,6 +65,8 @@ interface MenuPosition {
 export default function Billing() {
   const navigate = useNavigate();
   const invoices = useInvoicesStore((s) => s.invoices);
+  const currency = useCompanyStore((s) => s.preferences.currency);
+  const formatBs = (amount: number) => formatMoney(amount, currency);
   const isLoading = useInvoicesStore((s) => s.isLoading);
   const updateStatus = useInvoicesStore((s) => s.updateStatus);
   const toast = useToast();

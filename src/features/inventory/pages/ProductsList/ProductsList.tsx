@@ -17,6 +17,7 @@ import { Button } from '../../../../components/common/actions/Button';
 import { Input } from '../../../../components/common/inputs/Input';
 import { Select } from '../../../../components/common/inputs/Select';
 import { Skeleton } from '../../../../components/feedback/loading/Skeleton';
+import { formatMoney } from '../../../../utils/formatters';
 import { EmptyState } from '../../../../components/feedback/states/EmptyState';
 import { ConfirmDialog } from '../../../../components/common/overlay/ConfirmDialog';
 import { Pagination } from '../../../../components/common/navigation/Pagination';
@@ -54,12 +55,6 @@ const ITEMS_PER_PAGE = 10;
 type SortField = 'name' | 'price' | 'stock' | null;
 type SortDirection = 'asc' | 'desc';
 
-const formatBs = (amount: number): string =>
-  new Intl.NumberFormat('es-VE', {
-    style: 'currency',
-    currency: 'VES',
-    minimumFractionDigits: 2,
-  }).format(amount);
 
 export default function ProductsList() {
   const navigate = useNavigate();
@@ -70,6 +65,7 @@ export default function ProductsList() {
   const removeProduct = useProductsStore((s) => s.removeProduct);
   const addProduct = useProductsStore((s) => s.addProduct);
   const currency = useCompanyStore((s) => s.preferences.currency);
+  const formatBs = (amount: number) => formatMoney(amount, currency);
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [search, setSearch] = useState('');

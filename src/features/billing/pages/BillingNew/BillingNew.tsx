@@ -22,6 +22,7 @@ import { Card } from '../../../../components/common/data-display/Card';
 import { EmptyState } from '../../../../components/feedback/states/EmptyState';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { useProductsStore, useInvoicesStore, useCompanyStore } from '../../../../stores';
+import { formatMoney } from '../../../../utils/formatters';
 import { USE_BACKEND } from '../../../../config/backend';
 import {
   invoiceSchema,
@@ -31,12 +32,6 @@ import {
 import styles from './BillingNew.module.css';
 
 
-const formatBs = (amount: number): string =>
-  new Intl.NumberFormat('es-VE', {
-    style: 'currency',
-    currency: 'VES',
-    minimumFractionDigits: 2,
-  }).format(amount);
 
 export default function BillingNew() {
   const navigate = useNavigate();
@@ -45,6 +40,8 @@ export default function BillingNew() {
   const products = useProductsStore((s) => s.products);
   const addInvoice = useInvoicesStore((s) => s.addInvoice);
   const defaultIva = useCompanyStore((s) => s.preferences.defaultIva);
+  const currency = useCompanyStore((s) => s.preferences.currency);
+  const formatBs = (amount: number) => formatMoney(amount, currency);
   const ivaRate = Number(defaultIva) / 100;
   const decrementStock = useProductsStore((s) => s.decrementStock);
 

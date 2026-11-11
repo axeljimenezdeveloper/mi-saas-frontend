@@ -30,15 +30,10 @@ import {
   useCompanyStore,
 } from '../../../../stores';
 import { Skeleton } from '../../../../components/feedback/loading/Skeleton';
+import { formatMoney } from '../../../../utils/formatters';
 import { generateSampleProducts } from '../../../../features/demo/sampleProducts';
 import styles from './Dashboard.module.css';
 
-const formatBs = (amount: number): string =>
-  'Bs. ' +
-  new Intl.NumberFormat('es-VE', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
 
 const formatDate = (iso: string): string => {
   const [y, m, d] = iso.split('-');
@@ -50,6 +45,7 @@ export default function Dashboard() {
   const toast = useToast();
   const companyName = useCompanyStore((s) => s.company.name);
   const currency = useCompanyStore((s) => s.preferences.currency);
+  const formatBs = (amount: number) => formatMoney(amount, currency);
   const products = useProductsStore((s) => s.products);
   const addProduct = useProductsStore((s) => s.addProduct);
   const invoices = useInvoicesStore((s) => s.invoices);
