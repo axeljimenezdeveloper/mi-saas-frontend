@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.3.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v2.2.0...v2.3.0) (2026-11-11)
+
+### Bug Fixes
+
+* fetch company before login redirect decision ([9c93469](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/9c93469f20406cd69f7267099ba76de75d2c8977))
+* persist company changes to backend from settings ([947352d](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/947352d11a25a96dceb93c029c996c97d0cfafa1))
+* reset stores on logout to prevent cross-session data leakage ([adae4f4](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/adae4f4d033cd1a675d72edbee8205194f3dab93))
+
 ## [2.2.0](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v2.1.0...v2.2.0) (2026-11-10)
 
 ### Features
