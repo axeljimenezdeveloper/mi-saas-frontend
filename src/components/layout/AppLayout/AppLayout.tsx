@@ -63,11 +63,14 @@ export function AppLayout() {
   useEffect(() => {
     if (!USE_BACKEND) return;
 
-    // Fetch inicial (paralelo)
-    void useProductsStore.getState().fetchProducts();
+    // Fetch inicial: productos primero (invoices resuelve productName desde products).
+    // Company y notifications no dependen entre si, van en paralelo.
     void useCompanyStore.getState().fetchCompany();
-    void useInvoicesStore.getState().fetchInvoices();
     void useNotificationsStore.getState().fetchNotifications();
+    void (async () => {
+      await useProductsStore.getState().fetchProducts();
+      void useInvoicesStore.getState().fetchInvoices();
+    })();
 
     // Polling: refresca notificaciones para que el bell refleje acciones recientes
     const interval = setInterval(() => {
