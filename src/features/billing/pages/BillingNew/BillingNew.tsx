@@ -22,6 +22,7 @@ import { Card } from '../../../../components/common/data-display/Card';
 import { EmptyState } from '../../../../components/feedback/states/EmptyState';
 import { useToast } from '../../../../components/feedback/alerts/Toast';
 import { useProductsStore, useInvoicesStore, useCompanyStore } from '../../../../stores';
+import { USE_BACKEND } from '../../../../config/backend';
 import {
   invoiceSchema,
   type InvoiceFormData,
@@ -156,7 +157,7 @@ export default function BillingNew() {
     syncItemsToForm(items.filter((i) => i.productId !== productId));
   };
 
-  const onSubmit = (data: InvoiceFormData) => {
+  const onSubmit = async (data: InvoiceFormData) => {
     // Re-valida stock antes de guardar (por si cambio entre abrir el form y guardar)
     const stockIssues: string[] = [];
     items.forEach((item) => {
@@ -180,23 +181,28 @@ export default function BillingNew() {
       return;
     }
 
-    setTimeout(() => {
-      // Descontar stock de cada producto vendido
-      items.forEach((item) => {
-        decrementStock(item.productId, item.quantity);
-      });
-      addInvoice({
-        client: data.client,
-        items,
-        total: totals.total,
-      });
-      toast.success(
-        'Factura creada',
-        `Factura generada para ${data.client} por ${formatBs(totals.total)}`,
-          { category: 'billing', actionUrl: '/billing' }
-      );
-      navigate('/billing');
-    }, 600);
+    await new Promise((resolve) => setTimeout(resolve, 600));
+
+    items.forEach((item) => {
+      decrementStock(item.productId, item.quantity);
+    });
+    addInvoice({
+      client: data.client,
+      items,
+      total: totals.total,
+    });
+
+    // Backend mode: refresca stock real desde el backend, que descuenta server-side.
+    if (USE_BACKEND) {
+      await useProductsStore.getState().fetchProducts();
+    }
+
+    toast.success(
+      'Factura creada',
+      `Factura generada para ${data.client} por ${formatBs(totals.total)}`,
+        { category: 'billing', actionUrl: '/billing' }
+    );
+    navigate('/billing');
   };
 
   const onInvalid = () => {
