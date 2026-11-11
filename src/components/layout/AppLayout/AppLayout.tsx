@@ -16,6 +16,7 @@ import { Sidebar, type SidebarItem } from '../Sidebar';
 import { Header } from '../Header';
 import { MainLayout } from '../MainLayout';
 import { NotificationPanel } from '../../feedback/notifications/NotificationPanel';
+import { StoreErrorWatcher } from '../../feedback/errors/StoreErrorWatcher';
 import { useToast } from '../../feedback/alerts/Toast';
 import {
   useThemeStore,
@@ -93,82 +94,85 @@ export function AppLayout() {
   };
 
   return (
-    <MainLayout
-      sidebar={
-        <Sidebar
-          items={NAV_ITEMS}
-          activeHref={location.pathname}
-          onNavigate={(href) => navigate(href)}
-          isCollapsed={isCollapsed}
-          onToggleCollapse={toggleCollapse}
-          footer={
-            <button
-              type="button"
-              className={[
-                styles.logoutButton,
-                isCollapsed && styles.logoutButtonCollapsed,
-              ]
-                .filter(Boolean)
-                .join(' ')}
-              onClick={handleLogout}
-              title={isCollapsed ? 'Cerrar sesion' : undefined}
-              aria-label="Cerrar sesion"
-            >
-              <LogOut size={18} />
-              {!isCollapsed && <span>Cerrar sesion</span>}
-            </button>
-          }
-        />
-      }
-      renderHeader={(onMenuClick, isMobile) => (
-        <Header
-          showMenuButton={isMobile}
-          onMenuClick={onMenuClick}
-          brand={
-            <div className={styles.brand}>
-              <Package size={20} className={styles.brandIcon} />
-              <div className={styles.brandText}>
-                <span className={styles.brandName}>Vendra</span>
-                {companyName && (
-                  <span className={styles.brandCompany}>{companyName}</span>
-                )}
+    <>
+      <StoreErrorWatcher />
+      <MainLayout
+        sidebar={
+          <Sidebar
+            items={NAV_ITEMS}
+            activeHref={location.pathname}
+            onNavigate={(href) => navigate(href)}
+            isCollapsed={isCollapsed}
+            onToggleCollapse={toggleCollapse}
+            footer={
+              <button
+                type="button"
+                className={[
+                  styles.logoutButton,
+                  isCollapsed && styles.logoutButtonCollapsed,
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+                onClick={handleLogout}
+                title={isCollapsed ? 'Cerrar sesion' : undefined}
+                aria-label="Cerrar sesion"
+              >
+                <LogOut size={18} />
+                {!isCollapsed && <span>Cerrar sesion</span>}
+              </button>
+            }
+          />
+        }
+        renderHeader={(onMenuClick, isMobile) => (
+          <Header
+            showMenuButton={isMobile}
+            onMenuClick={onMenuClick}
+            brand={
+              <div className={styles.brand}>
+                <Package size={20} className={styles.brandIcon} />
+                <div className={styles.brandText}>
+                  <span className={styles.brandName}>Vendra</span>
+                  {companyName && (
+                    <span className={styles.brandCompany}>{companyName}</span>
+                  )}
+                </div>
               </div>
-            </div>
-          }
-          actions={
-            <>
-              <NotificationPanel />
-              <Button
-                variant="ghost"
-                size="sm"
-                iconOnly
-                onClick={toggleTheme}
-                aria-label={
-                  theme === 'dark'
-                    ? 'Activar modo claro'
-                    : 'Activar modo oscuro'
-                }
-              >
-                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-              </Button>
-              <Link
-                to="/settings"
-                className={styles.userLink}
-                aria-label="Configuracion de la cuenta"
-                title="Configuracion de la cuenta"
-              >
-                <Avatar
-                  name={user?.name ?? 'Invitado'}
+            }
+            actions={
+              <>
+                <NotificationPanel />
+                <Button
+                  variant="ghost"
                   size="sm"
-                  status="online"
-                />
-              </Link>
-            </>
-          }
-        />
-      )}
-    >
-      <Outlet />
-    </MainLayout>
+                  iconOnly
+                  onClick={toggleTheme}
+                  aria-label={
+                    theme === 'dark'
+                      ? 'Activar modo claro'
+                      : 'Activar modo oscuro'
+                  }
+                >
+                  {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+                </Button>
+                <Link
+                  to="/settings"
+                  className={styles.userLink}
+                  aria-label="Configuracion de la cuenta"
+                  title="Configuracion de la cuenta"
+                >
+                  <Avatar
+                    name={user?.name ?? 'Invitado'}
+                    size="sm"
+                    status="online"
+                  />
+                </Link>
+              </>
+            }
+          />
+        )}
+      >
+        <Outlet />
+      </MainLayout>
+    </>
   );
 }

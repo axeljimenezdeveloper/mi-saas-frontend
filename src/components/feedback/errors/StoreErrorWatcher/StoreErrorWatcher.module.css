@@ -1,0 +1,5 @@
+﻿/* src/components/feedback/errors/StoreErrorWatcher/StoreErrorWatcher.module.css
+ * Componente headless: no renderiza UI, solo dispara toasts al cambiar
+ * errores de los stores. Este archivo existe para cumplir R12
+ * (folder-per-component con 4 archivos).
+ */
