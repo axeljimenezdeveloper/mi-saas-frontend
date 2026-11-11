@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.3.6](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v2.3.5...v2.3.6) (2026-11-11)
+
+### Bug Fixes
+
+* remove unused test imports breaking tsc build ([6e8b061](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/6e8b061f42928efc33fe1411173fdd9227292c5c))
+
 ## [2.3.5](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v2.3.4...v2.3.5) (2026-11-11)
 
 ## [2.3.4](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v2.3.3...v2.3.4) (2026-11-11)
