@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.3.4](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v2.3.3...v2.3.4) (2026-11-11)
+
+### Bug Fixes
+
+* sequence products fetch before invoices to resolve item names ([0b5606a](https://github.com/axeljimenezdeveloper/mi-saas-frontend/commit/0b5606a613028cff746fe6379ac367e4a8f31095))
+
 ## [2.3.3](https://github.com/axeljimenezdeveloper/mi-saas-frontend/compare/v2.3.2...v2.3.3) (2026-11-11)
 
 ### Bug Fixes
